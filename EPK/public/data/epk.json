@@ -1,0 +1,40 @@
+{
+  "layout": [
+    { "type": "hero", "id": "hero_1" },
+    { "type": "bio", "id": "bio_1" },
+    { "type": "offerings", "id": "offer_1" },
+    { "type": "videos", "id": "vid_1" },
+    { "type": "gallery", "id": "gal_1" }
+  ],
+
+  "content": {
+    "hero_1": {
+      "image": "photos/Dave Session Violin.jpg",
+      "caption": "Live studio performance"
+    },
+
+    "bio_1": [
+      "South African composer and multi-instrumentalist.",
+      "Works across theatre, film, and live electronic performance."
+    ],
+
+    "offer_1": [
+      {
+        "title": "DU!F Live Looping",
+        "description": "Electronic layered improvisation"
+      }
+    ],
+
+    "vid_1": [
+      {
+        "title": "Acoustic Session",
+        "url": "https://youtu.be/ecOBbGNafoY"
+      }
+    ],
+
+    "gal_1": [
+      { "src": "photos/Dave Cello.jpg" },
+      { "src": "photos/Dave DUIF.jpg" }
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 40px;
+    max-width: 900px;
+    margin: auto;
+    color: #111;
+}
+
+h1, h2, h3 {
+    letter-spacing: 0.5px;
+}
+
+section {
+    margin-bottom: 40px;
+}
+
+.hero img {
+    width: 100%;
+    border-radius: 6px;
+}
+
+.caption {
+    color: #666;
+    font-style: italic;
+}
+
+.card {
+    border: 1px solid #ddd;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 6px;
+    background: #fafafa;
+}
+
+.link {
+    display: block;
+    margin: 6px 0;
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.grid img {
+    width: 100%;
+    border-radius: 4px;
+}
+
+@media (max-width: 700px) {
+    body { padding: 20px; }
+    .grid { grid-template-columns: 1fr 1fr; }
+}
