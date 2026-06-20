@@ -1,27 +1,46 @@
 {
+  "meta": {
+    "location": "Cape Town, South Africa"
+  },
+
   "layout": [
-    { "type": "hero", "id": "hero_1" },
-    { "type": "bio", "id": "bio_1" },
+    { "type": "hero",      "id": "hero_1"  },
+    { "type": "bio",       "id": "bio_1"   },
     { "type": "offerings", "id": "offer_1" },
-    { "type": "videos", "id": "vid_1" },
-    { "type": "gallery", "id": "gal_1" }
+    { "type": "videos",    "id": "vid_1"   },
+    { "type": "gallery",   "id": "gal_1"   },
+    { "type": "contact",   "id": "contact_1" }
   ],
 
   "content": {
     "hero_1": {
       "image": "photos/Dave Session Violin.jpg",
-      "caption": "Live studio performance"
+      "tagline": "Composer · Multi-Instrumentalist · Cape Town",
+      "caption": "Live studio session"
     },
 
     "bio_1": [
-      "South African composer and multi-instrumentalist.",
-      "Works across theatre, film, and live electronic performance."
+      "Dave Knowles is a South African composer and multi-instrumentalist whose work spans theatre, film, live electronic performance, and acoustic songwriting.",
+      "Drawing on violin, saxophone, guitar, and live looping technology, Dave creates layered sonic worlds that move between the intimate and the expansive — from solo acoustic sets under open skies to full-band productions for stage and screen.",
+      "Based in Cape Town and active across South Africa and Europe, Dave brings both technical precision and raw musical intuition to every project."
     ],
 
     "offer_1": [
       {
         "title": "DU!F Live Looping",
-        "description": "Electronic layered improvisation"
+        "description": "Immersive real-time composition using layered loops, violin, saxophone, and electronics."
+      },
+      {
+        "title": "Acoustic Songwriting",
+        "description": "Intimate guitar and vocal performances — festival stages, private events, and sessions."
+      },
+      {
+        "title": "Film & Theatre Scoring",
+        "description": "Original scores for screen and stage, from orchestral arrangements to electronic textures."
+      },
+      {
+        "title": "Wedding & Event Music",
+        "description": "Tailored live music and DJ sets for ceremonies, receptions, and corporate events."
       }
     ],
 
@@ -33,8 +52,17 @@
     ],
 
     "gal_1": [
+      { "src": "photos/Dave Session Violin.jpg" },
+      { "src": "photos/Dave DUIF.jpg" },
       { "src": "photos/Dave Cello.jpg" },
-      { "src": "photos/Dave DUIF.jpg" }
+      { "src": "photos/Dave with Acoustic.jpg" },
+      { "src": "photos/Dave with Sax.jpg" },
+      { "src": "photos/Dave Loop Setup.jpg" }
+    ],
+
+    "contact_1": [
+      { "label": "Email",    "value": "dave@daveknowles.com",       "href": "mailto:dave@daveknowles.com" },
+      { "label": "Location", "value": "Cape Town, South Africa",     "href": "#" }
     ]
   }
 }

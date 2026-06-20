@@ -7,62 +7,113 @@ async function init() {
 }
 
 function render(data) {
-    return data.layout.map(block => {
+    const sections = data.layout.map(block => {
         const c = data.content[block.id];
-
         switch (block.type) {
-
-            case "hero":
-                return `
-                <section class="hero">
-                    <img src="${c.image}" alt="Dave Knowles">
-                    <p class="caption">${c.caption || ""}</p>
-                </section>`;
-
-            case "bio":
-                return `
-                <section>
-                    <h2>Biography</h2>
-                    ${c.map(p => `<p>${p}</p>`).join("")}
-                </section>`;
-
-            case "offerings":
-                return `
-                <section>
-                    <h2>Offerings</h2>
-                    ${c.map(o => `
-                        <div class="card">
-                            <h3>${o.title}</h3>
-                            <p>${o.description}</p>
-                        </div>
-                    `).join("")}
-                </section>`;
-
-            case "videos":
-                return `
-                <section>
-                    <h2>Videos</h2>
-                    ${c.map(v => `
-                        <a class="link" target="_blank" href="${v.url}">
-                            ▶ ${v.title}
-                        </a>
-                    `).join("")}
-                </section>`;
-
-            case "gallery":
-                return `
-                <section>
-                    <h2>Gallery</h2>
-                    <div class="grid">
-                        ${c.map(g => `<img src="${g.src}" alt="Gallery">`).join("")}
-                    </div>
-                    <p><a href="gallery.html">View full gallery →</a></p>
-                </section>`;
-
-            default:
-                return "";
+            case "hero":     return renderHero(c);
+            case "bio":      return renderBio(c);
+            case "offerings": return renderOfferings(c);
+            case "videos":   return renderVideos(c);
+            case "gallery":  return renderGallery(c);
+            case "contact":  return renderContact(c);
+            default: return "";
         }
     }).join("");
+
+    return sections + renderFooter(data.meta || {});
+}
+
+function renderHero(c) {
+    return `
+    <section class="hero">
+        <img class="hero__img" src="${c.image}" alt="Dave Knowles">
+        <div class="hero__overlay">
+            <hr class="hero__rule">
+            <h1 class="hero__name">Dave Knowles</h1>
+            <hr class="hero__rule">
+            <p class="hero__tagline">${c.tagline || "Composer · Multi-Instrumentalist · Cape Town"}</p>
+        </div>
+        ${c.caption ? `<p class="hero__caption">${c.caption}</p>` : ""}
+    </section>`;
+}
+
+function renderBio(c) {
+    return `
+    <div class="content">
+        <section class="epk-section">
+            <p class="section-label">Biography</p>
+            <div class="bio-text">
+                ${c.map(p => `<p>${p}</p>`).join("")}
+            </div>
+        </section>
+    </div>`;
+}
+
+function renderOfferings(c) {
+    return `
+    <div class="content">
+        <section class="epk-section">
+            <p class="section-label">Offerings</p>
+            <div class="offerings-grid">
+                ${c.map(o => `
+                    <div class="offering-card">
+                        <h3>${o.title}</h3>
+                        <p>${o.description}</p>
+                    </div>
+                `).join("")}
+            </div>
+        </section>
+    </div>`;
+}
+
+function renderVideos(c) {
+    return `
+    <div class="content">
+        <section class="epk-section">
+            <p class="section-label">Videos</p>
+            <div class="video-list">
+                ${c.map(v => `
+                    <a class="video-link" href="${v.url}" target="_blank" rel="noopener">
+                        <span class="play-icon">▶</span>
+                        ${v.title}
+                    </a>
+                `).join("")}
+            </div>
+        </section>
+    </div>`;
+}
+
+function renderGallery(c) {
+    return `
+    <div class="content">
+        <section class="epk-section">
+            <p class="section-label">Gallery</p>
+            <div class="gallery-grid">
+                ${c.map(g => `<img src="${g.src}" alt="Dave Knowles">`).join("")}
+            </div>
+            <a class="gallery-more" href="gallery.html">View full gallery →</a>
+        </section>
+    </div>`;
+}
+
+function renderContact(c) {
+    return `
+    <div class="content">
+        <section class="epk-section">
+            <p class="section-label">Contact</p>
+            <div class="contact-block">
+                ${c.map(item => `
+                    <div class="contact-item">
+                        ${item.label}: <a href="${item.href}">${item.value}</a>
+                    </div>
+                `).join("")}
+            </div>
+        </section>
+    </div>`;
+}
+
+function renderFooter(meta) {
+    return `<footer>© ${new Date().getFullYear()} Dave Knowles${meta.location ? " · " + meta.location : ""}</footer>`;
 }
 
 init();

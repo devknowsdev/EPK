@@ -9,83 +9,87 @@ async function init() {
 
 function renderLayout() {
     document.getElementById("layout").innerHTML = `
-        <h2>Layout</h2>
-
-        ${db.layout.map((b,i) => `
-            <div class="card">
-                <strong>${b.type}</strong> &nbsp; <code style="color:#888;font-size:12px">${b.id}</code>
-                <div style="margin-top:8px">
-                    <button onclick="edit('${b.id}')">✏️ Edit</button>
-                    <button onclick="remove(${i})">🗑 Delete</button>
-                    <button onclick="move(${i},-1)" ${i === 0 ? 'disabled' : ''}>↑</button>
-                    <button onclick="move(${i},1)" ${i === db.layout.length-1 ? 'disabled' : ''}>↓</button>
+        <div class="block-list">
+            ${db.layout.map((b, i) => `
+                <div class="block-row">
+                    <strong>${b.type}</strong>
+                    <code>${b.id}</code>
+                    <button class="btn" onclick="edit('${b.id}')">✏ Edit</button>
+                    <button class="btn" onclick="move(${i}, -1)" ${i === 0 ? 'disabled' : ''}>↑</button>
+                    <button class="btn" onclick="move(${i}, 1)" ${i === db.layout.length - 1 ? 'disabled' : ''}>↓</button>
+                    <button class="btn btn-danger" onclick="remove(${i})">✕</button>
                 </div>
-            </div>
-        `).join("")}
+            `).join("")}
+        </div>
 
-        <hr>
-        <p><strong>Add block:</strong></p>
-        <button onclick="add('hero')">+ Hero</button>
-        <button onclick="add('bio')">+ Bio</button>
-        <button onclick="add('offerings')">+ Offerings</button>
-        <button onclick="add('videos')">+ Videos</button>
-        <button onclick="add('gallery')">+ Gallery</button>
+        <hr class="divider">
+        <p class="section-label" style="margin-bottom:16px">Add block</p>
+        <div class="add-row">
+            <button class="btn" onclick="add('hero')">+ Hero</button>
+            <button class="btn" onclick="add('bio')">+ Bio</button>
+            <button class="btn" onclick="add('offerings')">+ Offerings</button>
+            <button class="btn" onclick="add('videos')">+ Videos</button>
+            <button class="btn" onclick="add('gallery')">+ Gallery</button>
+            <button class="btn" onclick="add('contact')">+ Contact</button>
+        </div>
 
-        <hr>
-        <button onclick="save()">💾 Save to LocalStorage</button>
-        <button onclick="exportJSON()" style="background:#d4edda;border-color:#a8d5b5">⬇️ Export JSON</button>
+        <hr class="divider">
+        <div style="display:flex;gap:10px">
+            <button class="btn" onclick="save()">💾 Save to LocalStorage</button>
+            <button class="btn btn-primary" onclick="exportJSON()">⬇ Export JSON</button>
+        </div>
     `;
 }
 
 function edit(id) {
     selected = id;
-
     document.getElementById("editor").innerHTML = `
-        <h2>Edit: <code>${id}</code></h2>
-        <textarea id="box">${JSON.stringify(db.content[id], null, 2)}</textarea>
-        <br>
-        <button onclick="apply()">✅ Apply Changes</button>
-        <button onclick="document.getElementById('editor').innerHTML=''">Cancel</button>
-        <p id="edit-status" style="color:green;font-size:13px"></p>
+        <div class="editor-box">
+            <h2>Editing: <code style="font-size:0.85em;color:var(--stone)">${id}</code></h2>
+            <textarea id="box">${JSON.stringify(db.content[id], null, 2)}</textarea>
+            <div class="edit-actions">
+                <button class="btn btn-primary" onclick="apply()">✓ Apply</button>
+                <button class="btn" onclick="document.getElementById('editor').innerHTML=''">Cancel</button>
+                <span class="edit-status" id="edit-status"></span>
+            </div>
+        </div>
     `;
 }
 
 function apply() {
     try {
         db.content[selected] = JSON.parse(document.getElementById("box").value);
-        document.getElementById("edit-status").textContent = "✓ Applied. Export JSON to publish.";
+        document.getElementById("edit-status").textContent = "✓ Applied — export JSON to publish";
     } catch (e) {
-        alert("Invalid JSON — check your syntax and try again.");
+        alert("Invalid JSON — check your syntax.");
     }
 }
 
 function add(type) {
-    const id = type + "_" + Math.random().toString(36).slice(2,7);
-
+    const id = type + "_" + Math.random().toString(36).slice(2, 7);
     db.layout.push({ type, id });
-
     db.content[id] =
-        type === "hero"      ? { image: "", caption: "" } :
-        type === "bio"       ? ["New paragraph"] :
+        type === "hero"      ? { image: "", caption: "", tagline: "" } :
+        type === "bio"       ? ["New paragraph."] :
         type === "offerings" ? [{ title: "New Offering", description: "" }] :
         type === "videos"    ? [{ title: "New Video", url: "" }] :
         type === "gallery"   ? [{ src: "" }] :
+        type === "contact"   ? [{ label: "Email", value: "you@example.com", href: "mailto:you@example.com" }] :
         {};
-
     renderLayout();
 }
 
 function remove(i) {
-    if (!confirm(`Delete block "${db.layout[i].type}"?`)) return;
+    if (!confirm(`Delete "${db.layout[i].type}" block?`)) return;
     db.layout.splice(i, 1);
     renderLayout();
 }
 
 function move(i, d) {
     const arr = db.layout;
-    const target = i + d;
-    if (target < 0 || target >= arr.length) return;
-    [arr[i], arr[target]] = [arr[target], arr[i]];
+    const t = i + d;
+    if (t < 0 || t >= arr.length) return;
+    [arr[i], arr[t]] = [arr[t], arr[i]];
     renderLayout();
 }
 
