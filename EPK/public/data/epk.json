@@ -16,7 +16,13 @@
   "bio": {
     "short": "Dave Knowles is a South African composer, multi-instrumentalist, and live loop artist whose performances weave guitar, sax, violin, flute, and voice into immersive soundscapes. With a career spanning indie rock, folk, theatre, children's television, and experimental electronica, Dave brings a genre-blending performance full of energy, improvisation, and heart.",
     "acoustic": "Dave Knowles delivers dynamic acoustic performances, blending percussive guitar grooves with soulful melodies and lyrical storytelling. A seasoned folk artist, his live shows are intimate, powerful, and unforgettable.",
-    "full": []
+    "full": [
+      "<p><strong>Dave Knowles</strong> is a Cape Town-based composer and multi-instrumentalist whose two-decade career spans indie rock, theatre, film, and children's television. He began with the indie rock band <em>Shinobi</em>, which took him to the UK for two years, before returning to South Africa to develop a distinctive percussive acoustic style that established him in Cape Town's folk scene.</p>",
+      "<p>His work as a composer has taken him into theatre and film, including directing the music for <em>No Functional Language</em> (Chaeli Campaign, 2016) — a live multi-instrumental score performed across South Africa and at Denmark's Aprilfest — and co-scoring <em>The First Week</em> for the 48 Hour Film Project, which won <strong>Best Original Score</strong> internationally and screened at <strong>Cannes</strong>. More recently, he composed the original score for <em>Yazuke — Baba Yaya</em> (2025), a Cape Town dance theatre production tracing the story of the first African samurai through African contemporary dance, ballet, hip hop, and martial arts.</p>",
+      "<p>Dave is equally known for his immersive live-looping performances, weaving together guitar, saxophone, violin, flute, bass, voice, and electronics into marathon improvisational sets. These have brought him to stages including <strong>Lush</strong>, <strong>Splashy Fen</strong>, <strong>River Republic</strong>, <strong>STRAB</strong>, and the <strong>National Arts Festival</strong>, alongside reactive sound installations and live scoring for dance.</p>",
+      "<p>Since relocating to the Garden Route, Dave has built a strong commission portfolio, most notably composing four seasons of original music for <em>Takalani Sesame</em>, the South African co-production of <em>Sesame Street</em>. He also performs as <strong>DU!F</strong>, an electronic live-loop alias delivering high-energy, soundscape-driven sets.</p>",
+      "<p>From indie rock stages in Manchester to international children's television, <strong>Dave Knowles</strong> continues to build bridges between genres, disciplines, and audiences.</p>"
+    ]
   },
   "offerings": [
     {
@@ -118,13 +124,13 @@
   ],
   "videos": [
     {
-      "title": "New Acoustic Video (2026)",
+      "title": "Alone Together - Live Loop at Peace of Eden Studios (2020)",
       "url": "https://youtu.be/zwb3PXEnCnA",
       "tags": [
+        "default",
         "booker",
-        "acoustic",
         "press",
-        "default"
+        "acoustic"
       ]
     },
     {
@@ -140,24 +146,27 @@
       "title": "Fairy Folk 'n Roll Session — Live Acoustic (2024)",
       "url": "https://www.youtube.com/watch?v=fVEhFn1Dj6o",
       "tags": [
-        "acoustic",
-        "press"
+        "booker",
+        "press",
+        "acoustic"
       ]
     },
     {
       "title": "Yazuke — Debut Video Snippet (Baba Yaya, 2025)",
       "url": "https://youtu.be/a3bWrG8pbRc",
       "tags": [
-        "film",
-        "press"
+        "booker",
+        "press",
+        "film"
       ]
     },
     {
       "title": "Cocoon — Live Looped (2016)",
       "url": "https://youtube.com/watch?v=ecOBbGNafoY",
       "tags": [
-        "duif",
-        "press"
+        "booker",
+        "press",
+        "duif"
       ]
     },
     {
