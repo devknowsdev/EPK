@@ -13,47 +13,52 @@
       "youtube": "https://www.youtube.com/@DaveKnowlesmusic"
     }
   },
-
   "bio": {
     "short": "Dave Knowles is a South African composer, multi-instrumentalist, and live loop artist whose performances weave guitar, sax, violin, flute, and voice into immersive soundscapes. With a career spanning indie rock, folk, theatre, children's television, and experimental electronica, Dave brings a genre-blending performance full of energy, improvisation, and heart.",
     "acoustic": "Dave Knowles delivers dynamic acoustic performances, blending percussive guitar grooves with soulful melodies and lyrical storytelling. A seasoned folk artist, his live shows are intimate, powerful, and unforgettable.",
-    "full": [
-      "For over two decades, Dave Knowles has been crafting a diverse body of work that defies genre and embraces collaboration. Beginning his career with the indie rock band <em>Shinobi</em> — a project that took him to the UK for two years — Dave returned to South Africa to develop a distinctive percussive acoustic style that made him a mainstay of Cape Town's folk scene.",
-      "His versatility as a composer and multi-instrumentalist has led him into theatre, film, and international festivals. In 2016, he was commissioned to direct the music for <em>No Functional Language</em> (Chaeli Campaign), creating a live multi-instrumental score performed across South Africa and at Aprilfest in Denmark. That same year, he co-scored <em>The First Week</em> (48 Hour Film Project), which won <strong>Best Original Score</strong> internationally and screened at the Cannes Film Festival.",
-      "Dave's reputation for immersive, improvisational performances grew through his live looping sets — marathon shows that fused guitar, saxophone, violin, flute, bass, voice, and electronics. These performances brought him to stages at Lush, Splashy Fen, River Republic, STRAB, and the National Arts Festival.",
-      "His most visible commission has been composing four seasons of original music for <strong>Takalani Sesame</strong> (the South African co-production of <em>Sesame Street</em>), blending playfulness with cultural and musical authenticity.",
-      "Dave also performs under the alias <strong>DU!F</strong>, an electronic live-loop act delivering soaring soundscapes and high-energy beats. With a career that spans from indie rock stages in Manchester to international children's television, Dave Knowles continues to explore new musical languages while building bridges between genres, disciplines, and audiences."
-    ]
+    "full": []
   },
-
   "offerings": [
     {
       "title": "DU!F — Live Looping",
       "description": "Immersive real-time composition using layered loops, guitar, saxophone, violin, flute, and electronics. High-energy and deeply textured.",
-      "tags": ["booker", "duif"]
+      "tags": [
+        "booker",
+        "duif"
+      ]
     },
     {
       "title": "Acoustic Songwriting",
       "description": "Intimate percussive guitar and vocal performances — festival stages, private events, and sessions. Powerful, personal, unforgettable.",
-      "tags": ["booker", "acoustic"]
+      "tags": [
+        "booker",
+        "acoustic"
+      ]
     },
     {
       "title": "Film & Theatre Scoring",
       "description": "Original scores for screen and stage — from orchestral arrangements to live electronic textures. Credits include Cannes Film Festival and Takalani Sesame.",
-      "tags": ["booker", "film"]
+      "tags": [
+        "booker",
+        "film"
+      ]
     },
     {
       "title": "Wedding & Event Music",
       "description": "Tailored live music and DJ sets for ceremonies, receptions, and corporate events. Acoustic, electronic, or both.",
-      "tags": ["booker"]
+      "tags": [
+        "booker"
+      ]
     },
     {
       "title": "Sound Installation & Dance",
       "description": "Reactive sound installations and live scoring for contemporary dance. Collaborative, site-specific, experimental.",
-      "tags": ["booker", "film"]
+      "tags": [
+        "booker",
+        "film"
+      ]
     }
   ],
-
   "credits": [
     {
       "title": "Takalani Sesame — Seasons 11–14",
@@ -61,7 +66,10 @@
       "year": "2020–2024",
       "description": "Four seasons of original music for the South African co-production of Sesame Street.",
       "link": "https://www.youtube.com/watch?v=RDcmr-4GStA",
-      "tags": ["film", "press"]
+      "tags": [
+        "film",
+        "press"
+      ]
     },
     {
       "title": "Yazuke — Baba Yaya",
@@ -69,7 +77,10 @@
       "year": "2025",
       "description": "Contemporary dance theatre exploring the story of the first African samurai. Directed by Benjamin Nivison & Mandla Mbothwe. Cape Town, 2025.",
       "link": "https://youtu.be/a3bWrG8pbRc",
-      "tags": ["film", "press"]
+      "tags": [
+        "film",
+        "press"
+      ]
     },
     {
       "title": "Mantis — Baba Yaya",
@@ -77,7 +88,10 @@
       "year": "2025",
       "description": "60-minute dance theatre work exploring the Khoi-San trickster god. Novalis Ubuntu Institute, Cape Town.",
       "link": "",
-      "tags": ["film", "press"]
+      "tags": [
+        "film",
+        "press"
+      ]
     },
     {
       "title": "No Functional Language — Chaeli Campaign",
@@ -85,7 +99,10 @@
       "year": "2016",
       "description": "Live multi-instrumental score performed across South Africa and at Aprilfest, Denmark.",
       "link": "https://www.youtube.com/watch?v=bMnieGbiI6s",
-      "tags": ["film", "press"]
+      "tags": [
+        "film",
+        "press"
+      ]
     },
     {
       "title": "The First Week — 48 Hour Film Project",
@@ -93,113 +110,213 @@
       "year": "2016",
       "description": "Winner: Best Original Score (International). Screened at the Cannes Film Festival.",
       "link": "https://vimeo.com/265640419",
-      "tags": ["film", "press"]
+      "tags": [
+        "film",
+        "press"
+      ]
     }
   ],
-
   "videos": [
     {
       "title": "New Acoustic Video (2026)",
       "url": "https://youtu.be/zwb3PXEnCnA",
-      "tags": ["booker", "acoustic", "press", "default"]
+      "tags": [
+        "booker",
+        "acoustic",
+        "press",
+        "default"
+      ]
     },
     {
       "title": "DU!F Live at Wilderness Arts Festival",
       "url": "https://www.youtube.com/watch?v=aqHgSXZSy8M",
-      "tags": ["booker", "duif", "press"]
+      "tags": [
+        "booker",
+        "duif",
+        "press"
+      ]
     },
     {
       "title": "Fairy Folk 'n Roll Session — Live Acoustic (2024)",
       "url": "https://www.youtube.com/watch?v=fVEhFn1Dj6o",
-      "tags": ["acoustic", "press"]
+      "tags": [
+        "acoustic",
+        "press"
+      ]
     },
     {
       "title": "Yazuke — Debut Video Snippet (Baba Yaya, 2025)",
       "url": "https://youtu.be/a3bWrG8pbRc",
-      "tags": ["film", "press"]
+      "tags": [
+        "film",
+        "press"
+      ]
     },
     {
       "title": "Cocoon — Live Looped (2016)",
       "url": "https://youtube.com/watch?v=ecOBbGNafoY",
-      "tags": ["duif", "press"]
+      "tags": [
+        "duif",
+        "press"
+      ]
     },
     {
       "title": "The Regent — Live Acoustic (2016)",
       "url": "https://youtube.com/watch?v=RXD2Z2316lQ",
-      "tags": ["acoustic"]
+      "tags": [
+        "acoustic"
+      ]
     },
     {
       "title": "Leave Them Wild — Studio Arrangement",
       "url": "https://youtu.be/wCmX2JrK0R0",
-      "tags": ["acoustic", "press"]
+      "tags": [
+        "acoustic",
+        "press"
+      ]
     },
     {
       "title": "Takalani Sesame — Season 14 Example",
       "url": "https://www.youtube.com/watch?v=RDcmr-4GStA",
-      "tags": ["film"]
+      "tags": [
+        "film"
+      ]
     },
     {
       "title": "No Functional Language — Trailer (2016)",
       "url": "https://www.youtube.com/watch?v=bMnieGbiI6s",
-      "tags": ["film"]
+      "tags": [
+        "film"
+      ]
     },
     {
       "title": "The First Week — Short Film (Cannes, 2016)",
       "url": "https://vimeo.com/265640419",
-      "tags": ["film"]
+      "tags": [
+        "film"
+      ]
     },
     {
       "title": "When My Day Is Done — Studio Video (2016)",
       "url": "https://youtube.com/watch?v=CHax0yBrONg",
-      "tags": ["acoustic"]
+      "tags": [
+        "acoustic"
+      ]
     }
   ],
-
   "releases": [
     {
       "title": "Night Jar",
       "alias": "DU!F",
       "url": "https://on.soundcloud.com/LcA56nqxzAgmNyfR9",
-      "tags": ["duif", "press"]
+      "tags": [
+        "duif",
+        "press"
+      ]
     },
     {
       "title": "Pray Bird Prey",
       "alias": "DU!F",
       "url": "https://on.soundcloud.com/sngxAJPYT8vMeEBD8",
-      "tags": ["duif", "press"]
+      "tags": [
+        "duif",
+        "press"
+      ]
     }
   ],
-
   "gallery": [
-    { "src": "photos/Dave Session Violin.jpg",  "caption": "Studio violin session" },
-    { "src": "photos/Dave DUIF.jpg",            "caption": "DU!F live set" },
-    { "src": "photos/Dave with Acoustic.jpg",   "caption": "Acoustic performance" },
-    { "src": "photos/Dave with Sax.jpg",        "caption": "Saxophone" },
-    { "src": "photos/Dave Cello.jpg",           "caption": "Session work" },
-    { "src": "photos/Dave Loop Setup.jpg",      "caption": "Live loop rig" },
-    { "src": "photos/Dave Profile.jpg",         "caption": "Portrait" },
-    { "src": "photos/Dave Moody Guitar.jpg",    "caption": "Acoustic" },
-    { "src": "photos/Dave Sax Louvain.jpg",     "caption": "Louvain, Belgium" },
-    { "src": "photos/Dave at Sandy Stone Fest.jpg", "caption": "Sandy Stone Festival" },
-    { "src": "photos/DK acoustic pic.jpeg",     "caption": "On location" },
-    { "src": "photos/Dave On the Road.jpg",     "caption": "On the road" },
-    { "src": "photos/Dave loop face.jpg",       "caption": "Deep in the loop" },
-    { "src": "photos/Dead Dave.jpg",            "caption": "Portrait" },
-    { "src": "photos/Mantis poster.jpg",        "caption": "Mantis — Baba Yaya (2025)" },
-    { "src": "photos/No Functional Language poster.jpg", "caption": "No Functional Language (2016)" },
-    { "src": "photos/Takalane.jpeg",            "caption": "Takalani Sesame" },
-    { "src": "photos/Yasuke.jpg",               "caption": "Yazuke — Baba Yaya (2025)" }
+    {
+      "src": "photos/Dave Session Violin.jpg",
+      "caption": "Studio violin session"
+    },
+    {
+      "src": "photos/Dave DUIF.jpg",
+      "caption": "DU!F live set"
+    },
+    {
+      "src": "photos/Dave with Acoustic.jpg",
+      "caption": "Acoustic performance"
+    },
+    {
+      "src": "photos/Dave with Sax.jpg",
+      "caption": "Saxophone"
+    },
+    {
+      "src": "photos/Dave Cello.jpg",
+      "caption": "Session work"
+    },
+    {
+      "src": "photos/Dave Loop Setup.jpg",
+      "caption": "Live loop rig"
+    },
+    {
+      "src": "photos/Dave Profile.jpg",
+      "caption": "Portrait"
+    },
+    {
+      "src": "photos/Dave Moody Guitar.jpg",
+      "caption": "Acoustic"
+    },
+    {
+      "src": "photos/Dave Sax Louvain.jpg",
+      "caption": "Louvain, Belgium"
+    },
+    {
+      "src": "photos/Dave at Sandy Stone Fest.jpg",
+      "caption": "Sandy Stone Festival"
+    },
+    {
+      "src": "photos/DK acoustic pic.jpeg",
+      "caption": "On location"
+    },
+    {
+      "src": "photos/Dave On the Road.jpg",
+      "caption": "On the road"
+    },
+    {
+      "src": "photos/Dave loop face.jpg",
+      "caption": "Deep in the loop"
+    },
+    {
+      "src": "photos/Dead Dave.jpg",
+      "caption": "Portrait"
+    },
+    {
+      "src": "photos/Mantis poster.jpg",
+      "caption": "Mantis — Baba Yaya (2025)"
+    },
+    {
+      "src": "photos/No Functional Language poster.jpg",
+      "caption": "No Functional Language (2016)"
+    },
+    {
+      "src": "photos/Takalane.jpeg",
+      "caption": "Takalani Sesame"
+    },
+    {
+      "src": "photos/Yasuke.jpg",
+      "caption": "Yazuke — Baba Yaya (2025)"
+    }
   ],
-
   "modes": {
     "default": {
       "label": "General",
       "hero": "photos/Dave Session Violin.jpg",
       "heroCaption": "Live studio session",
       "bioStyle": "short",
-      "sections": ["bio", "offerings", "videos", "gallery", "contact"],
-      "offeringTags": ["booker"],
-      "videoTags": ["default"],
+      "sections": [
+        "bio",
+        "offerings",
+        "videos",
+        "gallery",
+        "contact"
+      ],
+      "offeringTags": [
+        "booker"
+      ],
+      "videoTags": [
+        "default"
+      ],
       "galleryCount": 6
     },
     "booker": {
@@ -207,9 +324,18 @@
       "hero": "photos/Dave with Acoustic.jpg",
       "heroCaption": "Live acoustic performance",
       "bioStyle": "short",
-      "sections": ["bio", "offerings", "videos", "contact"],
-      "offeringTags": ["booker"],
-      "videoTags": ["booker"],
+      "sections": [
+        "bio",
+        "offerings",
+        "videos",
+        "contact"
+      ],
+      "offeringTags": [
+        "booker"
+      ],
+      "videoTags": [
+        "booker"
+      ],
       "galleryCount": 0
     },
     "press": {
@@ -217,9 +343,18 @@
       "hero": "photos/Dave Profile.jpg",
       "heroCaption": "High-resolution press shot",
       "bioStyle": "full",
-      "sections": ["bio", "credits", "videos", "releases", "gallery", "contact"],
+      "sections": [
+        "bio",
+        "credits",
+        "videos",
+        "releases",
+        "gallery",
+        "contact"
+      ],
       "offeringTags": [],
-      "videoTags": ["press"],
+      "videoTags": [
+        "press"
+      ],
       "galleryCount": 9
     },
     "film": {
@@ -227,9 +362,18 @@
       "hero": "photos/Yasuke.jpg",
       "heroCaption": "Yazuke — Baba Yaya, Cape Town (2025)",
       "bioStyle": "short",
-      "sections": ["bio", "credits", "videos", "contact"],
-      "offeringTags": ["film"],
-      "videoTags": ["film"],
+      "sections": [
+        "bio",
+        "credits",
+        "videos",
+        "contact"
+      ],
+      "offeringTags": [
+        "film"
+      ],
+      "videoTags": [
+        "film"
+      ],
       "galleryCount": 0
     },
     "acoustic": {
@@ -237,9 +381,19 @@
       "hero": "photos/DK acoustic pic.jpeg",
       "heroCaption": "Acoustic performance",
       "bioStyle": "acoustic",
-      "sections": ["bio", "offerings", "videos", "gallery", "contact"],
-      "offeringTags": ["acoustic"],
-      "videoTags": ["acoustic"],
+      "sections": [
+        "bio",
+        "offerings",
+        "videos",
+        "gallery",
+        "contact"
+      ],
+      "offeringTags": [
+        "acoustic"
+      ],
+      "videoTags": [
+        "acoustic"
+      ],
       "galleryCount": 4
     },
     "duif": {
@@ -247,9 +401,19 @@
       "hero": "photos/Dave DUIF.jpg",
       "heroCaption": "DU!F — live electronics",
       "bioStyle": "short",
-      "sections": ["bio", "offerings", "videos", "releases", "contact"],
-      "offeringTags": ["duif"],
-      "videoTags": ["duif"],
+      "sections": [
+        "bio",
+        "offerings",
+        "videos",
+        "releases",
+        "contact"
+      ],
+      "offeringTags": [
+        "duif"
+      ],
+      "videoTags": [
+        "duif"
+      ],
       "galleryCount": 0
     }
   }
