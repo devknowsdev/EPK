@@ -3,25 +3,1221 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin — Dave Knowles EPK</title>
-<link rel="stylesheet" href="styles.css">
+<title>EPK Admin — Dave Knowles</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:       #F7F3EE;
+  --surface:  #FFFFFF;
+  --border:   #E0D8CF;
+  --text:     #1C1612;
+  --muted:    #8A7D70;
+  --brass:    #B8803C;
+  --brass-bg: #FDF6EC;
+  --danger:   #C0392B;
+  --success:  #2E7D52;
+  --radius:   6px;
+  --shadow:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Layout ── */
+.shell {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100svh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  background: var(--text);
+  color: #F0E6D3;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-brand h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: #F0E6D3;
+  line-height: 1.2;
+}
+
+.sidebar-brand p {
+  font-size: 0.7rem;
+  color: #7A6A58;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 0;
+}
+
+.nav-section {
+  padding: 16px 20px 8px;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #5A4A38;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  color: #B0A090;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 400;
+  transition: background 0.15s, color 0.15s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.05); color: #F0E6D3; }
+.nav-item.active { background: rgba(196,150,90,0.15); color: #C4965A; }
+.nav-item .icon { width: 16px; text-align: center; font-size: 0.85rem; }
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.view-link {
+  display: block;
+  font-size: 0.72rem;
+  color: #5A4A38;
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  transition: color 0.15s;
+}
+.view-link:hover { color: #C4965A; }
+
+/* ── Main ── */
+.main {
+  padding: 40px 48px;
+  max-width: 860px;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+.page-header {
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.page-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.page-header p {
+  font-size: 0.83rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── Form elements ── */
+.field { margin-bottom: 18px; }
+.field:last-child { margin-bottom: 0; }
+
+label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+label .hint {
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 6px;
+  font-size: 0.73rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--brass);
+  box-shadow: 0 0 0 3px rgba(184,128,60,0.1);
+}
+
+textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Tags ── */
+.tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.tag-check { display: none; }
+
+.tag-label {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.tag-check:checked + .tag-label {
+  background: var(--brass-bg);
+  border-color: var(--brass);
+  color: var(--brass);
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--brass);
+  color: white;
+  border-color: var(--brass);
+}
+.btn-primary:hover { background: #9e6d30; border-color: #9e6d30; }
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-secondary:hover { border-color: #B0A090; background: var(--bg); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: #E8C5C0;
+}
+.btn-danger:hover { background: #FEF0EF; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: transparent;
+  padding: 6px 10px;
+}
+.btn-ghost:hover { color: var(--text); background: var(--bg); }
+
+.btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+
+/* ── List items (videos, credits, etc.) ── */
+.list-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.list-item-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.list-item-header:hover { background: var(--bg); }
+
+.drag-handle {
+  color: var(--border);
+  font-size: 1rem;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.list-item-title {
+  flex: 1;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.list-item-meta {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.list-item-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--border);
+  display: none;
+}
+
+.list-item-body.open { display: block; padding-top: 16px; }
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Share links ── */
+.share-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.share-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.share-label {
+  width: 90px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.share-url {
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copy-btn {
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.copy-btn:hover { border-color: var(--brass); color: var(--brass); }
+.copy-btn.copied { border-color: var(--success); color: var(--success); }
+
+/* ── Publish panel ── */
+.publish-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.publish-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 0.83rem;
+  margin-top: 16px;
+  display: none;
+}
+
+.publish-status.show { display: flex; }
+.publish-status.loading { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+.publish-status.success { background: #F0FDF4; color: var(--success); border: 1px solid #BBF7D0; }
+.publish-status.error   { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; }
+
+.token-setup {
+  background: var(--brass-bg);
+  border: 1px solid #E8C98A;
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+  font-size: 0.83rem;
+  color: #6B4C1E;
+  line-height: 1.6;
+}
+
+.token-setup a { color: var(--brass); }
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Gallery grid ── */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.photo-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.9);
+  transition: filter 0.2s;
+}
+
+.photo-item:hover img { filter: brightness(1); }
+
+.photo-item .photo-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 0.65rem;
+  padding: 4px 6px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.photo-item:hover .photo-caption { opacity: 1; }
+
+/* ── Bio tabs ── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--brass); border-bottom-color: var(--brass); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .main { padding: 24px 20px; }
+  .field-row { grid-template-columns: 1fr; }
+  .photo-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
 </head>
 <body>
-<div class="admin-wrap">
-    <h1>EPK Admin</h1>
-    <a class="back" href="index.html">← View EPK</a>
+<div class="shell">
 
-    <div class="admin-notice">
-        <strong>How to publish:</strong> Edit the JSON below → click <strong>Export JSON</strong> → replace <code>public/data/epk.json</code> in your GitHub repo → Cloudflare redeploys in ~60 seconds.
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>Dave Knowles</h1>
+      <p>EPK Admin</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Content</div>
+      <button class="nav-item active" onclick="showPage('share')" id="nav-share">
+        <span class="icon">↗</span> Share Links
+      </button>
+      <button class="nav-item" onclick="showPage('meta')" id="nav-meta">
+        <span class="icon">◎</span> Profile
+      </button>
+      <button class="nav-item" onclick="showPage('bio')" id="nav-bio">
+        <span class="icon">✦</span> Biography
+      </button>
+      <button class="nav-item" onclick="showPage('offerings')" id="nav-offerings">
+        <span class="icon">◈</span> Offerings
+      </button>
+      <button class="nav-item" onclick="showPage('credits')" id="nav-credits">
+        <span class="icon">◇</span> Credits
+      </button>
+      <button class="nav-item" onclick="showPage('videos')" id="nav-videos">
+        <span class="icon">▶</span> Videos
+      </button>
+      <button class="nav-item" onclick="showPage('releases')" id="nav-releases">
+        <span class="icon">♪</span> Releases
+      </button>
+      <button class="nav-item" onclick="showPage('gallery')" id="nav-gallery">
+        <span class="icon">◻</span> Gallery
+      </button>
+      <div class="nav-section">Publish</div>
+      <button class="nav-item" onclick="showPage('publish')" id="nav-publish">
+        <span class="icon">⬆</span> Publish
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <a class="view-link" href="index.html" target="_blank">View EPK ↗</a>
+      <a class="view-link" href="index.html?for=booker" target="_blank">Booker view ↗</a>
+      <a class="view-link" href="index.html?for=film" target="_blank">Film view ↗</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Share Links -->
+    <div class="page active" id="page-share">
+      <div class="page-header">
+        <div>
+          <h2>Share Links</h2>
+          <p>Copy the right link for each audience. Each one shows a tailored version of your EPK.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="share-grid" id="share-grid"></div>
+      </div>
     </div>
 
-    <div class="mode-panel">
-        <h2>Share Links</h2>
-        <div class="mode-links" id="mode-links"></div>
+    <!-- Profile / Meta -->
+    <div class="page" id="page-meta">
+      <div class="page-header">
+        <div><h2>Profile</h2><p>Your name, contact details, and social links.</p></div>
+        <button class="btn btn-primary" onclick="saveMeta()">Save changes</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Identity</span></div>
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="meta-name">
+        </div>
+        <div class="field">
+          <label>Tagline <span class="hint">shown under your name on the hero</span></label>
+          <input type="text" id="meta-tagline">
+        </div>
+        <div class="field">
+          <label>Location</label>
+          <input type="text" id="meta-location">
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Contact</span></div>
+        <div class="field-row">
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="meta-email">
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <input type="tel" id="meta-phone">
+          </div>
+        </div>
+        <div class="field">
+          <label>Website</label>
+          <input type="url" id="meta-website">
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Social</span></div>
+        <div class="field">
+          <label>Instagram URL</label>
+          <input type="url" id="meta-instagram">
+        </div>
+        <div class="field">
+          <label>YouTube URL</label>
+          <input type="url" id="meta-youtube">
+        </div>
+        <div class="field">
+          <label>SoundCloud URL</label>
+          <input type="url" id="meta-soundcloud">
+        </div>
+        <div class="field">
+          <label>Facebook URL</label>
+          <input type="url" id="meta-facebook">
+        </div>
+      </div>
     </div>
 
-    <div id="editor-panel"></div>
+    <!-- Biography -->
+    <div class="page" id="page-bio">
+      <div class="page-header">
+        <div><h2>Biography</h2><p>Different lengths for different contexts. Each mode uses the right one.</p></div>
+        <button class="btn btn-primary" onclick="saveBio()">Save changes</button>
+      </div>
+      <div class="card">
+        <div class="tab-bar">
+          <div class="tab active" onclick="showBioTab('short')">Short</div>
+          <div class="tab" onclick="showBioTab('acoustic')">Acoustic</div>
+          <div class="tab" onclick="showBioTab('full')">Full (Press)</div>
+        </div>
+        <div class="tab-panel active" id="bio-tab-short">
+          <div class="field">
+            <label>Short bio <span class="hint">used for booker, default, and DU!F modes</span></label>
+            <textarea id="bio-short" rows="5"></textarea>
+          </div>
+        </div>
+        <div class="tab-panel" id="bio-tab-acoustic">
+          <div class="field">
+            <label>Acoustic bio <span class="hint">used for the acoustic mode</span></label>
+            <textarea id="bio-acoustic" rows="5"></textarea>
+          </div>
+        </div>
+        <div class="tab-panel" id="bio-tab-full">
+          <div class="field">
+            <label>Full bio <span class="hint">used for press mode — one paragraph per line</span></label>
+            <textarea id="bio-full" rows="14"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Offerings -->
+    <div class="page" id="page-offerings">
+      <div class="page-header">
+        <div><h2>Offerings</h2><p>What you do. Tag each one so it appears in the right mode.</p></div>
+        <button class="btn btn-primary" onclick="addOffering()">+ Add offering</button>
+      </div>
+      <div id="offerings-list"></div>
+    </div>
+
+    <!-- Credits -->
+    <div class="page" id="page-credits">
+      <div class="page-header">
+        <div><h2>Credits</h2><p>Film, theatre, and TV work. Shown in film and press modes.</p></div>
+        <button class="btn btn-primary" onclick="addCredit()">+ Add credit</button>
+      </div>
+      <div id="credits-list"></div>
+    </div>
+
+    <!-- Videos -->
+    <div class="page" id="page-videos">
+      <div class="page-header">
+        <div><h2>Videos</h2><p>YouTube or Vimeo links. Tag each one for the right audience.</p></div>
+        <button class="btn btn-primary" onclick="addVideo()">+ Add video</button>
+      </div>
+      <div id="videos-list"></div>
+    </div>
+
+    <!-- Releases -->
+    <div class="page" id="page-releases">
+      <div class="page-header">
+        <div><h2>Releases</h2><p>SoundCloud, Bandcamp, or Spotify links.</p></div>
+        <button class="btn btn-primary" onclick="addRelease()">+ Add release</button>
+      </div>
+      <div id="releases-list"></div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="page" id="page-gallery">
+      <div class="page-header">
+        <div><h2>Gallery</h2><p>Photos served from the <code>photos/</code> folder. Drag to reorder.</p></div>
+      </div>
+      <div class="card">
+        <p style="font-size:0.83rem;color:var(--muted);margin-bottom:16px">
+          To add photos: push new image files to <code>public/photos/</code> in your GitHub repo, then add them below.
+        </p>
+        <div class="photo-grid" id="photo-grid"></div>
+      </div>
+      <div style="margin-top:16px">
+        <button class="btn btn-secondary" onclick="addPhoto()">+ Add photo entry</button>
+      </div>
+      <div id="photo-list" style="margin-top:16px"></div>
+    </div>
+
+    <!-- Publish -->
+    <div class="page" id="page-publish">
+      <div class="page-header">
+        <div><h2>Publish</h2><p>Push your changes live. Cloudflare redeploys in about 60 seconds.</p></div>
+      </div>
+
+      <div class="publish-card" id="token-section">
+        <div class="card-header"><span class="card-title">GitHub Setup</span></div>
+        <div class="token-setup">
+          One-time setup: paste your GitHub personal access token below. It's saved in your browser only — never sent anywhere except GitHub.
+          <br><br>
+          Get one at <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens</a> — select <strong>repo</strong> scope, set expiry to 1 year.
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>GitHub username</label>
+            <input type="text" id="gh-user" placeholder="devknowsdev">
+          </div>
+          <div class="field">
+            <label>Repository name</label>
+            <input type="text" id="gh-repo" placeholder="EPK">
+          </div>
+        </div>
+        <div class="field">
+          <label>File path in repo <span class="hint">path to epk.json from repo root</span></label>
+          <input type="text" id="gh-path" placeholder="EPK/public/data/epk.json">
+        </div>
+        <div class="field">
+          <label>Personal access token</label>
+          <input type="text" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="saveGHSettings()">Save settings</button>
+      </div>
+
+      <div class="publish-card" style="margin-top:16px">
+        <div class="card-header"><span class="card-title">Publish Changes</span></div>
+        <p style="font-size:0.83rem;color:var(--muted);margin-bottom:20px;line-height:1.6">
+          This will commit your current changes to <code>epk.json</code> in your GitHub repo. Cloudflare will detect the push and redeploy automatically.
+        </p>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="publish()" id="publish-btn">
+            ⬆ Publish to GitHub
+          </button>
+          <button class="btn btn-secondary" onclick="downloadJSON()">
+            ⬇ Download JSON
+          </button>
+        </div>
+        <div class="publish-status" id="publish-status"></div>
+      </div>
+    </div>
+
+  </main>
 </div>
-<script src="admin.js"></script>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────
+let db = {};
+const ALL_TAGS = ['default','booker','press','film','acoustic','duif'];
+
+// ── Boot ──────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const res = await fetch('data/epk.json');
+    db = await res.json();
+  } catch(e) {
+    db = { meta:{name:'',tagline:'',location:'',email:'',phone:'',website:'',social:{}},
+           bio:{short:'',acoustic:'',full:[]}, offerings:[], credits:[],
+           videos:[], releases:[], gallery:[], modes:{} };
+  }
+  loadGHSettings();
+  renderAll();
+}
+
+function renderAll() {
+  renderShare();
+  renderMeta();
+  renderBio();
+  renderList('offerings');
+  renderList('credits');
+  renderList('videos');
+  renderList('releases');
+  renderGallery();
+}
+
+// ── Navigation ────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+}
+
+// ── Share links ───────────────────────────────────────────────────
+function renderShare() {
+  const base = window.location.origin + window.location.pathname.replace('admin.html','index.html');
+  const modes = db.modes || {};
+  const grid = document.getElementById('share-grid');
+  grid.innerHTML = Object.entries(modes).map(([key, m]) => {
+    const url = key === 'default' ? base : `${base}?for=${key}`;
+    return `
+    <div class="share-row">
+      <span class="share-label">${m.label}</span>
+      <span class="share-url">${url}</span>
+      <button class="copy-btn" onclick="copyURL(this,'${url}')">Copy</button>
+      <a class="btn btn-ghost btn-sm" href="${url}" target="_blank">Open ↗</a>
+    </div>`;
+  }).join('');
+}
+
+function copyURL(btn, url) {
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── Meta ──────────────────────────────────────────────────────────
+function renderMeta() {
+  const m = db.meta || {};
+  const s = m.social || {};
+  setValue('meta-name', m.name);
+  setValue('meta-tagline', m.tagline);
+  setValue('meta-location', m.location);
+  setValue('meta-email', m.email);
+  setValue('meta-phone', m.phone);
+  setValue('meta-website', m.website);
+  setValue('meta-instagram', s.instagram);
+  setValue('meta-youtube', s.youtube);
+  setValue('meta-soundcloud', s.soundcloud);
+  setValue('meta-facebook', s.facebook);
+}
+
+function saveMeta() {
+  db.meta = {
+    name: val('meta-name'),
+    tagline: val('meta-tagline'),
+    location: val('meta-location'),
+    email: val('meta-email'),
+    phone: val('meta-phone'),
+    website: val('meta-website'),
+    social: {
+      instagram: val('meta-instagram'),
+      youtube:   val('meta-youtube'),
+      soundcloud:val('meta-soundcloud'),
+      facebook:  val('meta-facebook')
+    }
+  };
+  toast('Profile saved');
+}
+
+// ── Bio ───────────────────────────────────────────────────────────
+function renderBio() {
+  const b = db.bio || {};
+  setValue('bio-short', b.short || '');
+  setValue('bio-acoustic', b.acoustic || '');
+  setValue('bio-full', Array.isArray(b.full) ? b.full.join('\n\n') : (b.full || ''));
+}
+
+function saveBio() {
+  const fullRaw = val('bio-full');
+  db.bio = {
+    short:    val('bio-short'),
+    acoustic: val('bio-acoustic'),
+    full:     fullRaw.split(/\n\n+/).map(p => p.trim()).filter(Boolean)
+  };
+  toast('Biography saved');
+}
+
+function showBioTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('bio-tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── Generic list renderer ─────────────────────────────────────────
+function renderList(type) {
+  const container = document.getElementById(type + '-list');
+  if (!container) return;
+  const items = db[type] || [];
+  container.innerHTML = items.length === 0
+    ? `<p style="color:var(--muted);font-size:0.83rem;padding:20px 0">No ${type} yet. Add one above.</p>`
+    : items.map((item, i) => renderListItem(type, item, i)).join('');
+}
+
+function renderListItem(type, item, i) {
+  const title = item.title || item.name || 'Untitled';
+  const meta  = item.year || item.alias || item.url || '';
+
+  const fields = getFields(type, item, i);
+  return `
+  <div class="list-item" id="${type}-item-${i}">
+    <div class="list-item-header" onclick="toggleItem('${type}-item-${i}')">
+      <span class="drag-handle">⠿</span>
+      <span class="list-item-title">${title}</span>
+      ${meta ? `<span class="list-item-meta">${meta.length > 40 ? meta.slice(0,40)+'…' : meta}</span>` : ''}
+    </div>
+    <div class="list-item-body" id="${type}-body-${i}">
+      ${fields}
+      <div class="item-actions">
+        <button class="btn btn-primary btn-sm" onclick="saveItem('${type}', ${i})">Save</button>
+        <button class="btn btn-danger btn-sm" onclick="removeItem('${type}', ${i})">Remove</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function getFields(type, item, i) {
+  const tags = item.tags || [];
+  const tagHTML = `
+    <div class="field">
+      <label>Show in modes</label>
+      <div class="tag-group">
+        ${ALL_TAGS.map(t => `
+          <input type="checkbox" class="tag-check" id="${type}-tag-${i}-${t}" ${tags.includes(t)?'checked':''}>
+          <label class="tag-label" for="${type}-tag-${i}-${t}">${t}</label>
+        `).join('')}
+      </div>
+    </div>`;
+
+  if (type === 'offerings') return `
+    <div class="field"><label>Title</label><input type="text" id="off-title-${i}" value="${esc(item.title)}"></div>
+    <div class="field"><label>Description</label><textarea id="off-desc-${i}">${esc(item.description)}</textarea></div>
+    ${tagHTML}`;
+
+  if (type === 'credits') return `
+    <div class="field-row">
+      <div class="field"><label>Title</label><input type="text" id="cr-title-${i}" value="${esc(item.title)}"></div>
+      <div class="field"><label>Year</label><input type="text" id="cr-year-${i}" value="${esc(item.year)}"></div>
+    </div>
+    <div class="field"><label>Role</label><input type="text" id="cr-role-${i}" value="${esc(item.role)}"></div>
+    <div class="field"><label>Description</label><textarea id="cr-desc-${i}">${esc(item.description)}</textarea></div>
+    <div class="field"><label>Link <span class="hint">optional</span></label><input type="url" id="cr-link-${i}" value="${esc(item.link)}"></div>
+    ${tagHTML}`;
+
+  if (type === 'videos') return `
+    <div class="field"><label>Title</label><input type="text" id="vid-title-${i}" value="${esc(item.title)}"></div>
+    <div class="field"><label>URL <span class="hint">YouTube or Vimeo</span></label><input type="url" id="vid-url-${i}" value="${esc(item.url)}"></div>
+    ${tagHTML}`;
+
+  if (type === 'releases') return `
+    <div class="field"><label>Title</label><input type="text" id="rel-title-${i}" value="${esc(item.title)}"></div>
+    <div class="field"><label>Alias / Artist <span class="hint">e.g. DU!F</span></label><input type="text" id="rel-alias-${i}" value="${esc(item.alias)}"></div>
+    <div class="field"><label>URL</label><input type="url" id="rel-url-${i}" value="${esc(item.url)}"></div>
+    ${tagHTML}`;
+
+  return '';
+}
+
+function saveItem(type, i) {
+  const tags = ALL_TAGS.filter(t => {
+    const el = document.getElementById(`${type}-tag-${i}-${t}`);
+    return el && el.checked;
+  });
+
+  if (type === 'offerings') {
+    db.offerings[i] = { title: val(`off-title-${i}`), description: val(`off-desc-${i}`), tags };
+  } else if (type === 'credits') {
+    db.credits[i] = { title: val(`cr-title-${i}`), year: val(`cr-year-${i}`),
+      role: val(`cr-role-${i}`), description: val(`cr-desc-${i}`),
+      link: val(`cr-link-${i}`), tags };
+  } else if (type === 'videos') {
+    db.videos[i] = { title: val(`vid-title-${i}`), url: val(`vid-url-${i}`), tags };
+  } else if (type === 'releases') {
+    db.releases[i] = { title: val(`rel-title-${i}`), alias: val(`rel-alias-${i}`),
+      url: val(`rel-url-${i}`), tags };
+  }
+
+  renderList(type);
+  toast('Saved');
+}
+
+function removeItem(type, i) {
+  if (!confirm('Remove this item?')) return;
+  db[type].splice(i, 1);
+  renderList(type);
+}
+
+function addOffering() {
+  db.offerings.push({ title: 'New Offering', description: '', tags: ['booker'] });
+  renderList('offerings');
+  toggleItem(`offerings-item-${db.offerings.length - 1}`);
+}
+
+function addCredit() {
+  db.credits.push({ title: 'New Credit', role: '', year: '', description: '', link: '', tags: ['film','press'] });
+  renderList('credits');
+  toggleItem(`credits-item-${db.credits.length - 1}`);
+}
+
+function addVideo() {
+  db.videos.push({ title: 'New Video', url: '', tags: ['default'] });
+  renderList('videos');
+  toggleItem(`videos-item-${db.videos.length - 1}`);
+}
+
+function addRelease() {
+  db.releases.push({ title: 'New Release', alias: '', url: '', tags: ['duif','press'] });
+  renderList('releases');
+  toggleItem(`releases-item-${db.releases.length - 1}`);
+}
+
+function toggleItem(id) {
+  const body = document.getElementById(id.replace('-item-', '-body-'));
+  if (body) body.classList.toggle('open');
+}
+
+// ── Gallery ───────────────────────────────────────────────────────
+function renderGallery() {
+  const photos = db.gallery || [];
+  const grid = document.getElementById('photo-grid');
+  grid.innerHTML = photos.map((g, i) => `
+    <div class="photo-item">
+      <img src="${g.src}" alt="${g.caption || ''}" onerror="this.style.background='#ddd'">
+      <div class="photo-caption">${g.caption || g.src}</div>
+    </div>`).join('');
+
+  const list = document.getElementById('photo-list');
+  list.innerHTML = photos.map((g, i) => `
+    <div class="list-item">
+      <div class="list-item-header" onclick="toggleItem('photo-item-${i}')">
+        <span class="drag-handle">⠿</span>
+        <span class="list-item-title">${g.src}</span>
+        <span class="list-item-meta">${g.caption || ''}</span>
+      </div>
+      <div class="list-item-body" id="photo-body-${i}">
+        <div class="field"><label>File path</label><input type="text" id="ph-src-${i}" value="${esc(g.src)}"></div>
+        <div class="field"><label>Caption</label><input type="text" id="ph-cap-${i}" value="${esc(g.caption)}"></div>
+        <div class="item-actions">
+          <button class="btn btn-primary btn-sm" onclick="savePhoto(${i})">Save</button>
+          <button class="btn btn-danger btn-sm" onclick="removePhoto(${i})">Remove</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function savePhoto(i) {
+  db.gallery[i] = { src: val(`ph-src-${i}`), caption: val(`ph-cap-${i}`) };
+  renderGallery();
+  toast('Photo saved');
+}
+
+function removePhoto(i) {
+  if (!confirm('Remove this photo?')) return;
+  db.gallery.splice(i, 1);
+  renderGallery();
+}
+
+function addPhoto() {
+  db.gallery.push({ src: 'photos/', caption: '' });
+  renderGallery();
+}
+
+// ── GitHub publish ─────────────────────────────────────────────────
+function loadGHSettings() {
+  setValue('gh-user',  localStorage.getItem('gh-user')  || 'devknowsdev');
+  setValue('gh-repo',  localStorage.getItem('gh-repo')  || 'EPK');
+  setValue('gh-path',  localStorage.getItem('gh-path')  || 'EPK/public/data/epk.json');
+  setValue('gh-token', localStorage.getItem('gh-token') || '');
+}
+
+function saveGHSettings() {
+  localStorage.setItem('gh-user',  val('gh-user'));
+  localStorage.setItem('gh-repo',  val('gh-repo'));
+  localStorage.setItem('gh-path',  val('gh-path'));
+  localStorage.setItem('gh-token', val('gh-token'));
+  toast('GitHub settings saved');
+}
+
+async function publish() {
+  const user  = val('gh-user')  || localStorage.getItem('gh-user');
+  const repo  = val('gh-repo')  || localStorage.getItem('gh-repo');
+  const path  = val('gh-path')  || localStorage.getItem('gh-path');
+  const token = val('gh-token') || localStorage.getItem('gh-token');
+
+  if (!token) { setStatus('error', 'No GitHub token saved. Fill in the setup section above.'); return; }
+  if (!user || !repo || !path) { setStatus('error', 'Fill in username, repo, and file path.'); return; }
+
+  setStatus('loading', 'Publishing…');
+  document.getElementById('publish-btn').disabled = true;
+
+  try {
+    // Get current file SHA (required for update)
+    const apiBase = `https://api.github.com/repos/${user}/${repo}/contents/${path}`;
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    const getRes = await fetch(apiBase, { headers });
+    if (!getRes.ok && getRes.status !== 404) throw new Error(`GitHub error: ${getRes.status}`);
+    const existing = getRes.ok ? await getRes.json() : null;
+    const sha = existing ? existing.sha : undefined;
+
+    // Encode content
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+    const now = new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+
+    const body = {
+      message: `EPK update — ${now}`,
+      content,
+      ...(sha ? { sha } : {})
+    };
+
+    const putRes = await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || `GitHub error: ${putRes.status}`);
+    }
+
+    setStatus('success', '✓ Published — Cloudflare will redeploy in about 60 seconds.');
+  } catch(e) {
+    setStatus('error', `Failed: ${e.message}`);
+  } finally {
+    document.getElementById('publish-btn').disabled = false;
+  }
+}
+
+function setStatus(type, msg) {
+  const el = document.getElementById('publish-status');
+  el.className = `publish-status show ${type}`;
+  el.innerHTML = type === 'loading'
+    ? `<div class="spinner"></div> ${msg}`
+    : msg;
+}
+
+function downloadJSON() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'epk.json';
+  a.click();
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
+function val(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function setValue(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.value = v || '';
+}
+
+function esc(s) {
+  return (s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+let toastTimer;
+function toast(msg) {
+  clearTimeout(toastTimer);
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = `position:fixed;bottom:24px;right:24px;background:#1C1612;color:#F0E6D3;
+      padding:10px 18px;border-radius:6px;font-size:0.8rem;font-family:Inter,sans-serif;
+      box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:999;transition:opacity 0.3s;`;
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  toastTimer = setTimeout(() => t.style.opacity = '0', 2500);
+}
+
+init();
+</script>
 </body>
 </html>
