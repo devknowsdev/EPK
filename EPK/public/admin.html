@@ -843,7 +843,8 @@ function showPage(id) {
 
 // ── Share links ───────────────────────────────────────────────────
 function renderShare() {
-  const base = window.location.origin + window.location.pathname.replace('admin.html','index.html');
+  const path = window.location.pathname.replace(/\/?admin(\.html)?$/, '/index.html');
+  const base = window.location.origin + path;
   const modes = db.modes || {};
   const grid = document.getElementById('share-grid');
   grid.innerHTML = Object.entries(modes).map(([key, m]) => {
