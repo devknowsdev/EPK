@@ -2,12 +2,12 @@
 
 /* ── Tokens ── */
 :root {
-  --bg:        #1C1612;
-  --surface:   #2E261E;
-  --parchment: #F0E6D3;
-  --brass:     #C4965A;
-  --stone:     #7A6A58;
-  --rule:      rgba(196,150,90,0.25);
+  --bg:        #1E1F1C;
+  --surface:   #2A2B27;
+  --parchment: #EDEEE8;
+  --brass:     #7A9E80;
+  --stone:     #7A8070;
+  --rule:      rgba(122,158,128,0.22);
 }
 
 /* ── Reset ── */
