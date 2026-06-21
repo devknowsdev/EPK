@@ -3,25 +3,1705 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin — Dave Knowles EPK</title>
-<link rel="stylesheet" href="styles.css">
+<title>EPK Admin — Dave Knowles</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  /* ── EPK stone-forest palette ── */
+  --bg:         #1E1F1C;
+  --surface:    #2A2B27;
+  --surface2:   #242520;
+  --border:     rgba(122,158,128,0.18);
+  --border-hi:  rgba(122,158,128,0.38);
+  --text:       #EDEEE8;
+  --text2:      #B8BFAD;
+  --muted:      #7A8070;
+  --brass:      #7A9E80;   /* EPK forest green — the accent */
+  --brass-lt:   #9DC4A4;
+  --brass-bg:   rgba(122,158,128,0.10);
+  --brass-border:rgba(122,158,128,0.30);
+  --green:      #7abf7a;
+  --green-bg:   rgba(122,191,122,0.10);
+  --green-border:rgba(122,191,122,0.35);
+  --red:        #c47a7a;
+  --red-bg:     rgba(196,122,122,0.10);
+  --red-border: rgba(196,122,122,0.35);
+  --blue:       #7AA8C4;
+  --blue-bg:    rgba(122,168,196,0.10);
+  --blue-border:rgba(122,168,196,0.30);
+  --radius:     4px;   /* EPK is crisp/square, minimal radius */
+  --shadow:     0 1px 4px rgba(0,0,0,0.3);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.4);
+  --rule:       rgba(122,158,128,0.22);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Layout ── */
+.shell {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  min-height: 100svh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  background: #16171A;
+  color: #EDEEE8;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border-right: 1px solid var(--rule);
+}
+
+.sidebar-brand {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.sidebar-brand h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: #EDEEE8;
+  line-height: 1.2;
+}
+
+.sidebar-brand p {
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* ── View links panel in sidebar — prominent ── */
+.sidebar-view-links {
+  padding: 14px 16px;
+  background: rgba(122,158,128,0.07);
+  border-bottom: 1px solid var(--rule);
+}
+
+.sidebar-view-links-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brass);
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.view-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  margin-bottom: 4px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.view-pill:last-child { margin-bottom: 0; }
+.view-pill:hover { background: rgba(122,158,128,0.10); border-color: var(--brass-border); }
+
+.view-pill-name {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--brass-lt);
+  white-space: nowrap;
+}
+
+.view-pill-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.view-pill-btn {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 2px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.view-pill-btn:hover { border-color: var(--brass); color: var(--brass); }
+.view-pill-btn.copied { border-color: var(--green); color: var(--green); }
+
+/* ── Nav ── */
+.sidebar-nav { flex: 1; padding: 10px 0; }
+
+.nav-section {
+  padding: 14px 20px 6px;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #3A4038;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 20px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 400;
+  transition: background 0.12s, color 0.12s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover { background: rgba(122,158,128,0.06); color: var(--text); }
+.nav-item.active { background: rgba(122,158,128,0.12); color: var(--brass); }
+.nav-item .icon { width: 15px; text-align: center; font-size: 0.8rem; opacity: 0.8; }
+
+/* ── Main ── */
+.main {
+  padding: 36px 44px;
+  max-width: 880px;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+.page-header {
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.page-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.page-header p {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── Form ── */
+.field { margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+
+label {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--text2);
+  margin-bottom: 5px;
+}
+
+label .hint {
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 6px;
+  font-size: 0.71rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.86rem;
+  color: var(--text);
+  background: var(--surface2);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--brass);
+  box-shadow: 0 0 0 3px rgba(122,158,128,0.15);
+}
+
+textarea { resize: vertical; min-height: 88px; line-height: 1.6; }
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Tags ── */
+.tag-group { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.tag-check { display: none; }
+
+.tag-label {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.12s;
+  user-select: none;
+  background: var(--surface2);
+}
+
+.tag-check:checked + .tag-label {
+  background: var(--brass-bg);
+  border-color: var(--brass-border);
+  color: var(--brass-lt);
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.12s;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--brass);
+  color: #1E1F1C;
+  border-color: var(--brass);
+}
+.btn-primary:hover { background: var(--brass-lt); border-color: var(--brass-lt); color: #1E1F1C; }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-secondary:hover { border-color: var(--border-hi); background: var(--surface2); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--red);
+  border-color: var(--red-border);
+}
+.btn-danger:hover { background: var(--red-bg); border-color: var(--red); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: transparent;
+  padding: 5px 9px;
+}
+.btn-ghost:hover { color: var(--text); background: var(--surface2); }
+
+.btn-sm { padding: 5px 10px; font-size: 0.73rem; }
+
+/* ── List items ── */
+.list-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 2px;
+  overflow: hidden;
+}
+
+.list-item-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 15px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.list-item-header:hover { background: var(--surface2); }
+
+.drag-handle { color: #3A4038; font-size: 0.95rem; cursor: grab; flex-shrink: 0; }
+
+.list-item-title { flex: 1; font-size: 0.86rem; font-weight: 500; color: var(--text); }
+
+.list-item-meta { font-size: 0.73rem; color: var(--muted); }
+
+.list-item-body {
+  padding: 0 15px;
+  border-top: 1px solid var(--border);
+  display: none;
+}
+
+.list-item-body.open { display: block; padding-top: 15px; padding-bottom: 15px; }
+
+.item-actions {
+  display: flex;
+  gap: 7px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Video previewer ── */
+.video-preview {
+  margin-top: 12px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #000;
+  display: none;
+}
+
+.video-preview.show { display: block; }
+
+.video-preview iframe {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: none;
+  display: block;
+}
+
+.video-preview-placeholder {
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+  border: 1px dashed var(--border);
+  border-radius: 3px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.video-preview-placeholder:hover { border-color: var(--brass); color: var(--brass); }
+
+.video-thumb {
+  position: relative;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 10px;
+  cursor: pointer;
+  display: none;
+}
+
+.video-thumb.show { display: block; }
+
+.video-thumb img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.8) sepia(0.15);
+}
+
+.video-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.video-thumb:hover .video-thumb-overlay { background: rgba(0,0,0,0.15); }
+
+.play-btn {
+  width: 48px;
+  height: 48px;
+  border: 2px solid rgba(122,158,128,0.8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(122,158,128,0.9);
+  font-size: 1.2rem;
+  padding-left: 3px;
+}
+
+/* ── Audio thumbnails ── */
+.audio-preview {
+  margin-top: 10px;
+  display: none;
+}
+
+.audio-preview.show { display: block; }
+
+.audio-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--brass);
+  border-radius: 0 3px 3px 0;
+}
+
+.audio-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.4rem;
+  overflow: hidden;
+}
+
+.audio-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.audio-waveform {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.audio-title {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio-sub {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.audio-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 20px;
+  margin-top: 3px;
+}
+
+.audio-bar {
+  width: 3px;
+  background: var(--brass);
+  border-radius: 2px;
+  opacity: 0.55;
+}
+
+.audio-link {
+  font-size: 0.7rem;
+  color: var(--brass);
+  text-decoration: none;
+  border: 1px solid var(--brass-border);
+  padding: 4px 9px;
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: all 0.12s;
+  flex-shrink: 0;
+  letter-spacing: 0.06em;
+}
+
+.audio-link:hover { background: var(--brass-bg); }
+
+/* ── Gallery — image role & modes ── */
+.photo-role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.photo-thumb-preview {
+  width: 100%;
+  aspect-ratio: 16/7;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  display: block;
+  margin-bottom: 10px;
+  filter: brightness(0.85) sepia(0.1);
+}
+
+.role-select-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.role-check { display: none; }
+
+.role-label {
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.12s;
+  user-select: none;
+  background: var(--surface2);
+}
+
+.role-check:checked + .role-label {
+  background: rgba(122,168,196,0.12);
+  border-color: rgba(122,168,196,0.4);
+  color: #9DC4DC;
+}
+
+/* Photo grid in gallery page */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.photo-item {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.12s;
+}
+
+.photo-item.is-hero { border-color: #C4965A; }
+.photo-item.is-banner { border-color: #7AA8C4; }
+
+.photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.75) sepia(0.2);
+  transition: filter 0.18s;
+}
+
+.photo-item:hover img { filter: brightness(0.95) sepia(0); }
+
+.photo-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  pointer-events: none;
+}
+
+.badge-hero   { background: rgba(196,150,90,0.85); color: #1E1F1C; }
+.badge-banner { background: rgba(122,168,196,0.85); color: #1E1F1C; }
+
+.photo-caption-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.75));
+  color: #EDEEE8;
+  font-size: 0.62rem;
+  padding: 14px 6px 5px;
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+
+.photo-item:hover .photo-caption-overlay { opacity: 1; }
+
+/* ── Share links ── */
+.share-grid { display: grid; gap: 2px; }
+
+.share-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 16px;
+  background: var(--surface);
+  border-left: 2px solid var(--brass);
+}
+
+.share-label {
+  width: 86px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brass);
+  flex-shrink: 0;
+}
+
+.share-url {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: 0.74rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copy-btn {
+  padding: 4px 11px;
+  border-radius: 2px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.12s;
+  flex-shrink: 0;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.copy-btn:hover { border-color: var(--brass); color: var(--brass); }
+.copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+/* ── Bio tabs ── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+
+.tab {
+  padding: 7px 15px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--brass); border-bottom-color: var(--brass); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Publish ── */
+.publish-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
+.publish-status {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px;
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  margin-top: 14px;
+}
+
+.publish-status.show { display: flex; }
+.publish-status.loading { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+.publish-status.success { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.publish-status.error   { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+.token-setup {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--brass);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px;
+  margin-bottom: 18px;
+  font-size: 0.81rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.token-setup a { color: var(--brass); }
+.token-setup strong { color: var(--text); }
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Info banner ── */
+.info-banner {
+  background: var(--brass-bg);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--brass);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 13px 16px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.info-banner strong { color: var(--text); }
+
+/* ── Mode badge in gallery ── */
+.mode-badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .main { padding: 22px 18px; }
+  .field-row { grid-template-columns: 1fr; }
+  .photo-grid { grid-template-columns: repeat(3, 1fr); }
+  .photo-role-grid { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
-<div class="admin-wrap">
-    <h1>EPK Admin</h1>
-    <a class="back" href="index.html">← View EPK</a>
+<div class="shell">
 
-    <div class="admin-notice">
-        <strong>How to publish:</strong> Edit the JSON below → click <strong>Export JSON</strong> → replace <code>public/data/epk.json</code> in your GitHub repo → Cloudflare redeploys in ~60 seconds.
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>Dave Knowles</h1>
+      <p>EPK Admin</p>
     </div>
 
-    <div class="mode-panel">
-        <h2>Share Links</h2>
-        <div class="mode-links" id="mode-links"></div>
+    <!-- View Links — top of sidebar, prominent -->
+    <div class="sidebar-view-links">
+      <span class="sidebar-view-links-label">Live EPK Views</span>
+      <div id="sidebar-view-links-list"></div>
     </div>
 
-    <div id="editor-panel"></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Content</div>
+      <button class="nav-item active" onclick="showPage('share')" id="nav-share">
+        <span class="icon">↗</span> Share Links
+      </button>
+      <button class="nav-item" onclick="showPage('meta')" id="nav-meta">
+        <span class="icon">◎</span> Profile
+      </button>
+      <button class="nav-item" onclick="showPage('bio')" id="nav-bio">
+        <span class="icon">✦</span> Biography
+      </button>
+      <button class="nav-item" onclick="showPage('offerings')" id="nav-offerings">
+        <span class="icon">◈</span> Offerings
+      </button>
+      <button class="nav-item" onclick="showPage('credits')" id="nav-credits">
+        <span class="icon">◇</span> Credits
+      </button>
+      <button class="nav-item" onclick="showPage('videos')" id="nav-videos">
+        <span class="icon">▶</span> Videos
+      </button>
+      <button class="nav-item" onclick="showPage('releases')" id="nav-releases">
+        <span class="icon">♪</span> Releases
+      </button>
+      <button class="nav-item" onclick="showPage('gallery')" id="nav-gallery">
+        <span class="icon">◻</span> Gallery
+      </button>
+      <div class="nav-section">Publish</div>
+      <button class="nav-item" onclick="showPage('publish')" id="nav-publish">
+        <span class="icon">⬆</span> Publish
+      </button>
+    </nav>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- ════ Share Links ════ -->
+    <div class="page active" id="page-share">
+      <div class="page-header">
+        <div>
+          <h2>Share Links</h2>
+          <p>Copy the right link for each audience. Each shows a tailored version of your EPK.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="share-grid" id="share-grid"></div>
+      </div>
+    </div>
+
+    <!-- ════ Profile ════ -->
+    <div class="page" id="page-meta">
+      <div class="page-header">
+        <div><h2>Profile</h2><p>Name, contact details, and social links.</p></div>
+        <button class="btn btn-primary" onclick="saveMeta()">Save changes</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Identity</span></div>
+        <div class="field"><label>Name</label><input type="text" id="meta-name"></div>
+        <div class="field"><label>Tagline <span class="hint">shown under name on hero</span></label><input type="text" id="meta-tagline"></div>
+        <div class="field"><label>Location</label><input type="text" id="meta-location"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Contact</span></div>
+        <div class="field-row">
+          <div class="field"><label>Email</label><input type="email" id="meta-email"></div>
+          <div class="field"><label>Phone</label><input type="tel" id="meta-phone"></div>
+        </div>
+        <div class="field"><label>Website</label><input type="url" id="meta-website"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Social</span></div>
+        <div class="field"><label>Instagram URL</label><input type="url" id="meta-instagram"></div>
+        <div class="field"><label>YouTube URL</label><input type="url" id="meta-youtube"></div>
+        <div class="field"><label>SoundCloud URL</label><input type="url" id="meta-soundcloud"></div>
+        <div class="field"><label>Facebook URL</label><input type="url" id="meta-facebook"></div>
+      </div>
+    </div>
+
+    <!-- ════ Biography ════ -->
+    <div class="page" id="page-bio">
+      <div class="page-header">
+        <div><h2>Biography</h2><p>Different lengths for different contexts. Each mode uses the right one.</p></div>
+        <button class="btn btn-primary" onclick="saveBio()">Save changes</button>
+      </div>
+      <div class="card">
+        <div class="tab-bar">
+          <div class="tab active" onclick="showBioTab('short', event)">Short</div>
+          <div class="tab" onclick="showBioTab('acoustic', event)">Acoustic</div>
+          <div class="tab" onclick="showBioTab('full', event)">Full (Press)</div>
+        </div>
+        <div class="tab-panel active" id="bio-tab-short">
+          <div class="field">
+            <label>Short bio <span class="hint">used for booker, default, and DU!F modes</span></label>
+            <textarea id="bio-short" rows="5"></textarea>
+          </div>
+        </div>
+        <div class="tab-panel" id="bio-tab-acoustic">
+          <div class="field">
+            <label>Acoustic bio <span class="hint">used for acoustic mode</span></label>
+            <textarea id="bio-acoustic" rows="5"></textarea>
+          </div>
+        </div>
+        <div class="tab-panel" id="bio-tab-full">
+          <div class="field">
+            <label>Full bio <span class="hint">used for press mode — one paragraph per blank line</span></label>
+            <textarea id="bio-full" rows="14"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ Offerings ════ -->
+    <div class="page" id="page-offerings">
+      <div class="page-header">
+        <div><h2>Offerings</h2><p>What you do. Tag each one so it appears in the right mode.</p></div>
+        <button class="btn btn-primary" onclick="addOffering()">+ Add offering</button>
+      </div>
+      <div id="offerings-list"></div>
+    </div>
+
+    <!-- ════ Credits ════ -->
+    <div class="page" id="page-credits">
+      <div class="page-header">
+        <div><h2>Credits</h2><p>Film, theatre, and TV work. Shown in film and press modes.</p></div>
+        <button class="btn btn-primary" onclick="addCredit()">+ Add credit</button>
+      </div>
+      <div id="credits-list"></div>
+    </div>
+
+    <!-- ════ Videos ════ -->
+    <div class="page" id="page-videos">
+      <div class="page-header">
+        <div><h2>Videos</h2><p>YouTube or Vimeo links. Tag each one for the right audience.</p></div>
+        <button class="btn btn-primary" onclick="addVideo()">+ Add video</button>
+      </div>
+      <div id="videos-list"></div>
+    </div>
+
+    <!-- ════ Releases ════ -->
+    <div class="page" id="page-releases">
+      <div class="page-header">
+        <div><h2>Releases</h2><p>SoundCloud, Bandcamp, or Spotify links.</p></div>
+        <button class="btn btn-primary" onclick="addRelease()">+ Add release</button>
+      </div>
+      <div id="releases-list"></div>
+    </div>
+
+    <!-- ════ Gallery ════ -->
+    <div class="page" id="page-gallery">
+      <div class="page-header">
+        <div>
+          <h2>Gallery</h2>
+          <p>Manage photos. Set each image's role (hero, banner, gallery) and which EPK modes it appears in.</p>
+        </div>
+        <button class="btn btn-secondary" onclick="addPhoto()">+ Add photo</button>
+      </div>
+
+      <div class="info-banner">
+        <strong>Image roles:</strong> <strong style="color:#B45309">Hero</strong> = full-screen backdrop on entry &nbsp;·&nbsp;
+        <strong style="color:#2563EB">Banner</strong> = cropped top-of-section image &nbsp;·&nbsp;
+        <strong style="color:var(--muted)">Gallery</strong> = appears in the photo grid. Each mode can have its own hero/banner assigned.
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Photo grid preview</span></div>
+        <div class="photo-grid" id="photo-grid"></div>
+      </div>
+
+      <div id="photo-list"></div>
+    </div>
+
+    <!-- ════ Publish ════ -->
+    <div class="page" id="page-publish">
+      <div class="page-header">
+        <div><h2>Publish</h2><p>Push changes live. Cloudflare redeploys in about 60 seconds.</p></div>
+      </div>
+
+      <div class="publish-card" id="token-section">
+        <div class="card-header"><span class="card-title">GitHub Setup</span></div>
+        <div class="token-setup">
+          One-time setup: paste your GitHub personal access token below. Saved in your browser only — never sent anywhere except GitHub.
+          <br><br>
+          Get one at <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens</a> — select <strong>repo</strong> scope, set expiry to 1 year.
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>GitHub username</label>
+            <input type="text" id="gh-user" placeholder="devknowsdev">
+          </div>
+          <div class="field">
+            <label>Repository name</label>
+            <input type="text" id="gh-repo" placeholder="EPK">
+          </div>
+        </div>
+        <div class="field">
+          <label>File path in repo <span class="hint">path to epk.json from repo root</span></label>
+          <input type="text" id="gh-path" placeholder="EPK/public/data/epk.json">
+        </div>
+        <div class="field">
+          <label>Personal access token</label>
+          <input type="text" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="saveGHSettings()">Save settings</button>
+      </div>
+
+      <div class="publish-card" style="margin-top:14px">
+        <div class="card-header"><span class="card-title">Publish Changes</span></div>
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:18px;line-height:1.6">
+          This commits your current changes to <code>epk.json</code> in your GitHub repo. Cloudflare detects the push and redeploys automatically.
+        </p>
+        <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="publish()" id="publish-btn">⬆ Publish to GitHub</button>
+          <button class="btn btn-secondary" onclick="downloadJSON()">⬇ Download JSON</button>
+        </div>
+        <div class="publish-status" id="publish-status"></div>
+      </div>
+    </div>
+
+  </main>
 </div>
-<script src="admin.js"></script>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────
+let db = {};
+const ALL_TAGS    = ['default','booker','press','film','acoustic','duif'];
+const ALL_ROLES   = ['hero','banner','gallery'];
+const MODE_KEYS   = ['default','booker','press','film','acoustic','duif'];
+const MODE_LABELS = { default:'General', booker:'Booker', press:'Press', film:'Film', acoustic:'Acoustic', duif:'DU!F' };
+
+// ── Boot ──────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const res = await fetch('data/epk.json');
+    db = await res.json();
+  } catch(e) {
+    db = { meta:{name:'',tagline:'',location:'',email:'',phone:'',website:'',social:{}},
+           bio:{short:'',acoustic:'',full:[]}, offerings:[], credits:[],
+           videos:[], releases:[], gallery:[], modes:{} };
+  }
+  loadGHSettings();
+  renderAll();
+}
+
+function renderAll() {
+  renderSidebarViewLinks();
+  renderShare();
+  renderMeta();
+  renderBio();
+  renderList('offerings');
+  renderList('credits');
+  renderList('videos');
+  renderList('releases');
+  renderGallery();
+}
+
+// ── Navigation ─────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+}
+
+// ── Sidebar View Links ─────────────────────────────────────────────
+function renderSidebarViewLinks() {
+  const path = window.location.pathname.replace(/\/?admin(\.html)?$/, '/index.html');
+  const base = window.location.origin + path;
+  const modes = db.modes || {};
+  const container = document.getElementById('sidebar-view-links-list');
+  container.innerHTML = Object.entries(modes).map(([key, m]) => {
+    const url = key === 'default' ? base : `${base}?for=${key}`;
+    return `
+    <div class="view-pill">
+      <span class="view-pill-name">${m.label || key}</span>
+      <div class="view-pill-actions">
+        <button class="view-pill-btn" onclick="copyViewURL(this,'${url}')">Copy</button>
+        <a class="view-pill-btn" href="${url}" target="_blank">Open ↗</a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function copyViewURL(btn, url) {
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── Share Links ───────────────────────────────────────────────────
+function renderShare() {
+  const path = window.location.pathname.replace(/\/?admin(\.html)?$/, '/index.html');
+  const base = window.location.origin + path;
+  const modes = db.modes || {};
+  const grid = document.getElementById('share-grid');
+  grid.innerHTML = Object.entries(modes).map(([key, m]) => {
+    const url = key === 'default' ? base : `${base}?for=${key}`;
+    return `
+    <div class="share-row">
+      <span class="share-label">${m.label || key}</span>
+      <span class="share-url">${url}</span>
+      <button class="copy-btn" onclick="copyURL(this,'${url}')">Copy</button>
+      <a class="btn btn-ghost btn-sm" href="${url}" target="_blank">Open ↗</a>
+    </div>`;
+  }).join('');
+}
+
+function copyURL(btn, url) {
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── Meta ──────────────────────────────────────────────────────────
+function renderMeta() {
+  const m = db.meta || {};
+  const s = m.social || {};
+  setValue('meta-name', m.name);
+  setValue('meta-tagline', m.tagline);
+  setValue('meta-location', m.location);
+  setValue('meta-email', m.email);
+  setValue('meta-phone', m.phone);
+  setValue('meta-website', m.website);
+  setValue('meta-instagram', s.instagram);
+  setValue('meta-youtube', s.youtube);
+  setValue('meta-soundcloud', s.soundcloud);
+  setValue('meta-facebook', s.facebook);
+}
+
+function saveMeta() {
+  db.meta = {
+    name:     val('meta-name'),
+    tagline:  val('meta-tagline'),
+    location: val('meta-location'),
+    email:    val('meta-email'),
+    phone:    val('meta-phone'),
+    website:  val('meta-website'),
+    social: {
+      instagram:  val('meta-instagram'),
+      youtube:    val('meta-youtube'),
+      soundcloud: val('meta-soundcloud'),
+      facebook:   val('meta-facebook')
+    }
+  };
+  toast('Profile saved');
+}
+
+// ── Bio ───────────────────────────────────────────────────────────
+function renderBio() {
+  const b = db.bio || {};
+  setValue('bio-short', b.short || '');
+  setValue('bio-acoustic', b.acoustic || '');
+  setValue('bio-full', Array.isArray(b.full) ? b.full.join('\n\n') : (b.full || ''));
+}
+
+function saveBio() {
+  const fullRaw = val('bio-full');
+  db.bio = {
+    short:    val('bio-short'),
+    acoustic: val('bio-acoustic'),
+    full:     fullRaw.split(/\n\n+/).map(p => p.trim()).filter(Boolean)
+  };
+  toast('Biography saved');
+}
+
+function showBioTab(id, e) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('bio-tab-' + id).classList.add('active');
+  if (e && e.target) e.target.classList.add('active');
+}
+
+// ── Generic list renderer ─────────────────────────────────────────
+function renderList(type) {
+  const container = document.getElementById(type + '-list');
+  if (!container) return;
+  const items = db[type] || [];
+  container.innerHTML = items.length === 0
+    ? `<p style="color:var(--muted);font-size:0.82rem;padding:18px 0">No ${type} yet. Add one above.</p>`
+    : items.map((item, i) => renderListItem(type, item, i)).join('');
+}
+
+function renderListItem(type, item, i) {
+  const title = item.title || item.name || 'Untitled';
+  const meta  = item.year || item.alias || item.url || '';
+  const fields = getFields(type, item, i);
+  return `
+  <div class="list-item" id="${type}-item-${i}">
+    <div class="list-item-header" onclick="toggleItem('${type}-item-${i}')">
+      <span class="drag-handle">⠿</span>
+      <span class="list-item-title">${title}</span>
+      ${meta ? `<span class="list-item-meta">${meta.length > 44 ? meta.slice(0,44)+'…' : meta}</span>` : ''}
+    </div>
+    <div class="list-item-body" id="${type}-body-${i}">
+      ${fields}
+      <div class="item-actions">
+        <button class="btn btn-primary btn-sm" onclick="saveItem('${type}', ${i})">Save</button>
+        <button class="btn btn-danger btn-sm" onclick="removeItem('${type}', ${i})">Remove</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function getFields(type, item, i) {
+  const tags = item.tags || [];
+  const tagHTML = `
+    <div class="field">
+      <label>Show in modes</label>
+      <div class="tag-group">
+        ${ALL_TAGS.map(t => `
+          <input type="checkbox" class="tag-check" id="${type}-tag-${i}-${t}" ${tags.includes(t)?'checked':''}>
+          <label class="tag-label" for="${type}-tag-${i}-${t}">${t}</label>
+        `).join('')}
+      </div>
+    </div>`;
+
+  if (type === 'offerings') return `
+    <div class="field"><label>Title</label><input type="text" id="off-title-${i}" value="${esc(item.title)}"></div>
+    <div class="field"><label>Description</label><textarea id="off-desc-${i}">${esc(item.description)}</textarea></div>
+    ${tagHTML}`;
+
+  if (type === 'credits') return `
+    <div class="field-row">
+      <div class="field"><label>Title</label><input type="text" id="cr-title-${i}" value="${esc(item.title)}"></div>
+      <div class="field"><label>Year</label><input type="text" id="cr-year-${i}" value="${esc(item.year)}"></div>
+    </div>
+    <div class="field"><label>Role</label><input type="text" id="cr-role-${i}" value="${esc(item.role)}"></div>
+    <div class="field"><label>Description</label><textarea id="cr-desc-${i}">${esc(item.description)}</textarea></div>
+    <div class="field"><label>Link <span class="hint">optional</span></label><input type="url" id="cr-link-${i}" value="${esc(item.link)}"></div>
+    ${tagHTML}`;
+
+  if (type === 'videos') {
+    const embedId = getYTId(item.url) || getVimeoId(item.url);
+    const thumbSrc = embedId && getYTId(item.url) ? `https://img.youtube.com/vi/${embedId}/mqdefault.jpg` : '';
+    return `
+    <div class="field"><label>Title</label><input type="text" id="vid-title-${i}" value="${esc(item.title)}"></div>
+    <div class="field">
+      <label>URL <span class="hint">YouTube or Vimeo</span></label>
+      <input type="url" id="vid-url-${i}" value="${esc(item.url)}" oninput="updateVideoPreview(${i})">
+    </div>
+    ${tagHTML}
+    ${thumbSrc ? `
+    <div class="video-thumb show" id="vid-thumb-${i}" onclick="expandVideo(${i})">
+      <img src="${thumbSrc}" alt="Video thumbnail">
+      <div class="video-thumb-overlay"><div class="play-btn">▶</div></div>
+    </div>
+    <div class="video-preview" id="vid-preview-${i}"></div>` : `
+    <div class="video-preview-placeholder" onclick="updateVideoPreview(${i})" id="vid-placeholder-${i}">
+      ▶ Preview will appear after entering a URL
+    </div>
+    <div class="video-thumb" id="vid-thumb-${i}" onclick="expandVideo(${i})">
+      <img src="" alt=""><div class="video-thumb-overlay"><div class="play-btn">▶</div></div>
+    </div>
+    <div class="video-preview" id="vid-preview-${i}"></div>`}`;
+  }
+
+  if (type === 'releases') {
+    const audioInfo = getAudioInfo(item);
+    return `
+    <div class="field"><label>Title</label><input type="text" id="rel-title-${i}" value="${esc(item.title)}"></div>
+    <div class="field"><label>Alias / Artist <span class="hint">e.g. DU!F</span></label><input type="text" id="rel-alias-${i}" value="${esc(item.alias)}"></div>
+    <div class="field">
+      <label>URL</label>
+      <input type="url" id="rel-url-${i}" value="${esc(item.url)}" oninput="updateAudioPreview(${i})">
+    </div>
+    ${tagHTML}
+    <div class="audio-preview ${audioInfo ? 'show' : ''}" id="rel-audio-${i}">
+      ${audioInfo ? renderAudioCard(item, audioInfo) : ''}
+    </div>`;
+  }
+
+  return '';
+}
+
+// ── Video helpers ─────────────────────────────────────────────────
+function getYTId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function getVimeoId(url) {
+  if (!url) return null;
+  const m = url.match(/vimeo\.com\/(\d+)/);
+  return m ? m[1] : null;
+}
+
+function getEmbedURL(url) {
+  const ytId = getYTId(url);
+  if (ytId) return `https://www.youtube.com/embed/${ytId}?autoplay=1`;
+  const vmId = getVimeoId(url);
+  if (vmId) return `https://player.vimeo.com/video/${vmId}?autoplay=1`;
+  return null;
+}
+
+function updateVideoPreview(i) {
+  const url  = val(`vid-url-${i}`);
+  const ytId = getYTId(url);
+  const thumb = document.getElementById(`vid-thumb-${i}`);
+  const preview = document.getElementById(`vid-preview-${i}`);
+  const placeholder = document.getElementById(`vid-placeholder-${i}`);
+
+  if (thumb && ytId) {
+    thumb.querySelector('img').src = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+    thumb.classList.add('show');
+    if (preview) { preview.classList.remove('show'); preview.innerHTML = ''; }
+    if (placeholder) placeholder.style.display = 'none';
+  } else if (thumb) {
+    thumb.classList.remove('show');
+    if (placeholder) placeholder.style.display = 'flex';
+  }
+}
+
+function expandVideo(i) {
+  const url     = val(`vid-url-${i}`);
+  const embed   = getEmbedURL(url);
+  const thumb   = document.getElementById(`vid-thumb-${i}`);
+  const preview = document.getElementById(`vid-preview-${i}`);
+  if (!embed || !preview) return;
+  thumb.classList.remove('show');
+  preview.innerHTML = `<iframe src="${embed}" allowfullscreen allow="autoplay"></iframe>`;
+  preview.classList.add('show');
+}
+
+// ── Audio helpers ─────────────────────────────────────────────────
+function getAudioInfo(item) {
+  if (!item.url) return null;
+  const url = item.url.toLowerCase();
+  if (url.includes('spotify.com')) return { platform: 'Spotify', icon: '🎵', color: '#1DB954' };
+  if (url.includes('soundcloud.com')) return { platform: 'SoundCloud', icon: '🔊', color: '#FF5500' };
+  if (url.includes('bandcamp.com')) return { platform: 'Bandcamp', icon: '🎶', color: '#1DA0C3' };
+  if (url.includes('apple')) return { platform: 'Apple Music', icon: '🎵', color: '#FC3C44' };
+  return { platform: 'Audio', icon: '♪', color: '#9B6B2F' };
+}
+
+function renderAudioCard(item, info) {
+  const bars = Array.from({length:18}, (_,i) => {
+    const h = 4 + Math.round(Math.random() * 16);
+    return `<div class="audio-bar" style="height:${h}px;background:${info.color};opacity:0.6"></div>`;
+  }).join('');
+  return `
+  <div class="audio-card">
+    <div class="audio-thumb" style="background:linear-gradient(135deg,${info.color}22,${info.color}44)">
+      <span style="font-size:1.3rem">${info.icon}</span>
+    </div>
+    <div class="audio-waveform">
+      <div class="audio-title">${item.title || 'Untitled'}</div>
+      <div class="audio-sub">${item.alias || ''} · ${info.platform}</div>
+      <div class="audio-bars">${bars}</div>
+    </div>
+    <a class="audio-link" href="${item.url}" target="_blank" rel="noopener">Open ↗</a>
+  </div>`;
+}
+
+function updateAudioPreview(i) {
+  const url    = val(`rel-url-${i}`);
+  const title  = val(`rel-title-${i}`);
+  const alias  = val(`rel-alias-${i}`);
+  const item   = { url, title, alias };
+  const info   = getAudioInfo(item);
+  const el     = document.getElementById(`rel-audio-${i}`);
+  if (!el) return;
+  if (info) {
+    el.innerHTML = renderAudioCard(item, info);
+    el.classList.add('show');
+  } else {
+    el.classList.remove('show');
+    el.innerHTML = '';
+  }
+}
+
+// ── Save / remove items ───────────────────────────────────────────
+function saveItem(type, i) {
+  const tags = ALL_TAGS.filter(t => {
+    const el = document.getElementById(`${type}-tag-${i}-${t}`);
+    return el && el.checked;
+  });
+
+  if (type === 'offerings') {
+    db.offerings[i] = { title: val(`off-title-${i}`), description: val(`off-desc-${i}`), tags };
+  } else if (type === 'credits') {
+    db.credits[i] = { title: val(`cr-title-${i}`), year: val(`cr-year-${i}`),
+      role: val(`cr-role-${i}`), description: val(`cr-desc-${i}`),
+      link: val(`cr-link-${i}`), tags };
+  } else if (type === 'videos') {
+    db.videos[i] = { title: val(`vid-title-${i}`), url: val(`vid-url-${i}`), tags };
+  } else if (type === 'releases') {
+    db.releases[i] = { title: val(`rel-title-${i}`), alias: val(`rel-alias-${i}`),
+      url: val(`rel-url-${i}`), tags };
+  }
+  renderList(type);
+  toast('Saved');
+}
+
+function removeItem(type, i) {
+  if (!confirm('Remove this item?')) return;
+  db[type].splice(i, 1);
+  renderList(type);
+}
+
+function addOffering() {
+  db.offerings.push({ title: 'New Offering', description: '', tags: ['booker'] });
+  renderList('offerings');
+  toggleItem(`offerings-item-${db.offerings.length - 1}`);
+}
+
+function addCredit() {
+  db.credits.push({ title: 'New Credit', role: '', year: '', description: '', link: '', tags: ['film','press'] });
+  renderList('credits');
+  toggleItem(`credits-item-${db.credits.length - 1}`);
+}
+
+function addVideo() {
+  db.videos.push({ title: 'New Video', url: '', tags: ['default'] });
+  renderList('videos');
+  toggleItem(`videos-item-${db.videos.length - 1}`);
+}
+
+function addRelease() {
+  db.releases.push({ title: 'New Release', alias: '', url: '', tags: ['duif','press'] });
+  renderList('releases');
+  toggleItem(`releases-item-${db.releases.length - 1}`);
+}
+
+function toggleItem(id) {
+  const body = document.getElementById(id.replace('-item-', '-body-'));
+  if (body) body.classList.toggle('open');
+}
+
+// ── Gallery ───────────────────────────────────────────────────────
+function renderGallery() {
+  const photos = db.gallery || [];
+
+  // Grid preview
+  const grid = document.getElementById('photo-grid');
+  grid.innerHTML = photos.map((g, i) => {
+    const roles = g.roles || [];
+    const isHero = roles.includes('hero');
+    const isBanner = roles.includes('banner');
+    return `
+    <div class="photo-item ${isHero ? 'is-hero' : ''} ${isBanner ? 'is-banner' : ''}">
+      <img src="${g.src}" alt="${g.caption || ''}" onerror="this.style.background='#ddd'">
+      ${isHero   ? `<span class="photo-badge badge-hero">Hero</span>` : ''}
+      ${isBanner ? `<span class="photo-badge badge-banner">Banner</span>` : ''}
+      <div class="photo-caption-overlay">${g.caption || g.src}</div>
+    </div>`;
+  }).join('');
+
+  // Editable list
+  const list = document.getElementById('photo-list');
+  list.innerHTML = photos.map((g, i) => {
+    const roles    = g.roles || [];
+    const modes    = g.modes || [];
+    const rolesHTML = ALL_ROLES.map(r => `
+      <input type="checkbox" class="role-check" id="ph-role-${i}-${r}" ${roles.includes(r)?'checked':''}>
+      <label class="role-label" for="ph-role-${i}-${r}">${r}</label>`).join('');
+
+    const modeTagHTML = MODE_KEYS.map(m => `
+      <input type="checkbox" class="tag-check" id="ph-mode-${i}-${m}" ${modes.includes(m)?'checked':''}>
+      <label class="tag-label" for="ph-mode-${i}-${m}">${m}</label>`).join('');
+
+    return `
+    <div class="list-item">
+      <div class="list-item-header" onclick="toggleItem('photo-item-${i}')">
+        <span class="drag-handle">⠿</span>
+        <span class="list-item-title">${g.src.split('/').pop()}</span>
+        <span class="list-item-meta">${[...(g.roles||[]), ...(g.modes||[])].join(', ') || g.caption || ''}</span>
+      </div>
+      <div class="list-item-body" id="photo-body-${i}">
+        <img class="photo-thumb-preview" src="${g.src}" alt=""
+             onerror="this.style.background='var(--surface2)';this.style.display='block'">
+        <div class="field-row">
+          <div class="field"><label>File path</label><input type="text" id="ph-src-${i}" value="${esc(g.src)}"
+            oninput="document.querySelector('#photo-item-${i}').previousElementSibling">
+          </div>
+          <div class="field"><label>Caption</label><input type="text" id="ph-cap-${i}" value="${esc(g.caption)}"></div>
+        </div>
+
+        <div class="field">
+          <label>Image role <span class="hint">what position this photo fills</span></label>
+          <div class="role-select-group">${rolesHTML}</div>
+        </div>
+
+        <div class="field">
+          <label>Appears in modes <span class="hint">leave all unchecked = appears in all</span></label>
+          <div class="tag-group">${modeTagHTML}</div>
+        </div>
+
+        <div class="item-actions">
+          <button class="btn btn-primary btn-sm" onclick="savePhoto(${i})">Save</button>
+          <button class="btn btn-danger btn-sm" onclick="removePhoto(${i})">Remove</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function savePhoto(i) {
+  const roles = ALL_ROLES.filter(r => {
+    const el = document.getElementById(`ph-role-${i}-${r}`);
+    return el && el.checked;
+  });
+  const modes = MODE_KEYS.filter(m => {
+    const el = document.getElementById(`ph-mode-${i}-${m}`);
+    return el && el.checked;
+  });
+  db.gallery[i] = {
+    src:     val(`ph-src-${i}`),
+    caption: val(`ph-cap-${i}`),
+    roles,
+    modes
+  };
+  renderGallery();
+  toast('Photo saved');
+}
+
+function removePhoto(i) {
+  if (!confirm('Remove this photo?')) return;
+  db.gallery.splice(i, 1);
+  renderGallery();
+}
+
+function addPhoto() {
+  db.gallery.push({ src: 'photos/', caption: '', roles: ['gallery'], modes: [] });
+  renderGallery();
+  // Open the last item
+  setTimeout(() => {
+    const last = db.gallery.length - 1;
+    const body = document.getElementById(`photo-body-${last}`);
+    if (body) body.classList.add('open');
+  }, 50);
+}
+
+// ── GitHub publish ─────────────────────────────────────────────────
+function loadGHSettings() {
+  setValue('gh-user',  localStorage.getItem('gh-user')  || 'devknowsdev');
+  setValue('gh-repo',  localStorage.getItem('gh-repo')  || 'EPK');
+  setValue('gh-path',  localStorage.getItem('gh-path')  || 'EPK/public/data/epk.json');
+  setValue('gh-token', localStorage.getItem('gh-token') || '');
+}
+
+function saveGHSettings() {
+  localStorage.setItem('gh-user',  val('gh-user'));
+  localStorage.setItem('gh-repo',  val('gh-repo'));
+  localStorage.setItem('gh-path',  val('gh-path'));
+  localStorage.setItem('gh-token', val('gh-token'));
+  toast('GitHub settings saved');
+}
+
+async function publish() {
+  const user  = val('gh-user')  || localStorage.getItem('gh-user');
+  const repo  = val('gh-repo')  || localStorage.getItem('gh-repo');
+  const path  = val('gh-path')  || localStorage.getItem('gh-path');
+  const token = val('gh-token') || localStorage.getItem('gh-token');
+
+  if (!token) { setStatus('error', 'No GitHub token. Fill in the setup section above.'); return; }
+  if (!user || !repo || !path) { setStatus('error', 'Fill in username, repo, and file path.'); return; }
+
+  setStatus('loading', 'Publishing…');
+  document.getElementById('publish-btn').disabled = true;
+
+  try {
+    const apiBase = `https://api.github.com/repos/${user}/${repo}/contents/${path}`;
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+    const getRes  = await fetch(apiBase, { headers });
+    if (!getRes.ok && getRes.status !== 404) throw new Error(`GitHub error: ${getRes.status}`);
+    const existing = getRes.ok ? await getRes.json() : null;
+    const sha = existing ? existing.sha : undefined;
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+    const now = new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+    const body = { message: `EPK update — ${now}`, content, ...(sha ? { sha } : {}) };
+    const putRes = await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || `GitHub error: ${putRes.status}`);
+    }
+    setStatus('success', '✓ Published — Cloudflare will redeploy in about 60 seconds.');
+  } catch(e) {
+    setStatus('error', `Failed: ${e.message}`);
+  } finally {
+    document.getElementById('publish-btn').disabled = false;
+  }
+}
+
+function setStatus(type, msg) {
+  const el = document.getElementById('publish-status');
+  el.className = `publish-status show ${type}`;
+  el.innerHTML = type === 'loading' ? `<div class="spinner"></div> ${msg}` : msg;
+}
+
+function downloadJSON() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'epk.json';
+  a.click();
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
+function val(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function setValue(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.value = v || '';
+}
+
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+let toastTimer;
+function toast(msg) {
+  clearTimeout(toastTimer);
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = `position:fixed;bottom:22px;right:22px;background:#2A2318;color:#EDE8E2;
+      padding:9px 16px;border-radius:6px;font-size:0.78rem;font-family:Inter,sans-serif;
+      box-shadow:0 4px 14px rgba(0,0,0,0.18);z-index:999;transition:opacity 0.25s;`;
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  toastTimer = setTimeout(() => t.style.opacity = '0', 2500);
+}
+
+init();
+</script>
 </body>
 </html>
