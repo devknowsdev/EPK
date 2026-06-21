@@ -12,11 +12,15 @@
     <a class="back" href="index.html">← View EPK</a>
 
     <div class="admin-notice">
-        <strong>How to publish:</strong> Edit blocks below → click <strong>Export JSON</strong> → replace <code>public/data/epk.json</code> in your GitHub repo → Cloudflare redeploys automatically.
+        <strong>How to publish:</strong> Edit the JSON below → click <strong>Export JSON</strong> → replace <code>public/data/epk.json</code> in your GitHub repo → Cloudflare redeploys in ~60 seconds.
     </div>
 
-    <div id="layout"></div>
-    <div id="editor"></div>
+    <div class="mode-panel">
+        <h2>Share Links</h2>
+        <div class="mode-links" id="mode-links"></div>
+    </div>
+
+    <div id="editor-panel"></div>
 </div>
 <script src="admin.js"></script>
 </body>
