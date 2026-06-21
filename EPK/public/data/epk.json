@@ -215,21 +215,67 @@
   ],
   "releases": [
     {
-      "title": "Night Jar",
+      "title": "Icarus",
       "alias": "DU!F",
-      "url": "https://on.soundcloud.com/LcA56nqxzAgmNyfR9",
+      "url": "https://open.spotify.com/track/3vFScFRkPEbjJGXdWEAd3A?si=4edae01fec3a4af3",
       "tags": [
-        "duif",
-        "press"
+        "booker",
+        "press",
+        "duif"
       ]
     },
     {
       "title": "Pray Bird Prey",
       "alias": "DU!F",
-      "url": "https://on.soundcloud.com/sngxAJPYT8vMeEBD8",
+      "url": "https://open.spotify.com/track/1qcGN0OzVNOxlwYLVOZZ7m?si=8279280aba7b4a50",
       "tags": [
-        "duif",
-        "press"
+        "default",
+        "booker",
+        "press",
+        "duif"
+      ]
+    },
+    {
+      "title": "Night Jar",
+      "alias": "DU!F",
+      "url": "https://open.spotify.com/track/064FV1EZBR8EnjQVgCsuhF?si=452b5fef3f8a4593",
+      "tags": [
+        "press",
+        "duif"
+      ]
+    },
+    {
+      "title": "Feel Unsteady",
+      "alias": "Dave Knowles",
+      "url": "https://on.soundcloud.com/58RuJEYoP2lPA0jagk",
+      "tags": [
+        "default",
+        "booker",
+        "press",
+        "duif"
+      ]
+    },
+    {
+      "title": "At the Butcher's",
+      "alias": "Dave Knowles",
+      "url": "https://on.soundcloud.com/18sZPo1TvurXj976qt",
+      "tags": [
+        "default",
+        "booker",
+        "press",
+        "acoustic",
+        "duif"
+      ]
+    },
+    {
+      "title": "Wishing Well",
+      "alias": "Dave Knowles",
+      "url": "https://on.soundcloud.com/lAIMrC4SgYdJ22vrKw",
+      "tags": [
+        "default",
+        "booker",
+        "press",
+        "duif"
       ]
     }
   ],
@@ -268,7 +314,7 @@
     },
     {
       "src": "photos/Dave Sax Louvain.jpg",
-      "caption": "Louvain, Belgium"
+      "caption": "Louvain Burn"
     },
     {
       "src": "photos/Dave at Sandy Stone Fest.jpg",
@@ -288,7 +334,7 @@
     },
     {
       "src": "photos/Dead Dave.jpg",
-      "caption": "Portrait"
+      "caption": "Loop Madness"
     },
     {
       "src": "photos/Mantis poster.jpg",
