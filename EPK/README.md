@@ -22,6 +22,7 @@
   styles.css
   /data
     epk.json        ← All content lives here
+  /published       ← Immutable snapshot route + per-version JSON files
   /photos           ← Drop your image files here
     Dave Session Violin.jpg
     Dave Cello.jpg
@@ -44,6 +45,22 @@
 
 **Option B — Edit JSON directly:**
 - Edit `public/data/epk.json` in your editor and push to GitHub
+
+## Published Versions
+
+Published EPK pages now live under immutable versioned URLs:
+
+- `https://your-domain/published/<version>/`
+- Each version reads its own JSON snapshot from `public/published/<version>/epk.json`
+- The published shell has no editor links or navigation back into the admin surface
+
+To publish a new version, set the admin publish path to a unique folder, for example:
+
+- `EPK/public/published/20260623-epk-001/epk.json`
+
+Then share the matching page URL:
+
+- `https://your-domain/published/20260623-epk-001/`
 
 ## Spectra Bridge
 
@@ -68,9 +85,10 @@ If we continue this integration, the next useful steps are:
 
 ## URL Reference
 
-| Page    | URL                              |
-|---------|----------------------------------|
-| EPK     | `https://your-domain/`           |
-| Gallery | `https://your-domain/gallery`    |
-| Admin   | `https://your-domain/admin`      |
-| Fallback | `https://your-domain/admin.html` |
+| Page    | URL                                 |
+|---------|-------------------------------------|
+| EPK     | `https://your-domain/`              |
+| Gallery | `https://your-domain/gallery`       |
+| Admin   | `https://your-domain/admin`         |
+| Fallback | `https://your-domain/admin.html`    |
+| Published | `https://your-domain/published/<id>/` |
