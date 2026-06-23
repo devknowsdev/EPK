@@ -1,5 +1,11 @@
 # EPK OS Pro — Dave Knowles
 
+## Ecosystem Role
+
+This repository is responsible for the public-facing EPK surface: the site, the admin editor, the published snapshots, and the structured press-kit payload in `public/data/epk.json`.
+It is not responsible for the full music management layer or Prism Core orchestration.
+For ecosystem-wide architecture, see [prism-beam/docs/ECOSYSTEM_OVERVIEW.md](https://github.com/devknowsdev/prism-beam/blob/main/docs/ECOSYSTEM_OVERVIEW.md) and [prism-beam/docs/REPO_BOUNDARIES.md](https://github.com/devknowsdev/prism-beam/blob/main/docs/REPO_BOUNDARIES.md).
+
 ## Deploy to Cloudflare Pages
 
 1. Push this repo to GitHub
