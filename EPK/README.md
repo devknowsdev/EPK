@@ -53,8 +53,13 @@ Published EPK pages now live under immutable versioned URLs:
 - `https://your-domain/published/<version>/`
 - Each version reads its own JSON snapshot from `public/published/<version>/epk.json`
 - The published shell has no editor links or navigation back into the admin surface
+- The publish button auto-generates a unique version id each time, so repeated publishes never overwrite older snapshots
 
-To publish a new version, set the admin publish path to a unique folder, for example:
+To publish a new version, set the admin publish path to the base folder, for example:
+
+- `EPK/public/published`
+
+The admin flow will create a unique snapshot folder automatically, for example:
 
 - `EPK/public/published/20260623-epk-001/epk.json`
 
