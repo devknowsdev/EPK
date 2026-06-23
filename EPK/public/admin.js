@@ -6,143 +6,110 @@ async function init() {
     const res = await fetch('data/epk.json');
     db = await res.json();
     loadedDB = structuredClone(db);
-    saveHistory();
+    history = JSON.parse(localStorage.getItem('epk-history') || '[]');
+    saveHistory('Loaded initial version');
     renderModeLinks();
     renderEditor();
     renderPreview();
 }
 
-// ── Mode share links ──────────────────────────────────────────────
 function renderModeLinks() {
     const base = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
-    const modes = Object.keys(db.modes);
-
-    document.getElementById("mode-links").innerHTML = modes.map(key => {
-        const m = db.modes[key];
+    document.getElementById("mode-links").innerHTML = Object.keys(db.modes || {}).map(key => {
         const url = key === 'default' ? base : `${base}?for=${key}`;
-        return `
-        <div class="mode-link-row">
-            <span class="mode-link-label">${m.label}</span>
-            <span class="mode-link-url">${url}</span>
-            <button class="btn-copy" onclick="copyLink(this, '${url}')">Copy</button>
-            <a class="btn" href="${url}" target="_blank" style="font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none">Open ↗</a>
-        </div>`;
+        return `<div class="mode-link-row"><span>${db.modes[key].label}</span><span>${url}</span><button onclick="copyLink(this,'${url}')">Copy</button></div>`;
     }).join('');
 }
 
-function copyLink(btn, url) {
-    navigator.clipboard.writeText(url).then(() => {
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => {
-            btn.textContent = 'Copy';
-            btn.classList.remove('copied');
-        }, 2000);
+function copyLink(btn,url){
+    navigator.clipboard.writeText(url);
+    btn.textContent='Copied';
+    setTimeout(()=>btn.textContent='Copy',1500);
+}
+
+function saveHistory(label='Edit'){
+    history.unshift({
+        label,
+        date:new Date().toISOString(),
+        data:structuredClone(db)
     });
+    history=history.slice(0,20);
+    localStorage.setItem('epk-history',JSON.stringify(history));
 }
 
-function saveHistory() {
-    history.unshift(structuredClone(db));
-    history = history.slice(0, 20);
-    localStorage.setItem('epk-history', JSON.stringify(history));
-}
-
-function undoJSON() {
-    if (history.length < 2) {
-        alert('No previous version available');
-        return;
-    }
+function undoJSON(){
+    if(history.length<2)return alert('No previous version');
     history.shift();
-    db = structuredClone(history[0]);
-    document.getElementById('box').value = JSON.stringify(db, null, 2);
-    renderModeLinks();
-    renderPreview();
+    db=structuredClone(history[0].data);
+    refreshEditor();
 }
 
-function renderPreview() {
-    if (document.getElementById('preview-panel')) return;
-    const panel = document.createElement('div');
-    panel.id = 'preview-panel';
-    panel.innerHTML = `
-        <hr class="divider">
-        <p class="section-label">Live Preview</p>
-        <select id="preview-mode" style="margin-bottom:12px"></select>
-        <iframe id="preview-frame" style="width:100%;height:600px;border:1px solid #ccc"></iframe>
-    `;
+function restoreSnapshot(index){
+    db=structuredClone(history[index].data);
+    refreshEditor();
+}
+
+function refreshEditor(){
+    document.getElementById('box').value=JSON.stringify(db,null,2);
+    renderModeLinks();
+    updatePreview();
+}
+
+function renderPreview(){
+    if(document.getElementById('preview-panel'))return;
+    const panel=document.createElement('div');
+    panel.id='preview-panel';
+    panel.innerHTML=`<hr><p>Live Preview</p><select id="preview-mode"></select><iframe id="preview-frame" style="width:100%;height:600px"></iframe>`;
     document.getElementById('editor-panel').appendChild(panel);
-
-    const select = document.getElementById('preview-mode');
-    Object.entries(db.modes).forEach(([key, value]) => {
-        select.innerHTML += `<option value="${key}">${value.label}</option>`;
-    });
-    select.onchange = () => updatePreview();
+    const select=document.getElementById('preview-mode');
+    Object.entries(db.modes||{}).forEach(([k,v])=>select.innerHTML+=`<option value="${k}">${v.label}</option>`);
+    select.onchange=updatePreview;
     updatePreview();
 }
 
-function updatePreview() {
-    const mode = document.getElementById('preview-mode')?.value || 'default';
-    const base = window.location.href.replace('admin.html', 'index.html').split('?')[0];
-    document.getElementById('preview-frame').src = mode === 'default' ? base : `${base}?for=${mode}`;
+function updatePreview(){
+    const frame=document.getElementById('preview-frame');
+    if(!frame)return;
+    const mode=document.getElementById('preview-mode')?.value||'default';
+    const base=location.href.replace('admin.html','index.html').split('?')[0];
+    frame.src=mode==='default'?base:`${base}?for=${mode}`;
 }
 
-// ── Full JSON editor ──────────────────────────────────────────────
-function renderEditor() {
-    document.getElementById("editor-panel").innerHTML = `
-        <hr class="divider">
-        <p class="section-label">Edit Content</p>
-
-        <textarea id="box">${JSON.stringify(db, null, 2)}</textarea>
-
-        <div class="edit-actions" style="margin-top:16px">
-            <button class="btn btn-primary" onclick="applyJSON()">✓ Validate & Apply</button>
-            <button class="btn btn-primary" onclick="exportJSON()">⬇ Export JSON</button>
-            <button class="btn" onclick="resetJSON()">↺ Reset</button>
-            <button class="btn" onclick="undoJSON()">↶ Undo</button>
-            <span class="edit-status" id="edit-status"></span>
-        </div>
-
-        <p style="font-size:0.75rem;color:var(--stone);margin-top:16px;line-height:1.6">
-            Tip: Edit the JSON directly. Changes are stored locally with undo support.
-        </p>
-    `;
+function renderEditor(){
+    document.getElementById('editor-panel').innerHTML=`
+    <hr><p>Edit Content</p>
+    <textarea id="box">${JSON.stringify(db,null,2)}</textarea>
+    <div style="margin-top:16px">
+    <button onclick="applyJSON()">Validate</button>
+    <button onclick="showChanges()">Preview Changes</button>
+    <button onclick="exportJSON()">Export JSON</button>
+    <button onclick="undoJSON()">Undo</button>
+    </div>
+    <div id="change-panel"></div>`;
 }
 
-function applyJSON() {
-    try {
-        db = JSON.parse(document.getElementById("box").value);
-        saveHistory();
+function applyJSON(){
+    try{
+        db=JSON.parse(document.getElementById('box').value);
+        saveHistory('Manual JSON edit');
         renderModeLinks();
-        renderPreview();
         updatePreview();
-        const status = document.getElementById("edit-status");
-        status.textContent = "✓ Valid JSON — export to publish";
-        setTimeout(() => status.textContent = '', 4000);
-    } catch (e) {
-        alert("Invalid JSON — " + e.message);
-    }
+    }catch(e){alert(e.message)}
 }
 
-function resetJSON() {
-    if (!confirm("Reset editor to last loaded version?")) return;
-    db = structuredClone(loadedDB);
-    document.getElementById("box").value = JSON.stringify(db, null, 2);
-    renderModeLinks();
-    updatePreview();
+function showChanges(){
+    const before=JSON.stringify(loadedDB,null,2).split('\n');
+    const after=JSON.stringify(db,null,2).split('\n');
+    const changed=after.filter((line,i)=>line!==before[i]);
+    document.getElementById('change-panel').innerHTML=`<pre style="margin-top:20px">${changed.length?changed.join('\n'):'No changes detected'}</pre>`;
 }
 
-function exportJSON() {
-    try {
-        const parsed = JSON.parse(document.getElementById("box").value);
-        const blob = new Blob([JSON.stringify(parsed, null, 2)], { type: "application/json" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "epk.json";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-    } catch (e) {
-        alert("Cannot export — JSON is invalid: " + e.message);
-    }
+function exportJSON(){
+    const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='epk.json';
+    a.click();
 }
 
 init();
