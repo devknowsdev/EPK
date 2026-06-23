@@ -15,7 +15,8 @@
 /public             ← Cloudflare serves everything from here
   index.html        ← Main EPK page
   gallery.html      ← Full gallery page
-  admin.html        ← Content editor (not publicly linked)
+  admin.html        ← Content editor
+  _redirects        ← Cloudflare Pages route rewrites
   app.js
   admin.js
   styles.css
@@ -35,7 +36,7 @@
 ## Editing Content
 
 **Option A — Admin UI (recommended):**
-1. Open `https://your-domain/admin.html`
+1. Open `https://your-domain/admin` or `https://your-domain/admin.html`
 2. Edit blocks visually
 3. Click **Export JSON**
 4. Replace `public/data/epk.json` in your repo with the downloaded file
@@ -44,10 +45,32 @@
 **Option B — Edit JSON directly:**
 - Edit `public/data/epk.json` in your editor and push to GitHub
 
+## Spectra Bridge
+
+The public site now exposes a machine-readable bridge for Spectra and related automation:
+
+- `window.EPKAdapter.getData()` returns the full EPK payload.
+- `window.EPKAdapter.getModes()` and `getActiveMode()` expose the audience-specific views.
+- `window.EPKAdapter.getCreativeBrief()` returns a mode-aware creative brief.
+- `window.EPKAdapter.buildGigPromoBrief({ eventName, date, venue, city, cta })` is the starting point for posters and socials.
+- `public/index.html` includes bridge metadata via `meta` tags so the page is easy to detect.
+
+The current source of truth is still `public/data/epk.json`; the adapter just gives Spectra a stable entrypoint.
+
+## Continuation Notes
+
+If we continue this integration, the next useful steps are:
+
+1. Add a dedicated music-career data block to `epk.json` for gigs, releases, and promo assets.
+2. Teach Spectra to read `window.EPKAdapter` before it falls back to DOM scraping.
+3. Add a small UI on the EPK side for quick promo-brief generation.
+4. Bring the gallery and admin pages onto the same bridge metadata pattern.
+
 ## URL Reference
 
 | Page    | URL                              |
 |---------|----------------------------------|
 | EPK     | `https://your-domain/`           |
 | Gallery | `https://your-domain/gallery`    |
-| Admin   | `https://your-domain/admin.html` |
+| Admin   | `https://your-domain/admin`      |
+| Fallback | `https://your-domain/admin.html` |
