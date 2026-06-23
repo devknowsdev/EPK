@@ -2,6 +2,7 @@ let db = {};
 let loadedDB = {};
 let history = [];
 let visualMode = true;
+let publishState = JSON.parse(localStorage.getItem('epk-publish-state') || 'null');
 
 async function init(){
  const res=await fetch('data/epk.json');
@@ -35,7 +36,6 @@ function undoJSON(){
  history.shift();
  db=structuredClone(history[0].data);
  renderEditor();
- renderModeLinks();
  updatePreview();
 }
 
@@ -60,106 +60,74 @@ function updatePreview(){
 
 function renderEditor(){
  document.getElementById('editor-panel').innerHTML=`
- <hr>
- <button onclick="toggleEditor()">Toggle Advanced JSON</button>
+ <hr><button onclick="toggleEditor()">Toggle Advanced JSON</button>
  <div id="visual-editor"></div>
  <textarea id="box" style="display:none">${JSON.stringify(db,null,2)}</textarea>
  <div style="margin-top:15px">
  <button onclick="applyJSON()">Apply</button>
  <button onclick="showChanges()">Changes</button>
+ <button onclick="validateEPK()">Validate</button>
  <button onclick="exportJSON()">Export</button>
  <button onclick="undoJSON()">Undo</button>
- </div>
- <div id="change-panel"></div>`;
+ </div><div id="change-panel"></div>`;
  renderVisualEditor();
 }
 
-function toggleEditor(){
- const box=document.getElementById('box');
- visualMode=!visualMode;
- box.style.display=visualMode?'none':'block';
-}
+function toggleEditor(){visualMode=!visualMode;document.getElementById('box').style.display=visualMode?'none':'block';}
 
 function renderVisualEditor(){
- const root=document.getElementById('visual-editor');
- root.innerHTML=(sectionEditor('Bio',db.bio||{})+
- arrayEditor('Videos',db.videos||[],'videos')+
- arrayEditor('Releases',db.releases||[],'releases')+
- arrayEditor('Gallery',db.gallery||[],'gallery'));
+ document.getElementById('visual-editor').innerHTML=(sectionEditor('Bio',db.bio||{})+arrayEditor('Videos',db.videos||[],'videos')+arrayEditor('Releases',db.releases||[],'releases')+arrayEditor('Gallery',db.gallery||[],'gallery'));
 }
 
-function sectionEditor(title,obj){
- return `<h3>${title}</h3>${Object.keys(obj).map(k=>`<label>${k}<br><textarea onchange="updateField('bio','${k}',this.value)">${esc(obj[k])}</textarea></label>`).join('')}`;
-}
+function sectionEditor(title,obj){return `<h3>${title}</h3>`+Object.keys(obj).map(k=>`<label>${k}<br><textarea onchange="updateField('bio','${k}',this.value)">${esc(obj[k])}</textarea></label>`).join('');}
 
-function arrayEditor(title,arr,key){
- return `<h3>${title}</h3><div ondragover="event.preventDefault()" ondrop="dropItem(event,'${key}')">${arr.map((item,i)=>`
- <div draggable="true" ondragstart="dragItem(event,'${key}',${i})" style="border:1px solid #ccc;padding:8px;margin:5px">
- <b>${esc(item.title||item.name||'Item')}</b><br>
- ${tagEditor(key,i,item)}<br>
- <button onclick="duplicateItem('${key}',${i})">Duplicate</button>
- <button onclick="removeItem('${key}',${i})">Delete</button>
- </div>`).join('')}</div>`;
-}
+function arrayEditor(title,arr,key){return `<h3>${title}</h3>`+arr.map((item,i)=>`<div draggable="true" ondragstart="dragItem(event,'${key}',${i})" style="border:1px solid #ccc;padding:8px;margin:5px"><b>${esc(item.title||item.name||'Item')}</b><br>${tagEditor(key,i,item)}<br><button onclick="duplicateItem('${key}',${i})">Duplicate</button><button onclick="removeItem('${key}',${i})">Delete</button></div>`).join('');}
 
-function tagEditor(key,index,item){
- const tags=item.tags||[];
- return `<small>Tags:</small> ${['general','booker','press','film','acoustic','duif'].map(t=>`<label><input type="checkbox" ${tags.includes(t)?'checked':''} onchange="toggleTag('${key}',${index},'${t}',this.checked)">${t}</label>`).join(' ')}`;
-}
+function tagEditor(key,index,item){return (item.tags||[]).map(t=>`[${t}]`).join(' ');}
 
-function toggleTag(key,index,tag,on){
- const item=db[key][index];
- item.tags=item.tags||[];
- if(on&&!item.tags.includes(tag))item.tags.push(tag);
- if(!on)item.tags=item.tags.filter(t=>t!==tag);
- saveHistory('Tag edit');
-}
-
-let dragData=null;
-function dragItem(e,key,index){dragData={key,index};}
-function dropItem(e,key){
- if(!dragData||dragData.key!==key)return;
- const item=db[key].splice(dragData.index,1)[0];
- const target=e.target.closest('[draggable="true"]');
- const index=target?Array.from(target.parentNode.children).indexOf(target):db[key].length;
- db[key].splice(index,0,item);
- dragData=null;
- saveHistory('Reorder');
- renderEditor();
-}
-
-function updateField(section,key,value){
- db[section][key]=value;
- saveHistory('Visual edit');
-}
-
+function updateField(section,key,value){db[section][key]=value;saveHistory('Visual edit');}
 function duplicateItem(key,index){db[key].splice(index,0,structuredClone(db[key][index]));saveHistory('Duplicate');renderEditor();}
 function removeItem(key,index){if(confirm('Delete item?')){db[key].splice(index,1);saveHistory('Delete');renderEditor();}}
 
-function applyJSON(){
- try{
-  db=JSON.parse(document.getElementById('box').value);
-  saveHistory('JSON edit');
-  renderEditor();
-  updatePreview();
- }catch(e){alert(e.message)}
+let dragData=null;
+function dragItem(e,key,index){dragData={key,index};}
+
+document.addEventListener('drop',e=>{
+ if(!dragData)return;
+ const key=dragData.key;
+ const item=db[key].splice(dragData.index,1)[0];
+ db[key].push(item);
+ dragData=null;
+ saveHistory('Reorder');
+ renderEditor();
+});
+
+definePublishState();
+
+function definePublishState(){
+ window.savePublishedSnapshot=function(commit='local'){
+  publishState={timestamp:new Date().toISOString(),commit,snapshot:structuredClone(db)};
+  localStorage.setItem('epk-publish-state',JSON.stringify(publishState));
+ }
 }
+
+function validateEPK(){
+ let issues=[];
+ if(!db.meta)issues.push('Missing meta');
+ if(!db.bio)issues.push('Missing bio');
+ (db.videos||[]).forEach((v,i)=>{if(!v.title)issues.push(`Video ${i+1} missing title`)});
+ document.getElementById('change-panel').innerHTML=`<pre>${issues.length?'Warnings:\n'+issues.join('\n'):'Ready to publish ✓'}</pre>`;
+}
+
+function applyJSON(){try{db=JSON.parse(document.getElementById('box').value);saveHistory('JSON edit');renderEditor();updatePreview();}catch(e){alert(e.message)}}
 
 function showChanges(){
- const before=JSON.stringify(loadedDB,null,2).split('\n');
+ const before=JSON.stringify(publishState?.snapshot||loadedDB,null,2).split('\n');
  const after=JSON.stringify(db,null,2).split('\n');
  const changed=after.filter((x,i)=>x!==before[i]);
- document.getElementById('change-panel').innerHTML=`<pre>${changed.length?changed.join('\n'):'No changes'}</pre>`;
+ document.getElementById('change-panel').innerHTML=`<pre>${changed.length?changed.join('\n'):'No changes detected'}</pre>`;
 }
 
-function exportJSON(){
- const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
- const a=document.createElement('a');
- a.href=URL.createObjectURL(blob);
- a.download='epk.json';
- a.click();
-}
-
+function exportJSON(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='epk.json';a.click();}
 function esc(s){return (s||'').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
 init();
