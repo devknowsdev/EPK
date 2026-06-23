@@ -82,20 +82,50 @@ function toggleEditor(){
 
 function renderVisualEditor(){
  const root=document.getElementById('visual-editor');
- let html='';
- html+=sectionEditor('Bio',db.bio||{});
- html+=arrayEditor('Videos',db.videos||[],'videos');
- html+=arrayEditor('Releases',db.releases||[],'releases');
- html+=arrayEditor('Gallery',db.gallery||[],'gallery');
- root.innerHTML=html;
+ root.innerHTML=(sectionEditor('Bio',db.bio||{})+
+ arrayEditor('Videos',db.videos||[],'videos')+
+ arrayEditor('Releases',db.releases||[],'releases')+
+ arrayEditor('Gallery',db.gallery||[],'gallery'));
 }
 
 function sectionEditor(title,obj){
- return `<h3>${title}</h3>${Object.keys(obj).map(k=>`<label>${k}<br><textarea onchange="updateField('bio','${k}',this.value)">${obj[k]||''}</textarea></label>`).join('')}`;
+ return `<h3>${title}</h3>${Object.keys(obj).map(k=>`<label>${k}<br><textarea onchange="updateField('bio','${k}',this.value)">${esc(obj[k])}</textarea></label>`).join('')}`;
 }
 
 function arrayEditor(title,arr,key){
- return `<h3>${title}</h3>${arr.map((item,i)=>`<div draggable="true" style="border:1px solid #ccc;padding:8px;margin:5px"><b>${item.title||item.name||'Item'}</b><br><button onclick="duplicateItem('${key}',${i})">Duplicate</button><button onclick="removeItem('${key}',${i})">Delete</button></div>`).join('')}`;
+ return `<h3>${title}</h3><div ondragover="event.preventDefault()" ondrop="dropItem(event,'${key}')">${arr.map((item,i)=>`
+ <div draggable="true" ondragstart="dragItem(event,'${key}',${i})" style="border:1px solid #ccc;padding:8px;margin:5px">
+ <b>${esc(item.title||item.name||'Item')}</b><br>
+ ${tagEditor(key,i,item)}<br>
+ <button onclick="duplicateItem('${key}',${i})">Duplicate</button>
+ <button onclick="removeItem('${key}',${i})">Delete</button>
+ </div>`).join('')}</div>`;
+}
+
+function tagEditor(key,index,item){
+ const tags=item.tags||[];
+ return `<small>Tags:</small> ${['general','booker','press','film','acoustic','duif'].map(t=>`<label><input type="checkbox" ${tags.includes(t)?'checked':''} onchange="toggleTag('${key}',${index},'${t}',this.checked)">${t}</label>`).join(' ')}`;
+}
+
+function toggleTag(key,index,tag,on){
+ const item=db[key][index];
+ item.tags=item.tags||[];
+ if(on&&!item.tags.includes(tag))item.tags.push(tag);
+ if(!on)item.tags=item.tags.filter(t=>t!==tag);
+ saveHistory('Tag edit');
+}
+
+let dragData=null;
+function dragItem(e,key,index){dragData={key,index};}
+function dropItem(e,key){
+ if(!dragData||dragData.key!==key)return;
+ const item=db[key].splice(dragData.index,1)[0];
+ const target=e.target.closest('[draggable="true"]');
+ const index=target?Array.from(target.parentNode.children).indexOf(target):db[key].length;
+ db[key].splice(index,0,item);
+ dragData=null;
+ saveHistory('Reorder');
+ renderEditor();
 }
 
 function updateField(section,key,value){
@@ -103,8 +133,8 @@ function updateField(section,key,value){
  saveHistory('Visual edit');
 }
 
-function duplicateItem(key,index){db[key].splice(index,0,structuredClone(db[key][index]));renderEditor();}
-function removeItem(key,index){if(confirm('Delete item?')){db[key].splice(index,1);renderEditor();}}
+function duplicateItem(key,index){db[key].splice(index,0,structuredClone(db[key][index]));saveHistory('Duplicate');renderEditor();}
+function removeItem(key,index){if(confirm('Delete item?')){db[key].splice(index,1);saveHistory('Delete');renderEditor();}}
 
 function applyJSON(){
  try{
@@ -129,5 +159,7 @@ function exportJSON(){
  a.download='epk.json';
  a.click();
 }
+
+function esc(s){return (s||'').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 init();
