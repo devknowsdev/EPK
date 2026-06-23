@@ -15,6 +15,7 @@ async function init() {
     document.body.dataset.epkPage = 'index';
 
     installAdapter();
+    injectBridgeStyles();
     injectStructuredData();
 
     document.title = `${epk.meta.name} — ${mode.label}`;
@@ -42,6 +43,101 @@ function installAdapter() {
         mode: modeKey,
         href: window.location.href
     };
+}
+
+function injectBridgeStyles() {
+    const existing = document.getElementById('epk-bridge-styles');
+    if (existing) existing.remove();
+
+    const style = document.createElement('style');
+    style.id = 'epk-bridge-styles';
+    style.textContent = `
+        .site-bar {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 18px 32px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            border-bottom: 1px solid var(--rule);
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+        }
+
+        .site-bar__brand {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .site-bar__home {
+            font-size: 0.74rem;
+            color: var(--parchment);
+            text-decoration: none;
+        }
+
+        .site-bar__home:hover {
+            color: var(--brass);
+        }
+
+        .site-bar__mode {
+            font-size: 0.62rem;
+            color: var(--brass);
+        }
+
+        .site-bar__nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .site-bar__chip,
+        .site-bar__action {
+            font-size: 0.62rem;
+            color: var(--stone);
+            text-decoration: none;
+            border: 1px solid var(--rule);
+            padding: 6px 10px;
+            border-radius: 999px;
+            transition: border-color 0.2s, color 0.2s, background 0.2s;
+            white-space: nowrap;
+        }
+
+        .site-bar__chip:hover,
+        .site-bar__action:hover {
+            color: var(--brass);
+            border-color: var(--brass);
+        }
+
+        .site-bar__chip.is-active {
+            background: var(--brass);
+            color: var(--bg);
+            border-color: var(--brass);
+        }
+
+        .site-bar__actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 720px) {
+            .site-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-inline: 20px;
+            }
+
+            .site-bar__nav,
+            .site-bar__actions {
+                justify-content: flex-start;
+            }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 function injectStructuredData() {
