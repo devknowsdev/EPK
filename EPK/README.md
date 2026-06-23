@@ -15,7 +15,8 @@
 /public             ← Cloudflare serves everything from here
   index.html        ← Main EPK page
   gallery.html      ← Full gallery page
-  admin.html        ← Content editor (not publicly linked)
+  admin.html        ← Content editor
+  _redirects        ← Cloudflare Pages route rewrites
   app.js
   admin.js
   styles.css
@@ -35,7 +36,7 @@
 ## Editing Content
 
 **Option A — Admin UI (recommended):**
-1. Open `https://your-domain/admin.html`
+1. Open `https://your-domain/admin` or `https://your-domain/admin.html`
 2. Edit blocks visually
 3. Click **Export JSON**
 4. Replace `public/data/epk.json` in your repo with the downloaded file
@@ -71,4 +72,5 @@ If we continue this integration, the next useful steps are:
 |---------|----------------------------------|
 | EPK     | `https://your-domain/`           |
 | Gallery | `https://your-domain/gallery`    |
-| Admin   | `https://your-domain/admin.html` |
+| Admin   | `https://your-domain/admin`      |
+| Fallback | `https://your-domain/admin.html` |
