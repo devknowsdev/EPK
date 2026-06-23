@@ -1,25 +1,48 @@
 let epk = null;
 let mode = null;
 let modeKey = 'default';
+let publishedId = '';
+let isPublished = false;
 
 async function init() {
-    const res = await fetch('data/epk.json');
-    epk = await res.json();
-
     const params = new URLSearchParams(window.location.search);
+    publishedId = window.__EPK_PUBLISHED_ID__ || params.get('published') || '';
+    isPublished = Boolean(publishedId);
+
+    epk = await loadEPKData();
+
     const requested = params.get('for') || 'default';
     modeKey = epk.modes?.[requested] ? requested : 'default';
     mode = getMode(modeKey);
 
     document.body.dataset.epkMode = modeKey;
-    document.body.dataset.epkPage = 'index';
+    document.body.dataset.epkPage = isPublished ? 'published' : 'index';
+    document.body.dataset.epkPublished = publishedId;
 
     installAdapter();
     injectBridgeStyles();
     injectStructuredData();
 
-    document.title = `${epk.meta.name} — ${mode.label}`;
+    document.title = isPublished
+        ? `${epk.meta.name} — ${mode.label}`
+        : `${epk.meta.name} — ${mode.label}`;
     document.getElementById('app').innerHTML = renderPage();
+}
+
+async function loadEPKData() {
+    if (window.__EPK_SNAPSHOT__) {
+        return structuredClone(window.__EPK_SNAPSHOT__);
+    }
+
+    const source = isPublished
+        ? `/published/${publishedId}/epk.json`
+        : '/data/epk.json';
+
+    const res = await fetch(source);
+    if (!res.ok) {
+        throw new Error(`Failed to load EPK data from ${source}`);
+    }
+    return await res.json();
 }
 
 function getMode(key) {
@@ -28,11 +51,16 @@ function getMode(key) {
 
 function installAdapter() {
     window.EPKAdapter = {
-        version: '1.1.0',
+        version: '1.2.0',
         getData: () => structuredClone(epk),
         getModes: () => structuredClone(epk?.modes || {}),
         getMode: key => structuredClone(getMode(key)),
         getActiveMode: () => structuredClone(mode),
+        getPublication: () => ({
+            id: publishedId || null,
+            isPublished,
+            url: isPublished ? canonicalPageUrl() : null
+        }),
         getStructuredData: () => structuredClone(buildStructuredData()),
         getCreativeBrief: overrides => structuredClone(buildCreativeBrief(overrides || {})),
         buildGigPromoBrief: event => structuredClone(buildGigPromoBrief(event || {}))
@@ -41,7 +69,9 @@ function installAdapter() {
     window.EPK_SITE = {
         name: epk.meta.name,
         mode: modeKey,
-        href: window.location.href
+        published: isPublished,
+        publicationId: publishedId || null,
+        href: canonicalPageUrl()
     };
 }
 
@@ -154,6 +184,13 @@ function injectStructuredData() {
     meta.name = 'epk:mode';
     meta.content = modeKey;
     document.head.appendChild(meta);
+
+    if (publishedId) {
+        const pub = document.createElement('meta');
+        pub.name = 'epk:publication';
+        pub.content = publishedId;
+        document.head.appendChild(pub);
+    }
 }
 
 function buildStructuredData() {
@@ -164,11 +201,12 @@ function buildStructuredData() {
         name: epk.meta.name,
         jobTitle: epk.meta.tagline,
         address: epk.meta.location,
-        url: epk.meta.website,
+        url: canonicalPageUrl(),
         sameAs: socialLinks,
-        image: mode?.hero ? new URL(mode.hero, window.location.href).toString() : undefined,
+        image: mode?.hero ? assetURL(mode.hero) : undefined,
         description: epk.bio?.short || epk.meta.tagline,
-        knowsAbout: (epk.offerings || []).map(o => o.title).filter(Boolean)
+        knowsAbout: (epk.offerings || []).map(o => o.title).filter(Boolean),
+        identifier: publishedId || undefined
     };
 }
 
@@ -181,6 +219,10 @@ function buildCreativeBrief(overrides = {}) {
         mode: {
             key: modeKey,
             label: active?.label || mode?.label || 'General'
+        },
+        publication: {
+            id: publishedId || null,
+            url: isPublished ? canonicalPageUrl() : null
         },
         event: {
             name: overrides.eventName || '',
@@ -197,9 +239,12 @@ function buildCreativeBrief(overrides = {}) {
             'facebook event blurb'
         ],
         assets: {
-            heroImage: active?.hero || '',
+            heroImage: active?.hero ? assetURL(active.hero) : '',
             heroCaption: active?.heroCaption || '',
-            gallery: (epk.gallery || []).slice(0, 6),
+            gallery: (epk.gallery || []).slice(0, 6).map(photo => ({
+                ...photo,
+                src: assetURL(photo.src)
+            })),
             videos: (epk.videos || []).slice(0, 4),
             releases: epk.releases || []
         },
@@ -237,7 +282,11 @@ function buildGigPromoBrief(event = {}) {
 }
 
 function renderPage() {
-    const parts = [renderTopBar(), renderHero()];
+    const parts = [];
+    if (!isPublished) {
+        parts.push(renderTopBar());
+    }
+    parts.push(renderHero());
     const wrapOpen = `<div class="content">`;
     const wrapClose = `</div>`;
 
@@ -246,26 +295,29 @@ function renderPage() {
             case 'bio':
                 parts.push(wrapOpen + renderBio() + wrapClose);
                 break;
-            case 'offerings':
+            case 'offerings': {
                 const offers = epk.offerings.filter(o =>
                     mode.offeringTags.length === 0 ||
                     o.tags.some(t => mode.offeringTags.includes(t))
                 );
                 if (offers.length) parts.push(wrapOpen + renderOfferings(offers) + wrapClose);
                 break;
-            case 'credits':
+            }
+            case 'credits': {
                 const credits = epk.credits.filter(c =>
                     c.tags.some(t => ['film', 'press'].includes(t))
                 );
                 if (credits.length) parts.push(wrapOpen + renderCredits(credits) + wrapClose);
                 break;
-            case 'videos':
+            }
+            case 'videos': {
                 const videos = epk.videos.filter(v =>
                     mode.videoTags.length === 0 ||
                     v.tags.some(t => mode.videoTags.includes(t))
                 );
                 if (videos.length) parts.push(wrapOpen + renderVideos(videos) + wrapClose);
                 break;
+            }
             case 'releases':
                 if (epk.releases.length) parts.push(wrapOpen + renderReleases() + wrapClose);
                 break;
@@ -281,7 +333,9 @@ function renderPage() {
         }
     });
 
-    parts.push(renderFooter());
+    if (!isPublished) {
+        parts.push(renderFooter());
+    }
     return parts.join('');
 }
 
@@ -289,33 +343,43 @@ function renderTopBar() {
     return `
     <header class="site-bar" data-ai-surface="spectra" data-epk-section="utility">
         <div class="site-bar__brand">
-            <a class="site-bar__home" href="index.html">${epk.meta.name}</a>
+            <a class="site-bar__home" href="/">${epk.meta.name}</a>
             <span class="site-bar__mode">${mode.label} view</span>
         </div>
         <nav class="site-bar__nav" aria-label="Audience modes">
             ${renderModeLinks()}
         </nav>
         <div class="site-bar__actions">
-            <a class="site-bar__action" href="gallery.html">Gallery</a>
-            <a class="site-bar__action" href="admin.html">Admin</a>
+            <a class="site-bar__action" href="/gallery.html">Gallery</a>
+            <a class="site-bar__action" href="/admin">Admin</a>
         </div>
     </header>`;
 }
 
 function renderModeLinks() {
     return Object.entries(epk.modes || {}).map(([key, item]) => {
-        const href = key === 'default' ? 'index.html' : `index.html?for=${key}`;
+        const href = key === 'default' ? '/' : `/?for=${key}`;
         const active = key === modeKey ? ' is-active' : '';
         const current = key === modeKey ? ' aria-current="page"' : '';
         return `<a class="site-bar__chip${active}" href="${href}"${current}>${item.label}</a>`;
     }).join('');
 }
 
+function assetURL(path) {
+    if (!path) return '';
+    if (/^https?:\/\//.test(path)) return path;
+    return `/${path.replace(/^\/+/, '')}`;
+}
+
+function canonicalPageUrl() {
+    return window.location.href.split('?')[0];
+}
+
 // ── Hero ──────────────────────────────────────────────────────────
 function renderHero() {
     return `
     <section class="hero" data-epk-section="hero" data-epk-mode="${modeKey}">
-        <img class="hero__img" src="${mode.hero}" alt="${epk.meta.name}">
+        <img class="hero__img" src="${assetURL(mode.hero)}" alt="${epk.meta.name}">
         <div class="hero__overlay">
             <hr class="hero__rule">
             <h1 class="hero__name">${epk.meta.name}</h1>
@@ -423,9 +487,9 @@ function renderGallery(photos) {
     <section class="epk-section" data-epk-section="gallery">
         <p class="section-label">Photos</p>
         <div class="gallery-grid">
-            ${photos.map(g => `<img src="${g.src}" alt="${g.caption || 'Dave Knowles'}" title="${g.caption || ''}">`).join('')}
+            ${photos.map(g => `<img src="${assetURL(g.src)}" alt="${g.caption || 'Dave Knowles'}" title="${g.caption || ''}">`).join('')}
         </div>
-        <a class="gallery-more" href="gallery.html">View all photos →</a>
+        ${isPublished ? '' : '<a class="gallery-more" href="/gallery.html">View all photos →</a>'}
     </section>`;
 }
 
