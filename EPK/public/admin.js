@@ -130,4 +130,85 @@ function showChanges(){
 
 function exportJSON(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='epk.json';a.click();}
 function esc(s){return (s||'').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function getPublishBasePath(rawPath){
+ const trimmed=(rawPath||'').trim();
+ if(!trimmed) return 'EPK/public/published';
+ const normalized=trimmed.replace(/\/+$/,'');
+ if(normalized.endsWith('.json')) return normalized.replace(/\/[^/]*$/,'');
+ return normalized;
+}
+
+function makePublishId(){
+ const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z').replace('T','-').replace('Z','');
+ const rand=Math.random().toString(36).slice(2,6);
+ return `${stamp}-${rand}`;
+}
+
+function getPublicationPageURL(id){
+ const base=location.origin;
+ return `${base}/published/${id}/`;
+}
+
+async function publish() {
+  const user  = val('gh-user')  || localStorage.getItem('gh-user');
+  const repo  = val('gh-repo')  || localStorage.getItem('gh-repo');
+  const raw   = val('gh-path')  || localStorage.getItem('gh-path');
+  const token = val('gh-token') || localStorage.getItem('gh-token');
+
+  if (!token) { setStatus('error', 'No GitHub token. Fill in the setup section above.'); return; }
+  if (!user || !repo) { setStatus('error', 'Fill in username and repo.'); return; }
+
+  const basePath = getPublishBasePath(raw);
+  const publishId = makePublishId();
+  const path = `${basePath}/${publishId}/epk.json`;
+  const pageURL = getPublicationPageURL(publishId);
+
+  setStatus('loading', 'Publishing…');
+  document.getElementById('publish-btn').disabled = true;
+
+  try {
+    const apiBase = `https://api.github.com/repos/${user}/${repo}/contents/${path}`;
+    const headers = {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+    const getRes  = await fetch(apiBase, { headers });
+    if (!getRes.ok && getRes.status !== 404) throw new Error(`GitHub error: ${getRes.status}`);
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+    const now = new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' });
+    const body = { message: `EPK publish ${publishId} — ${now}`, content };
+    const putRes = await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || `GitHub error: ${putRes.status}`);
+    }
+    localStorage.setItem('epk-last-publication-id', publishId);
+    localStorage.setItem('epk-last-publication-url', pageURL);
+    setValue('gh-path', basePath);
+    localStorage.setItem('gh-path', basePath);
+    setStatus('success', `✓ Published ${publishId}. Share: ${pageURL}`);
+    if (typeof savePublishedSnapshot === 'function') savePublishedSnapshot(publishId);
+  } catch(e) {
+    setStatus('error', `Failed: ${e.message}`);
+  } finally {
+    document.getElementById('publish-btn').disabled = false;
+  }
+}
+
+function setStatus(type, msg) {
+  const el = document.getElementById('publish-status');
+  el.className = `publish-status show ${type}`;
+  el.innerHTML = type === 'loading' ? `<div class="spinner"></div> ${msg}` : msg;
+}
+
+function downloadJSON() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'epk.json';
+  a.click();
+}
+
 init();
