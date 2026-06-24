@@ -1,5 +1,6 @@
 .template-strip,
-.poster-template-grid {
+.poster-template-grid,
+.site-template-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -32,7 +33,7 @@
 }
 
 .template-card {
-  width: min(230px, 100%);
+  width: min(250px, 100%);
 }
 
 .template-swatch,
@@ -67,6 +68,12 @@
 .template-score { background: linear-gradient(145deg, #181918, #514735 52%, #1E1F1C); }
 .template-press { background: linear-gradient(145deg, #1E1F1C, #4c564a); }
 .template-wedding { background: linear-gradient(145deg, #2b2a23, #8e7e5f); }
+
+.site-template-forest { background: linear-gradient(145deg, #1E1F1C, #7A9E80); }
+.site-template-press { background: linear-gradient(145deg, #191a18, #B8BFAD); }
+.site-template-acoustic { background: linear-gradient(145deg, #241d18, #D6B275); }
+.site-template-duif { background: radial-gradient(circle at 20% 20%, #7AA8C4, transparent 26%), linear-gradient(145deg, #111417, #17232a); }
+.site-template-score { background: linear-gradient(145deg, #171715, #C6A261); }
 
 .poster-workbench {
   display: grid;
@@ -148,6 +155,21 @@
 .section-audio-tool audio,
 .audio-preview audio {
   width: 100%;
+}
+
+.page-card-tools {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0 16px;
+  padding: 12px;
+  border: 1px solid var(--rule);
+  background: rgba(122,158,128,0.045);
+}
+
+.page-card-tools__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
 }
 
 .contact-preview-form {

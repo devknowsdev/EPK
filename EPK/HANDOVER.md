@@ -7,36 +7,34 @@
 - Added clean public route handling for `/`, `/venue`, `/acoustic`, and `/press`.
 - Removed visible public mode switching from audience pages; public audience selection is by URL only.
 - Added `public-clean.js` so the public utility/mode toolbar is removed from public pages without disturbing route-mode resolution.
-- Added public media/contact enhancements:
+- Added public media/contact/site-template enhancements:
   - YouTube thumbnail cards where a video id can be detected.
   - Optional release audio scrubbers when a release has `audio`, `audioSrc`, or `previewAudio`.
+  - Site templates read from `design.siteTemplate` globally and `modes.<key>.siteTemplate` per page.
   - A small public contact button with fields for name, email, phone, enquiry type, date, venue/city, and message.
   - Contact submit opens a reviewable email addressed to `meta.email`; no silent static-site email sending is claimed.
 - Added a hosted publisher portal at `/publisher/`.
-- Upgraded `/publisher/` into a full EPK control centre with:
-  - public route copy/open controls inside each Audience Pages recipe, not as a detached dashboard route strip
-  - visible template previews and a template studio
-  - media previews attached to the Videos section cards
-  - audio scrubber path controls attached to the Releases section cards
-  - browser-only poster generator with template, act/mode, date, venue, doors, other act, CTA, extra text, and optional logo upload
-  - public-contact behavior preview
-  - live preview selector
-  - profile/contact/social editing
-  - short/acoustic/full biography editing
-  - offerings, credits, videos, releases, and gallery editing
-  - audience page recipe controls for modes, sections, hero images, tags, gallery counts, and route open buttons
-  - advanced JSON format/apply/download controls
-  - browser draft save/restore/discard
-  - local promo brief composer with copy/download output
-  - live `EPK/public/data/epk.json` publishing and immutable snapshot publishing
+- Reworked `/publisher/` information architecture:
+  - Left nav now uses work areas: Dashboard, Identity, Biography, Offerings, Credits, Videos, Releases, Gallery, Page builder, Promo brief, Site templates, Poster studio, Contact UX, JSON, Publish.
+  - Draft/reload controls are labeled **Drafts & data safety**, not Workflow.
+  - Page route copy/open/preview controls live inside each Page builder card.
+  - Site templates and poster templates are separate.
+  - Site templates affect public pages; poster templates only affect the poster canvas.
+  - Poster generator can use images from the Gallery as its poster image source.
+  - Media previews stay attached to the Videos section cards.
+  - Audio scrubber path controls stay attached to the Releases section cards.
+  - Gallery edit cards show their images.
+  - Public-contact behavior preview remains in Contact UX.
+  - Live preview selector remains on the dashboard.
+  - Profile/contact/social editing, biographies, offerings, credits, videos, releases, gallery, page recipes, JSON, drafts, promo brief, and publishing remain available.
 - Kept local/admin tooling outside the public EPK UX under `admin/`.
-- Documented the Spectra bridge, public route contract, publisher/admin policy, media/contact behavior, templates, and poster generator in `README.md`.
+- Documented the Spectra bridge, public route contract, publisher/admin policy, media/contact behavior, separate site/poster templates, and poster generator in `README.md`.
 
 ## Why
 
 The EPK site already had a strong content model. These passes make the model easier for Spectra to consume while keeping public audience pages clean and separating publisher access from visitor-facing page chrome.
 
-The latest correction tightens the publisher hierarchy: media controls live with videos/releases, route controls live with audience-page recipes, templates visibly drive the poster generator, and the public contact button is small enough to feel like a site action rather than a takeover.
+The latest correction fixes the publisher hierarchy: controls now live where the user expects them, templates have separate meanings, and poster generation can draw from the actual Gallery instead of requiring only uploaded logos.
 
 ## Current Contract
 
@@ -59,11 +57,12 @@ Publisher/admin:
 
 - `/publisher/` is the hosted publisher portal and must be protected with Cloudflare Access or equivalent if deployed.
 - `/publisher/` is not linked from public EPK pages.
-- Detached dashboard route tabs should not be reintroduced; route controls belong on each Audience Pages card.
-- The template set encoded in the publisher is: Acoustic Earth, DU!F Night Drive, Scorehouse, Press Minimal, and Wedding Gold.
-- Template selection must update the selected template state and redraw the poster preview.
-- Media previews should stay attached to their source records in Videos/Releases, not live in a separate media folder/page.
-- The poster generator is browser-only. It exports PNGs and does not upload assets or call generation APIs.
+- Detached dashboard route tabs should not be reintroduced; route controls belong on each Page builder card.
+- Media previews should stay attached to their source records in Videos/Releases, not live in a separate media page.
+- Site templates are separate from poster templates.
+- Site template set: Forest Editorial, Press Minimal, Acoustic Warm, DU!F Electric, Cinema Score.
+- Poster template set: Acoustic Earth, DU!F Night Drive, Scorehouse, Press Minimal Poster, Wedding Gold.
+- Poster generator is browser-only, can use Gallery images, and exports PNGs without uploading assets or calling generation APIs.
 - The public contact form is a static mailto handoff. It opens the visitor's email app; a true server-side sender needs a separate backend/form-service sprint.
 - `admin/admin.html` is local/admin tooling.
 - Public EPK pages must not link to admin/editor controls or show the mode-switching toolbar.
