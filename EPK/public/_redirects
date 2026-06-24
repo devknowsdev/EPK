@@ -1,3 +1,13 @@
-/admin /admin.html 200
-/admin/ /admin.html 200
+/venue /index.html 200
+/venue/ /index.html 200
+/booker /index.html 200
+/booker/ /index.html 200
+/acoustic /index.html 200
+/acoustic/ /index.html 200
+/press /index.html 200
+/press/ /index.html 200
+/film /index.html 200
+/film/ /index.html 200
+/duif /index.html 200
+/duif/ /index.html 200
 /published/* /published/index.html?published=:splat 200

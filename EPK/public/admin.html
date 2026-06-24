@@ -1127,14 +1127,25 @@ function showPage(id) {
   document.getElementById('nav-' + id).classList.add('active');
 }
 
+const ADMIN_MODE_ROUTES = {
+  default: '/',
+  booker: '/venue',
+  acoustic: '/acoustic',
+  press: '/press',
+  film: '/film',
+  duif: '/duif'
+};
+
+function publicURLForMode(key) {
+  return `${window.location.origin}${ADMIN_MODE_ROUTES[key] || '/'}`;
+}
+
 // ── Sidebar View Links ─────────────────────────────────────────────
 function renderSidebarViewLinks() {
-  const path = window.location.pathname.replace(/\/?admin(\.html)?$/, '/index.html');
-  const base = window.location.origin + path;
   const modes = db.modes || {};
   const container = document.getElementById('sidebar-view-links-list');
   container.innerHTML = Object.entries(modes).map(([key, m]) => {
-    const url = key === 'default' ? base : `${base}?for=${key}`;
+    const url = publicURLForMode(key);
     return `
     <div class="view-pill">
       <span class="view-pill-name">${m.label || key}</span>
@@ -1156,12 +1167,10 @@ function copyViewURL(btn, url) {
 
 // ── Share Links ───────────────────────────────────────────────────
 function renderShare() {
-  const path = window.location.pathname.replace(/\/?admin(\.html)?$/, '/index.html');
-  const base = window.location.origin + path;
   const modes = db.modes || {};
   const grid = document.getElementById('share-grid');
   grid.innerHTML = Object.entries(modes).map(([key, m]) => {
-    const url = key === 'default' ? base : `${base}?for=${key}`;
+    const url = publicURLForMode(key);
     return `
     <div class="share-row">
       <span class="share-label">${m.label || key}</span>
