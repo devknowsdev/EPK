@@ -1,31 +1,73 @@
 function renderMediaTools() {
-  const videoTarget = document.getElementById('epk-video-preview-grid');
-  const audioTarget = document.getElementById('epk-audio-preview-list');
-  if (!videoTarget || !audioTarget || typeof currentData === 'undefined' || !currentData) return;
+  enhanceVideoSectionPreviews();
+  enhanceReleaseSectionAudio();
+}
 
-  videoTarget.innerHTML = (currentData.videos || []).map(video => {
+function enhanceVideoSectionPreviews() {
+  const cards = document.querySelectorAll('#videos-list .item-card');
+  cards.forEach((card, index) => {
+    const video = currentData?.videos?.[index];
+    if (!video) return;
+    card.querySelector('.inline-media-preview')?.remove();
     const parsed = parseVideoURL(video.url || '');
-    const thumb = parsed && parsed.thumbnail ? `<img src="${safeAttr(parsed.thumbnail)}" alt="${safeAttr(video.title || 'Video')} thumbnail">` : '';
-    return `<article class="media-preview-card"><div class="media-preview-thumb">${thumb}</div><div><h4>${safe(video.title || 'Untitled video')}</h4><p class="help">${safe(parsed ? parsed.platform : 'Media link')} · ${(video.tags || []).map(safe).join(', ')}</p><a class="btn btn-sm" href="${safeAttr(video.url || '#')}" target="_blank" rel="noopener">Open</a></div></article>`;
-  }).join('') || '<p class="help">No video links yet.</p>';
+    const thumb = parsed?.thumbnail ? `<img src="${safeAttr(parsed.thumbnail)}" alt="${safeAttr(video.title || 'Video')} thumbnail">` : '';
+    const preview = document.createElement('details');
+    preview.className = 'inline-media-preview';
+    preview.innerHTML = `
+      <summary>Preview linked video</summary>
+      <div class="media-preview-card compact">
+        <div class="media-preview-thumb">${thumb}</div>
+        <div>
+          <h4>${safe(video.title || 'Untitled video')}</h4>
+          <p class="help">${safe(parsed?.platform || 'Media link')} · ${(video.tags || []).map(safe).join(', ')}</p>
+          <a class="btn btn-sm" href="${safeAttr(video.url || '#')}" target="_blank" rel="noopener">Open video</a>
+        </div>
+      </div>`;
+    const fields = card.querySelector('.form-grid') || card;
+    fields.insertAdjacentElement('afterend', preview);
+  });
+}
 
-  audioTarget.innerHTML = (currentData.releases || []).map((release, index) => {
+function enhanceReleaseSectionAudio() {
+  const cards = document.querySelectorAll('#releases-list .item-card');
+  cards.forEach((card, index) => {
+    const release = currentData?.releases?.[index];
+    if (!release) return;
+    card.querySelector('.inline-audio-preview')?.remove();
     const audio = release.audio || release.audioSrc || release.previewAudio || '';
-    return `<article class="item-card"><div class="item-head"><h4>${safe(release.title || `Release ${index + 1}`)}</h4><span class="hint">${safe(release.alias || '')}</span></div><label>Audio preview path<input value="${safeAttr(audio)}" placeholder="audio/track.mp3" data-audio-index="${index}"></label>${audio ? `<div class="audio-preview"><audio controls preload="metadata" src="${safeAttr(localAssetURL(audio))}"></audio></div>` : '<p class="help">No audio preview path set.</p>'}</article>`;
-  }).join('') || '<p class="help">No releases yet.</p>';
+    const preview = document.createElement('details');
+    preview.className = 'inline-audio-preview';
+    preview.innerHTML = `
+      <summary>Preview / attach audio scrubber</summary>
+      <div class="section-audio-tool">
+        <label>Audio preview path<input value="${safeAttr(audio)}" placeholder="audio/track.mp3" data-section-audio-index="${index}"></label>
+        ${audio ? `<audio controls preload="metadata" src="${safeAttr(localAssetURL(audio))}"></audio>` : '<p class="help">Add a same-origin audio path to show a public scrubber for this release.</p>'}
+      </div>`;
+    const fields = card.querySelector('.form-grid') || card;
+    fields.insertAdjacentElement('afterend', preview);
+  });
 
-  audioTarget.querySelectorAll('[data-audio-index]').forEach(input => {
+  document.querySelectorAll('[data-section-audio-index]').forEach(input => {
     input.onchange = () => {
-      currentData.releases[Number(input.dataset.audioIndex)].audioSrc = input.value.trim();
+      const release = currentData.releases[Number(input.dataset.sectionAudioIndex)];
+      release.audioSrc = input.value.trim();
       if (typeof markDirty === 'function') markDirty('Release audio preview updated');
       if (typeof renderJSON === 'function') renderJSON(false);
-      renderMediaTools();
+      enhanceReleaseSectionAudio();
     };
   });
 }
 
 function bindPosterTools() {
-  ['epk-poster-template', 'epk-poster-mode', 'epk-poster-title', 'epk-poster-date', 'epk-poster-venue', 'epk-poster-doors', 'epk-poster-other', 'epk-poster-cta', 'epk-poster-extra'].forEach(id => {
+  const templateSelect = document.getElementById('epk-poster-template');
+  if (templateSelect) {
+    templateSelect.onchange = () => {
+      if (typeof applyEPKTemplate === 'function') applyEPKTemplate(templateSelect.value);
+      else drawPosterPreview();
+    };
+  }
+
+  ['epk-poster-mode', 'epk-poster-title', 'epk-poster-date', 'epk-poster-venue', 'epk-poster-doors', 'epk-poster-other', 'epk-poster-cta', 'epk-poster-extra'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.oninput = drawPosterPreview;
@@ -59,7 +101,8 @@ function drawPosterPreview() {
   if (!modeSelect.options.length) {
     modeSelect.innerHTML = Object.entries(currentData.modes || {}).map(([key, mode]) => `<option value="${safeAttr(key)}">${safe(mode.label || key)}</option>`).join('');
   }
-  templateSelect.value ||= currentData.design?.template || 'acoustic-earth';
+  const selectedTemplate = currentData.design?.template || templateSelect.value || 'acoustic-earth';
+  templateSelect.value = selectedTemplate;
   modeSelect.value ||= 'booker';
 
   const canvas = document.getElementById('epk-poster-canvas');
