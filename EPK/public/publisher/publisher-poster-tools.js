@@ -1,3 +1,6 @@
+let epkPosterGalleryImage = null;
+let epkPosterGalleryImagePath = '';
+
 function renderMediaTools() {
   enhanceVideoSectionPreviews();
   enhanceReleaseSectionAudio();
@@ -67,7 +70,7 @@ function bindPosterTools() {
     };
   }
 
-  ['epk-poster-mode', 'epk-poster-title', 'epk-poster-date', 'epk-poster-venue', 'epk-poster-doors', 'epk-poster-other', 'epk-poster-cta', 'epk-poster-extra'].forEach(id => {
+  ['epk-poster-mode', 'epk-poster-gallery-image', 'epk-poster-title', 'epk-poster-date', 'epk-poster-venue', 'epk-poster-doors', 'epk-poster-other', 'epk-poster-cta', 'epk-poster-extra'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.oninput = drawPosterPreview;
@@ -93,22 +96,33 @@ function bindPosterTools() {
 function drawPosterPreview() {
   const templateSelect = document.getElementById('epk-poster-template');
   const modeSelect = document.getElementById('epk-poster-mode');
+  const gallerySelect = document.getElementById('epk-poster-gallery-image');
   if (!templateSelect || !modeSelect || typeof currentData === 'undefined' || !currentData) return;
 
   if (!templateSelect.options.length) {
-    templateSelect.innerHTML = EPK_TEMPLATES.map(t => `<option value="${safeAttr(t[0])}">${safe(t[1])}</option>`).join('');
+    templateSelect.innerHTML = (window.EPK_POSTER_TEMPLATES || EPK_TEMPLATES).map(t => `<option value="${safeAttr(t[0])}">${safe(t[1])}</option>`).join('');
   }
   if (!modeSelect.options.length) {
     modeSelect.innerHTML = Object.entries(currentData.modes || {}).map(([key, mode]) => `<option value="${safeAttr(key)}">${safe(mode.label || key)}</option>`).join('');
   }
-  const selectedTemplate = currentData.design?.template || templateSelect.value || 'acoustic-earth';
+  if (gallerySelect) renderPosterGalleryOptions(gallerySelect);
+
+  const selectedTemplate = currentData.design?.posterTemplate || templateSelect.value || 'acoustic-earth';
   templateSelect.value = selectedTemplate;
   modeSelect.value ||= 'booker';
+
+  const selectedGallery = gallerySelect?.value || '';
+  if (selectedGallery && selectedGallery !== epkPosterGalleryImagePath) loadPosterGalleryImage(selectedGallery);
+  if (!selectedGallery) {
+    epkPosterGalleryImagePath = '';
+    epkPosterGalleryImage = null;
+  }
 
   const canvas = document.getElementById('epk-poster-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  const template = EPK_TEMPLATES.find(t => t[0] === templateSelect.value) || EPK_TEMPLATES[0];
+  const templates = window.EPK_POSTER_TEMPLATES || EPK_TEMPLATES;
+  const template = templates.find(t => t[0] === templateSelect.value) || templates[0];
   const mode = currentData.modes?.[modeSelect.value] || currentData.modes?.default || {};
   const title = readField('epk-poster-title') || `${currentData.meta?.name || 'Dave Knowles'} Live`;
   const date = readField('epk-poster-date') || 'Date TBC';
@@ -123,6 +137,12 @@ function drawPosterPreview() {
   gradient.addColorStop(1, template[5]);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (epkPosterGalleryImage) {
+    drawImageCover(ctx, epkPosterGalleryImage, 70, 70, canvas.width - 140, 720);
+    ctx.fillStyle = 'rgba(0,0,0,0.42)';
+    ctx.fillRect(70, 70, canvas.width - 140, 720);
+  }
 
   ctx.globalAlpha = 0.16;
   ctx.fillStyle = template[6];
@@ -176,6 +196,36 @@ function drawPosterPreview() {
   updateContactPreview();
 }
 
+function renderPosterGalleryOptions(select) {
+  const existing = select.value;
+  const options = ['<option value="">No gallery image / graphic poster</option>'].concat((currentData.gallery || []).map(photo => `<option value="${safeAttr(photo.src || '')}">${safe(photo.caption || photo.src || 'Gallery image')}</option>`));
+  select.innerHTML = options.join('');
+  if ([...select.options].some(option => option.value === existing)) select.value = existing;
+}
+
+function loadPosterGalleryImage(path) {
+  epkPosterGalleryImagePath = path;
+  epkPosterGalleryImage = null;
+  const image = new Image();
+  image.onload = () => {
+    epkPosterGalleryImage = image;
+    drawPosterPreview();
+  };
+  image.onerror = () => {
+    epkPosterGalleryImage = null;
+  };
+  image.src = localAssetURL(path);
+}
+
+function drawImageCover(ctx, image, x, y, width, height) {
+  const ratio = Math.max(width / image.width, height / image.height);
+  const scaledWidth = image.width * ratio;
+  const scaledHeight = image.height * ratio;
+  const offsetX = x + (width - scaledWidth) / 2;
+  const offsetY = y + (height - scaledHeight) / 2;
+  ctx.drawImage(image, offsetX, offsetY, scaledWidth, scaledHeight);
+}
+
 function wrapPosterText(ctx, text, x, y, width, lineHeight, maxLines) {
   const words = String(text || '').split(/\s+/).filter(Boolean);
   let line = '';
@@ -221,8 +271,9 @@ function downloadPosterPNG() {
 }
 
 async function copyPosterBrief() {
-  const template = EPK_TEMPLATES.find(t => t[0] === document.getElementById('epk-poster-template')?.value) || EPK_TEMPLATES[0];
-  const brief = ['# Poster Brief', `Template: ${template[1]}`, `Act: ${template[2]}`, `Title: ${readField('epk-poster-title')}`, `Date: ${readField('epk-poster-date')}`, `Venue: ${readField('epk-poster-venue')}`, `Doors: ${readField('epk-poster-doors')}`, `Other act: ${readField('epk-poster-other')}`, `CTA: ${readField('epk-poster-cta')}`, `Extra: ${readField('epk-poster-extra')}`, '', 'Do not invent dates, venues, other acts, or ticket links.'].join('\n');
+  const templates = window.EPK_POSTER_TEMPLATES || EPK_TEMPLATES;
+  const template = templates.find(t => t[0] === document.getElementById('epk-poster-template')?.value) || templates[0];
+  const brief = ['# Poster Brief', `Poster template: ${template[1]}`, `Act: ${template[2]}`, `Gallery image: ${readField('epk-poster-gallery-image')}`, `Title: ${readField('epk-poster-title')}`, `Date: ${readField('epk-poster-date')}`, `Venue: ${readField('epk-poster-venue')}`, `Doors: ${readField('epk-poster-doors')}`, `Other act: ${readField('epk-poster-other')}`, `CTA: ${readField('epk-poster-cta')}`, `Extra: ${readField('epk-poster-extra')}`, '', 'Do not invent dates, venues, other acts, or ticket links.'].join('\n');
   if (typeof copyText === 'function') await copyText(brief, 'Copied poster brief.');
 }
 
@@ -267,3 +318,5 @@ function safe(value) {
 function safeAttr(value) {
   return safe(value).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+
+window.EPK_POSTER_TEMPLATES = window.EPK_POSTER_TEMPLATES || EPK_TEMPLATES;
