@@ -1,0 +1,226 @@
+function renderMediaTools() {
+  const videoTarget = document.getElementById('epk-video-preview-grid');
+  const audioTarget = document.getElementById('epk-audio-preview-list');
+  if (!videoTarget || !audioTarget || typeof currentData === 'undefined' || !currentData) return;
+
+  videoTarget.innerHTML = (currentData.videos || []).map(video => {
+    const parsed = parseVideoURL(video.url || '');
+    const thumb = parsed && parsed.thumbnail ? `<img src="${safeAttr(parsed.thumbnail)}" alt="${safeAttr(video.title || 'Video')} thumbnail">` : '';
+    return `<article class="media-preview-card"><div class="media-preview-thumb">${thumb}</div><div><h4>${safe(video.title || 'Untitled video')}</h4><p class="help">${safe(parsed ? parsed.platform : 'Media link')} · ${(video.tags || []).map(safe).join(', ')}</p><a class="btn btn-sm" href="${safeAttr(video.url || '#')}" target="_blank" rel="noopener">Open</a></div></article>`;
+  }).join('') || '<p class="help">No video links yet.</p>';
+
+  audioTarget.innerHTML = (currentData.releases || []).map((release, index) => {
+    const audio = release.audio || release.audioSrc || release.previewAudio || '';
+    return `<article class="item-card"><div class="item-head"><h4>${safe(release.title || `Release ${index + 1}`)}</h4><span class="hint">${safe(release.alias || '')}</span></div><label>Audio preview path<input value="${safeAttr(audio)}" placeholder="audio/track.mp3" data-audio-index="${index}"></label>${audio ? `<div class="audio-preview"><audio controls preload="metadata" src="${safeAttr(localAssetURL(audio))}"></audio></div>` : '<p class="help">No audio preview path set.</p>'}</article>`;
+  }).join('') || '<p class="help">No releases yet.</p>';
+
+  audioTarget.querySelectorAll('[data-audio-index]').forEach(input => {
+    input.onchange = () => {
+      currentData.releases[Number(input.dataset.audioIndex)].audioSrc = input.value.trim();
+      if (typeof markDirty === 'function') markDirty('Release audio preview updated');
+      if (typeof renderJSON === 'function') renderJSON(false);
+      renderMediaTools();
+    };
+  });
+}
+
+function bindPosterTools() {
+  ['epk-poster-template', 'epk-poster-mode', 'epk-poster-title', 'epk-poster-date', 'epk-poster-venue', 'epk-poster-doors', 'epk-poster-other', 'epk-poster-cta', 'epk-poster-extra'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.oninput = drawPosterPreview;
+      el.onchange = drawPosterPreview;
+    }
+  });
+  const logo = document.getElementById('epk-poster-logo');
+  if (logo) logo.onchange = loadPosterLogo;
+  const refresh = document.getElementById('epk-poster-refresh');
+  if (refresh) refresh.onclick = drawPosterPreview;
+  const download = document.getElementById('epk-poster-download');
+  if (download) download.onclick = downloadPosterPNG;
+  const copy = document.getElementById('epk-poster-copy');
+  if (copy) copy.onclick = copyPosterBrief;
+  ['epk-contact-name', 'epk-contact-email', 'epk-contact-date', 'epk-contact-venue', 'epk-contact-message'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.oninput = updateContactPreview;
+  });
+  const contactCopy = document.getElementById('epk-contact-copy');
+  if (contactCopy) contactCopy.onclick = copyContactPreview;
+}
+
+function drawPosterPreview() {
+  const templateSelect = document.getElementById('epk-poster-template');
+  const modeSelect = document.getElementById('epk-poster-mode');
+  if (!templateSelect || !modeSelect || typeof currentData === 'undefined' || !currentData) return;
+
+  if (!templateSelect.options.length) {
+    templateSelect.innerHTML = EPK_TEMPLATES.map(t => `<option value="${safeAttr(t[0])}">${safe(t[1])}</option>`).join('');
+  }
+  if (!modeSelect.options.length) {
+    modeSelect.innerHTML = Object.entries(currentData.modes || {}).map(([key, mode]) => `<option value="${safeAttr(key)}">${safe(mode.label || key)}</option>`).join('');
+  }
+  templateSelect.value ||= currentData.design?.template || 'acoustic-earth';
+  modeSelect.value ||= 'booker';
+
+  const canvas = document.getElementById('epk-poster-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const template = EPK_TEMPLATES.find(t => t[0] === templateSelect.value) || EPK_TEMPLATES[0];
+  const mode = currentData.modes?.[modeSelect.value] || currentData.modes?.default || {};
+  const title = readField('epk-poster-title') || `${currentData.meta?.name || 'Dave Knowles'} Live`;
+  const date = readField('epk-poster-date') || 'Date TBC';
+  const venue = readField('epk-poster-venue') || 'Venue TBC';
+  const doors = readField('epk-poster-doors') || 'Doors TBC';
+  const other = readField('epk-poster-other');
+  const cta = readField('epk-poster-cta') || currentData.meta?.website || '';
+  const extra = readField('epk-poster-extra') || mode.heroCaption || currentData.meta?.tagline || '';
+
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, template[4]);
+  gradient.addColorStop(1, template[5]);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.globalAlpha = 0.16;
+  ctx.fillStyle = template[6];
+  ctx.beginPath();
+  ctx.arc(230, 220, 260, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(980, 1320, 360, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  ctx.strokeStyle = template[6];
+  ctx.lineWidth = 6;
+  ctx.strokeRect(70, 70, canvas.width - 140, canvas.height - 140);
+
+  ctx.fillStyle = template[6];
+  ctx.font = '36px Helvetica, Arial, sans-serif';
+  ctx.fillText(String(template[2]).toUpperCase(), 95, 140);
+
+  ctx.fillStyle = '#F4F0E7';
+  ctx.font = '112px Georgia, Times New Roman, serif';
+  wrapPosterText(ctx, title, 95, 305, 940, 112, 4);
+
+  ctx.fillStyle = template[6];
+  ctx.font = '42px Helvetica, Arial, sans-serif';
+  ctx.fillText(date.toUpperCase(), 95, 760);
+
+  ctx.fillStyle = '#F4F0E7';
+  ctx.font = '58px Georgia, Times New Roman, serif';
+  wrapPosterText(ctx, venue, 95, 840, 900, 64, 2);
+
+  ctx.fillStyle = template[6];
+  ctx.font = '34px Helvetica, Arial, sans-serif';
+  ctx.fillText(doors.toUpperCase(), 95, 1010);
+
+  ctx.fillStyle = '#F4F0E7';
+  ctx.font = '34px Helvetica, Arial, sans-serif';
+  if (other) ctx.fillText(`WITH ${other.toUpperCase()}`, 95, 1070);
+  ctx.font = '32px Helvetica, Arial, sans-serif';
+  wrapPosterText(ctx, extra, 95, 1160, 900, 42, 4);
+
+  ctx.fillStyle = template[6];
+  ctx.font = '30px Helvetica, Arial, sans-serif';
+  wrapPosterText(ctx, cta, 95, 1450, 880, 36, 2);
+
+  ctx.fillStyle = '#F4F0E7';
+  ctx.font = '28px Helvetica, Arial, sans-serif';
+  ctx.fillText(currentData.meta?.name || 'Dave Knowles', 95, 1535);
+
+  if (epkPosterLogo) ctx.drawImage(epkPosterLogo, canvas.width - 270, canvas.height - 275, 180, 180);
+  updateContactPreview();
+}
+
+function wrapPosterText(ctx, text, x, y, width, lineHeight, maxLines) {
+  const words = String(text || '').split(/\s+/).filter(Boolean);
+  let line = '';
+  let lines = 0;
+  words.forEach(word => {
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width > width && line) {
+      if (lines < maxLines) ctx.fillText(line, x, y + lines * lineHeight);
+      line = word;
+      lines += 1;
+    } else {
+      line = test;
+    }
+  });
+  if (line && lines < maxLines) ctx.fillText(line, x, y + lines * lineHeight);
+}
+
+function loadPosterLogo(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const image = new Image();
+    image.onload = () => {
+      epkPosterLogo = image;
+      drawPosterPreview();
+    };
+    image.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function downloadPosterPNG() {
+  const canvas = document.getElementById('epk-poster-canvas');
+  if (!canvas) return;
+  canvas.toBlob(blob => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'dave-knowles-poster.png';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }, 'image/png');
+}
+
+async function copyPosterBrief() {
+  const template = EPK_TEMPLATES.find(t => t[0] === document.getElementById('epk-poster-template')?.value) || EPK_TEMPLATES[0];
+  const brief = ['# Poster Brief', `Template: ${template[1]}`, `Act: ${template[2]}`, `Title: ${readField('epk-poster-title')}`, `Date: ${readField('epk-poster-date')}`, `Venue: ${readField('epk-poster-venue')}`, `Doors: ${readField('epk-poster-doors')}`, `Other act: ${readField('epk-poster-other')}`, `CTA: ${readField('epk-poster-cta')}`, `Extra: ${readField('epk-poster-extra')}`, '', 'Do not invent dates, venues, other acts, or ticket links.'].join('\n');
+  if (typeof copyText === 'function') await copyText(brief, 'Copied poster brief.');
+}
+
+function updateContactPreview() {
+  const link = document.getElementById('epk-contact-mailto');
+  if (!link || typeof currentData === 'undefined' || !currentData) return;
+  const email = currentData.meta?.email || 'dave.knowles.music@gmail.com';
+  link.href = `mailto:${email}?subject=${encodeURIComponent('EPK enquiry — ' + readField('epk-contact-name'))}&body=${encodeURIComponent(contactPreviewText(email))}`;
+}
+
+async function copyContactPreview() {
+  const email = currentData?.meta?.email || 'dave.knowles.music@gmail.com';
+  if (typeof copyText === 'function') await copyText(contactPreviewText(email), 'Copied contact email preview.');
+}
+
+function contactPreviewText(email) {
+  return [`To: ${email}`, '', `Name: ${readField('epk-contact-name')}`, `Email: ${readField('epk-contact-email')}`, `Date: ${readField('epk-contact-date')}`, `Venue / City: ${readField('epk-contact-venue')}`, '', readField('epk-contact-message')].join('\n');
+}
+
+function parseVideoURL(url) {
+  const youtube = String(url).match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+  if (youtube) return { platform: 'YouTube', thumbnail: `https://img.youtube.com/vi/${youtube[1]}/hqdefault.jpg` };
+  const vimeo = String(url).match(/vimeo\.com\/(\d+)/);
+  if (vimeo) return { platform: 'Vimeo', thumbnail: '' };
+  return null;
+}
+
+function localAssetURL(path) {
+  if (!path) return '';
+  if (/^https?:\/\//.test(path)) return path;
+  return `/${String(path).replace(/^\/+/, '')}`;
+}
+
+function readField(id) {
+  return document.getElementById(id)?.value.trim() || '';
+}
+
+function safe(value) {
+  return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function safeAttr(value) {
+  return safe(value).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
