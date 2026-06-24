@@ -60,22 +60,31 @@
 
 .contact-launcher {
   position: fixed;
-  right: 22px;
-  bottom: 22px;
+  right: 18px;
+  bottom: 18px;
   z-index: 40;
-  border: 1px solid var(--brass);
-  background: rgba(30,31,28,0.92);
+  border: 1px solid rgba(122,158,128,0.55);
+  border-radius: 999px;
+  background: rgba(30,31,28,0.76);
   color: var(--parchment);
   cursor: pointer;
   font: inherit;
-  letter-spacing: 0.12em;
-  padding: 12px 16px;
+  font-size: 0.68rem;
+  letter-spacing: 0.10em;
+  line-height: 1;
+  padding: 8px 11px;
   text-transform: uppercase;
-  box-shadow: 0 14px 42px rgba(0,0,0,0.35);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.25);
+  opacity: 0.82;
+  backdrop-filter: blur(6px);
 }
 
-.contact-launcher:hover {
+.contact-launcher:hover,
+.contact-launcher:focus-visible {
+  border-color: var(--brass);
   color: var(--brass);
+  opacity: 1;
+  outline: none;
 }
 
 .contact-modal[hidden] {
@@ -113,7 +122,7 @@
 .contact-card h2 {
   margin: 0;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-size: clamp(1.7rem, 4vw, 2.7rem);
   line-height: 1;
 }
 
@@ -198,7 +207,7 @@
   }
 
   .contact-launcher {
-    right: 14px;
-    bottom: 14px;
+    right: 12px;
+    bottom: 12px;
   }
 }
