@@ -31,7 +31,7 @@ Everything in the deploy root is publicly servable unless Cloudflare Access or e
   _redirects        ← Cloudflare Pages route rewrites
   app.js            ← Public EPK renderer and Spectra bridge
   public-clean.js   ← Removes public utility/mode toolbar from audience pages
-  public-media-contact.js/css ← Video thumbnail, audio scrubber, and contact-button enhancements
+  public-media-contact.js/css ← Site-template, video thumbnail, audio scrubber, and contact-button enhancements
   styles.css
   /data
     epk.json        ← All public content lives here
@@ -62,15 +62,16 @@ The public EPK exposes clean audience routes:
 
 Legacy query-param mode URLs such as `/?for=press`, `/?for=acoustic`, and `/?for=booker` are still parsed for compatibility, but public navigation should use the clean routes above.
 
-Public audience pages do not show the mode-switching toolbar. Audience selection happens by URL only. Publisher-side route/open controls belong inside the Audience Pages section for each page recipe, not as a detached dashboard route strip.
+Public audience pages do not show the mode-switching toolbar. Audience selection happens by URL only. Publisher-side route/open/copy/preview controls belong inside the **Page builder** card for each page recipe, not as a detached dashboard route strip.
 
-## Public Media and Contact Enhancements
+## Public Media, Site Templates, and Contact Enhancements
 
 The public EPK includes lightweight browser-only enhancements:
 
 - YouTube links render with thumbnails where a video id can be detected.
 - Vimeo and non-thumbnail media links remain safe text/card links.
 - Release audio scrubbers appear when a release has `audio`, `audioSrc`, or `previewAudio` set.
+- Site templates are read from `design.siteTemplate` globally and `modes.<key>.siteTemplate` per audience page.
 - A small public **Contact** button opens a form with name, email, phone, enquiry type, date, venue/city, and message fields.
 - Contact submit opens the visitor's email app addressed to the `meta.email` address from `epk.json`.
 - The static site does not silently send email; true server-side sending must be implemented separately with a protected backend/form service.
@@ -84,12 +85,16 @@ There are two admin surfaces:
 - URL: `https://your-domain/publisher/`
 - Location: `public/publisher/`
 - Purpose: edit the EPK data, preview clean public audience pages, generate promo briefs, validate/export JSON, publish live `EPK/public/data/epk.json`, and publish immutable snapshots to `/published/<id>/`
-- Includes controls for profile/contact/socials, short/acoustic/full bio, offerings, credits, videos, releases, gallery, and audience page recipes
-- Includes browser draft save/restore/discard and a local promo brief composer for copy/download handoff artifacts
+- Left navigation is organized by work area: Dashboard, Identity, Biography, Offerings, Credits, Videos, Releases, Gallery, Page builder, Promo brief, Site templates, Poster studio, Contact UX, JSON, Publish
+- Draft/local reload controls live under **Drafts & data safety** on the dashboard, not under a vague Workflow section
+- Page route/open/copy/preview controls live on each **Page builder** card
+- Site templates and poster templates are separate concepts
+- Site templates affect public EPK pages globally or per page
+- Poster templates affect only the poster canvas
 - Media previews are attached inside the Videos and Releases sections so they stay with their source records
 - Release audio paths are edited inside the Releases section, next to the linked release
-- Visible template previews remain on the dashboard and template studio; applying a template also updates the poster generator selection and preview
-- Poster generator inputs: template, act/mode, event title, date, venue, doors, other act, CTA, extra text, and optional venue/promoter logo upload
+- Poster generator can use images from the Gallery as the poster image source
+- Poster generator inputs: poster template, act/mode, gallery image, event title, date, venue, doors, other act, CTA, extra text, and optional venue/promoter logo upload
 - Not linked from public EPK pages
 - Must be protected with Cloudflare Access or equivalent platform authentication before being treated as private
 - Does not implement frontend-only password protection
@@ -115,17 +120,27 @@ You can also edit `public/data/epk.json` directly in your editor and push to Git
 - Do not add frontend-only password gates; they do not secure static admin tooling.
 - Public EPK pages must not link to admin/editor controls or expose the mode-switching toolbar.
 
-## Templates and Poster Generation
+## Site Templates and Poster Templates
 
-The publisher encodes the visible template set that was missing from the repo:
+Site templates:
+
+- Forest Editorial
+- Press Minimal
+- Acoustic Warm
+- DU!F Electric
+- Cinema Score
+
+Poster templates:
 
 - Acoustic Earth
 - DU!F Night Drive
 - Scorehouse
-- Press Minimal
+- Press Minimal Poster
 - Wedding Gold
 
-Templates are visible on the dashboard and in the template studio. Applying a template selects it in the poster generator and redraws the poster preview. The browser-only poster generator exports a PNG poster from manual event inputs. It does not call image APIs, upload files, or publish posters automatically.
+Site templates are selected globally from **Site templates** and per audience page from **Page builder**. Poster templates are selected inside **Poster studio**. Applying a site template should not silently change the poster canvas; applying a poster template should not silently change public page styling.
+
+The browser-only poster generator exports a PNG poster from manual event inputs and optional gallery/logo images. It does not call image APIs, upload files, or publish posters automatically.
 
 ## Published Versions
 
