@@ -1096,7 +1096,7 @@ const MODE_LABELS = { default:'General', booker:'Booker', press:'Press', film:'F
 // ── Boot ──────────────────────────────────────────────────────────
 async function init() {
   try {
-    const res = await fetch('data/epk.json');
+    const res = await fetch('../public/data/epk.json');
     db = await res.json();
   } catch(e) {
     db = { meta:{name:'',tagline:'',location:'',email:'',phone:'',website:'',social:{}},

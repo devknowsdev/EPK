@@ -21,10 +21,8 @@ For ecosystem-wide architecture, see [prism-beam/docs/ECOSYSTEM_OVERVIEW.md](htt
 /public             ← Cloudflare serves everything from here
   index.html        ← Main EPK page
   gallery.html      ← Full gallery page
-  admin.html        ← Local/admin content editor tooling
   _redirects        ← Cloudflare Pages route rewrites
   app.js
-  admin.js
   styles.css
   /data
     epk.json        ← All content lives here
@@ -33,6 +31,9 @@ For ecosystem-wide architecture, see [prism-beam/docs/ECOSYSTEM_OVERVIEW.md](htt
     Dave Session Violin.jpg
     Dave Cello.jpg
     Dave DUIF.jpg
+/admin              ← Local/admin tooling; do not deploy publicly
+  admin.html
+  admin.js
 ```
 
 ## Adding / Editing Photos
@@ -56,19 +57,21 @@ Legacy query-param mode URLs such as `/?for=press`, `/?for=acoustic`, and `/?for
 ## Editing Content
 
 **Option A — Local/admin UI:**
-1. Open `public/admin.html` in a trusted local or protected admin context
-2. Edit blocks visually
-3. Click **Export JSON**
-4. Replace `public/data/epk.json` in your repo with the downloaded file
-5. Push to GitHub → Cloudflare redeploys automatically
+1. From the repo root, run a local static server such as `python3 -m http.server 8000`
+2. Open `http://localhost:8000/EPK/admin/admin.html`
+3. Edit blocks visually
+4. Click **Export JSON**
+5. Replace `public/data/epk.json` in your repo with the downloaded file
+6. Push to GitHub → Cloudflare redeploys automatically
 
 **Option B — Edit JSON directly:**
 - Edit `public/data/epk.json` in your editor and push to GitHub
 
 ## Admin Policy
 
-- `admin.html` and `admin.js` are admin tooling, not public UX.
-- Do not publicly route `/admin` unless hosting/platform authentication protects it.
+- Public deploy root remains `public`; files in this folder are served by Cloudflare Pages.
+- `admin/admin.html` and `admin/admin.js` are local/admin tooling, not public UX.
+- Do not copy, route, or deploy admin files publicly unless Cloudflare Access or equivalent hosting/platform authentication protects them.
 - Do not add frontend-only password gates; they do not secure static admin tooling.
 - The public site must not link to admin/editor controls.
 

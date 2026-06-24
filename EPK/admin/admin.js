@@ -18,7 +18,7 @@ function publicURLForMode(key){
 }
 
 async function init(){
- const res=await fetch('data/epk.json');
+ const res=await fetch('../public/data/epk.json');
  db=await res.json();
  loadedDB=structuredClone(db);
  history=JSON.parse(localStorage.getItem('epk-history')||'[]');
