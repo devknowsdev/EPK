@@ -6,6 +6,7 @@
 <title>EPK Publisher — Dave Knowles</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="publisher.css">
+<link rel="stylesheet" href="publisher-extensions.css">
 </head>
 <body>
 <div class="publisher-shell">
@@ -20,8 +21,9 @@
       <strong>Security note:</strong> this is not a password gate. Protect <code>/publisher/*</code> with Cloudflare Access or equivalent before treating it as private.
     </div>
 
-    <div class="sidebar-block">
-      <span class="sidebar-label">Clean public routes</span>
+    <div class="sidebar-block sidebar-routes-block">
+      <span class="sidebar-label">Public route tools</span>
+      <p class="help">Route tabs now live on the dashboard preview. These links remain as quick copy/open tools.</p>
       <div id="mode-links" class="mode-links"></div>
     </div>
 
@@ -61,7 +63,7 @@
       <div class="metric-grid" id="metrics"></div>
 
       <div class="grid two">
-        <section class="panel">
+        <section class="panel dashboard-preview-panel">
           <div class="panel-head">
             <h3>Live preview</h3>
             <select id="preview-mode"></select>
@@ -232,5 +234,6 @@
 </div>
 
 <script src="publisher.js"></script>
+<script src="publisher-extensions.js"></script>
 </body>
 </html>

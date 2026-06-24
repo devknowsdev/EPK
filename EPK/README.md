@@ -31,6 +31,7 @@ Everything in the deploy root is publicly servable unless Cloudflare Access or e
   _redirects        ← Cloudflare Pages route rewrites
   app.js            ← Public EPK renderer and Spectra bridge
   public-clean.js   ← Removes public utility/mode toolbar from audience pages
+  public-media-contact.js/css ← Video thumbnail, audio scrubber, and contact-button enhancements
   styles.css
   /data
     epk.json        ← All public content lives here
@@ -42,10 +43,11 @@ Everything in the deploy root is publicly servable unless Cloudflare Access or e
   admin.js
 ```
 
-## Adding / Editing Photos
+## Adding / Editing Photos and Audio
 
 1. Drop image files into `/public/photos/`
 2. Reference them in `epk.json` as `"photos/your-file.jpg"`
+3. Optional audio previews can be added to release objects as `audioSrc`, for example `"audio/track.mp3"`; the public page shows an audio scrubber when that field exists.
 
 ## Public Routes
 
@@ -60,7 +62,18 @@ The public EPK exposes clean audience routes:
 
 Legacy query-param mode URLs such as `/?for=press`, `/?for=acoustic`, and `/?for=booker` are still parsed for compatibility, but public navigation should use the clean routes above.
 
-Public audience pages do not show the mode-switching toolbar. Audience selection happens by URL only.
+Public audience pages do not show the mode-switching toolbar. Audience selection happens by URL only. In the publisher dashboard, these routes appear as preview tabs so layout work can happen in the dashboard without exposing tabs on the public site.
+
+## Public Media and Contact Enhancements
+
+The public EPK includes lightweight browser-only enhancements:
+
+- YouTube links render with thumbnails where a video id can be detected.
+- Vimeo and non-thumbnail media links remain safe text/card links.
+- Release audio scrubbers appear when a release has `audio`, `audioSrc`, or `previewAudio` set.
+- A public **Contact** button opens a form with name, email, phone, enquiry type, date, venue/city, and message fields.
+- Contact submit opens the visitor's email app addressed to the `meta.email` address from `epk.json`.
+- The static site does not silently send email; true server-side sending must be implemented separately with a protected backend/form service.
 
 ## Publisher / Admin Access
 
@@ -73,10 +86,12 @@ There are two admin surfaces:
 - Purpose: edit the EPK data, preview clean public audience pages, generate promo briefs, validate/export JSON, publish live `EPK/public/data/epk.json`, and publish immutable snapshots to `/published/<id>/`
 - Includes controls for profile/contact/socials, short/acoustic/full bio, offerings, credits, videos, releases, gallery, and audience page recipes
 - Includes browser draft save/restore/discard and a local promo brief composer for copy/download handoff artifacts
+- Adds media previews, optional release audio paths, visible template previews, dashboard route tabs, a public-contact preview, and a browser-only poster generator
+- Poster generator inputs: template, act/mode, event title, date, venue, doors, other act, CTA, extra text, and optional venue/promoter logo upload
 - Not linked from public EPK pages
 - Must be protected with Cloudflare Access or equivalent platform authentication before being treated as private
 - Does not implement frontend-only password protection
-- Does not send email, modify calendars, scan user folders, run media analysis, or call paid APIs
+- Does not silently send email, modify calendars, scan user folders, run media analysis, or call paid APIs
 - Does not save GitHub tokens; paste a token only for a publishing session
 
 **Local/admin UI:**
@@ -97,6 +112,18 @@ You can also edit `public/data/epk.json` directly in your editor and push to Git
 - `admin/admin.html` and `admin/admin.js` remain local/admin tooling, not public EPK UX.
 - Do not add frontend-only password gates; they do not secure static admin tooling.
 - Public EPK pages must not link to admin/editor controls or expose the mode-switching toolbar.
+
+## Templates and Poster Generation
+
+The publisher now encodes the visible template set that was missing from the repo:
+
+- Acoustic Earth
+- DU!F Night Drive
+- Scorehouse
+- Press Minimal
+- Wedding Gold
+
+Templates are visible on the dashboard and in the template studio. The browser-only poster generator uses these templates to export a PNG poster from manual event inputs. It does not call image APIs, upload files, or publish posters automatically.
 
 ## Published Versions
 
@@ -136,9 +163,10 @@ The current source of truth is still `public/data/epk.json`; the adapter just gi
 If we continue this integration, the next useful steps are:
 
 1. Protect `/publisher/*` with Cloudflare Access before relying on hosted publisher privacy.
-2. Add a dedicated music-career data block to `epk.json` for gigs, releases, and promo assets.
-3. Teach Spectra to read `window.EPKAdapter` before it falls back to DOM scraping.
-4. Bring the gallery and admin pages onto the same bridge metadata pattern if full parity is needed.
+2. Add a true server-side contact/send path only after choosing a protected backend/form service.
+3. Add a dedicated music-career data block to `epk.json` for gigs, releases, and promo assets.
+4. Teach Spectra to read `window.EPKAdapter` before it falls back to DOM scraping.
+5. Bring the gallery and admin pages onto the same bridge metadata pattern if full parity is needed.
 
 ## URL Reference
 
