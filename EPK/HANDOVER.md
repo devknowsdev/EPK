@@ -10,21 +10,21 @@
 - Added public media/contact enhancements:
   - YouTube thumbnail cards where a video id can be detected.
   - Optional release audio scrubbers when a release has `audio`, `audioSrc`, or `previewAudio`.
-  - A public contact button with fields for name, email, phone, enquiry type, date, venue/city, and message.
+  - A small public contact button with fields for name, email, phone, enquiry type, date, venue/city, and message.
   - Contact submit opens a reviewable email addressed to `meta.email`; no silent static-site email sending is claimed.
 - Added a hosted publisher portal at `/publisher/`.
 - Upgraded `/publisher/` into a full EPK control centre with:
-  - clean route copy/open links
-  - dashboard route tabs that open the selected public page in the preview
+  - public route copy/open controls inside each Audience Pages recipe, not as a detached dashboard route strip
   - visible template previews and a template studio
-  - media preview tools for video thumbnails and release audio paths
+  - media previews attached to the Videos section cards
+  - audio scrubber path controls attached to the Releases section cards
   - browser-only poster generator with template, act/mode, date, venue, doors, other act, CTA, extra text, and optional logo upload
   - public-contact behavior preview
   - live preview selector
   - profile/contact/social editing
   - short/acoustic/full biography editing
   - offerings, credits, videos, releases, and gallery editing
-  - audience page recipe controls for modes, sections, hero images, tags, and gallery counts
+  - audience page recipe controls for modes, sections, hero images, tags, gallery counts, and route open buttons
   - advanced JSON format/apply/download controls
   - browser draft save/restore/discard
   - local promo brief composer with copy/download output
@@ -36,7 +36,7 @@
 
 The EPK site already had a strong content model. These passes make the model easier for Spectra to consume while keeping public audience pages clean and separating publisher access from visitor-facing page chrome.
 
-The latest publisher pass restores the practical control-centre feel: Dave can preview audience pages as dashboard tabs, inspect media, choose a visual template, build a poster, and publish EPK data without bringing back the public top toolbar.
+The latest correction tightens the publisher hierarchy: media controls live with videos/releases, route controls live with audience-page recipes, templates visibly drive the poster generator, and the public contact button is small enough to feel like a site action rather than a takeover.
 
 ## Current Contract
 
@@ -59,8 +59,10 @@ Publisher/admin:
 
 - `/publisher/` is the hosted publisher portal and must be protected with Cloudflare Access or equivalent if deployed.
 - `/publisher/` is not linked from public EPK pages.
-- Dashboard route tabs are publisher-only preview controls; they must not be exposed on public EPK pages.
-- The template set now encoded in the publisher is: Acoustic Earth, DU!F Night Drive, Scorehouse, Press Minimal, and Wedding Gold.
+- Detached dashboard route tabs should not be reintroduced; route controls belong on each Audience Pages card.
+- The template set encoded in the publisher is: Acoustic Earth, DU!F Night Drive, Scorehouse, Press Minimal, and Wedding Gold.
+- Template selection must update the selected template state and redraw the poster preview.
+- Media previews should stay attached to their source records in Videos/Releases, not live in a separate media folder/page.
 - The poster generator is browser-only. It exports PNGs and does not upload assets or call generation APIs.
 - The public contact form is a static mailto handoff. It opens the visitor's email app; a true server-side sender needs a separate backend/form-service sprint.
 - `admin/admin.html` is local/admin tooling.

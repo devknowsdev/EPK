@@ -62,7 +62,7 @@ The public EPK exposes clean audience routes:
 
 Legacy query-param mode URLs such as `/?for=press`, `/?for=acoustic`, and `/?for=booker` are still parsed for compatibility, but public navigation should use the clean routes above.
 
-Public audience pages do not show the mode-switching toolbar. Audience selection happens by URL only. In the publisher dashboard, these routes appear as preview tabs so layout work can happen in the dashboard without exposing tabs on the public site.
+Public audience pages do not show the mode-switching toolbar. Audience selection happens by URL only. Publisher-side route/open controls belong inside the Audience Pages section for each page recipe, not as a detached dashboard route strip.
 
 ## Public Media and Contact Enhancements
 
@@ -71,7 +71,7 @@ The public EPK includes lightweight browser-only enhancements:
 - YouTube links render with thumbnails where a video id can be detected.
 - Vimeo and non-thumbnail media links remain safe text/card links.
 - Release audio scrubbers appear when a release has `audio`, `audioSrc`, or `previewAudio` set.
-- A public **Contact** button opens a form with name, email, phone, enquiry type, date, venue/city, and message fields.
+- A small public **Contact** button opens a form with name, email, phone, enquiry type, date, venue/city, and message fields.
 - Contact submit opens the visitor's email app addressed to the `meta.email` address from `epk.json`.
 - The static site does not silently send email; true server-side sending must be implemented separately with a protected backend/form service.
 
@@ -86,7 +86,9 @@ There are two admin surfaces:
 - Purpose: edit the EPK data, preview clean public audience pages, generate promo briefs, validate/export JSON, publish live `EPK/public/data/epk.json`, and publish immutable snapshots to `/published/<id>/`
 - Includes controls for profile/contact/socials, short/acoustic/full bio, offerings, credits, videos, releases, gallery, and audience page recipes
 - Includes browser draft save/restore/discard and a local promo brief composer for copy/download handoff artifacts
-- Adds media previews, optional release audio paths, visible template previews, dashboard route tabs, a public-contact preview, and a browser-only poster generator
+- Media previews are attached inside the Videos and Releases sections so they stay with their source records
+- Release audio paths are edited inside the Releases section, next to the linked release
+- Visible template previews remain on the dashboard and template studio; applying a template also updates the poster generator selection and preview
 - Poster generator inputs: template, act/mode, event title, date, venue, doors, other act, CTA, extra text, and optional venue/promoter logo upload
 - Not linked from public EPK pages
 - Must be protected with Cloudflare Access or equivalent platform authentication before being treated as private
@@ -115,7 +117,7 @@ You can also edit `public/data/epk.json` directly in your editor and push to Git
 
 ## Templates and Poster Generation
 
-The publisher now encodes the visible template set that was missing from the repo:
+The publisher encodes the visible template set that was missing from the repo:
 
 - Acoustic Earth
 - DU!F Night Drive
@@ -123,7 +125,7 @@ The publisher now encodes the visible template set that was missing from the rep
 - Press Minimal
 - Wedding Gold
 
-Templates are visible on the dashboard and in the template studio. The browser-only poster generator uses these templates to export a PNG poster from manual event inputs. It does not call image APIs, upload files, or publish posters automatically.
+Templates are visible on the dashboard and in the template studio. Applying a template selects it in the poster generator and redraws the poster preview. The browser-only poster generator exports a PNG poster from manual event inputs. It does not call image APIs, upload files, or publish posters automatically.
 
 ## Published Versions
 
