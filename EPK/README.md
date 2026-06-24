@@ -6,6 +6,31 @@ This repository is responsible for the public-facing EPK surface: the site, publ
 It is not responsible for the full music management layer or Prism Core orchestration.
 For ecosystem-wide architecture, see [prism-beam/docs/ECOSYSTEM_OVERVIEW.md](https://github.com/devknowsdev/prism-beam/blob/main/docs/ECOSYSTEM_OVERVIEW.md) and [prism-beam/docs/REPO_BOUNDARIES.md](https://github.com/devknowsdev/prism-beam/blob/main/docs/REPO_BOUNDARIES.md).
 
+## First-run setup
+
+Start with [docs/EPK_SETUP.md](docs/EPK_SETUP.md) before using the publisher or deploying the site.
+
+Local preview from the repository root:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open:
+
+```text
+http://localhost:8000/EPK/public/
+http://localhost:8000/EPK/public/publisher/
+http://localhost:8000/EPK/admin/admin.html
+```
+
+Important boundary:
+
+- The public EPK and snapshots are public by design.
+- The hosted publisher route must be protected with Cloudflare Access or equivalent before being treated as private.
+- The publisher does not save GitHub tokens; paste a token only for a publishing session.
+- The static contact form opens the visitor's email app; it does not silently send email.
+
 ## Deploy to Cloudflare Pages
 
 Use one of these equivalent Cloudflare Pages setups:
