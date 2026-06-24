@@ -8,12 +8,25 @@ const EPK_TEMPLATES = [
 
 let epkPosterLogo = null;
 let epkExtensionAttempts = 0;
+let epkPosterToolsLoaded = false;
 
+loadPosterTools();
 document.addEventListener('DOMContentLoaded', waitForEPKPublisherData);
+
+function loadPosterTools() {
+  if (document.querySelector('script[data-publisher-poster-tools]')) return;
+  const script = document.createElement('script');
+  script.src = 'publisher-poster-tools.js';
+  script.dataset.publisherPosterTools = 'true';
+  script.onload = () => {
+    epkPosterToolsLoaded = true;
+  };
+  document.head.appendChild(script);
+}
 
 function waitForEPKPublisherData() {
   epkExtensionAttempts += 1;
-  if (typeof currentData !== 'undefined' && currentData && document.getElementById('preview-frame')) {
+  if (typeof currentData !== 'undefined' && currentData && epkPosterToolsLoaded && typeof renderMediaTools === 'function' && document.getElementById('preview-frame')) {
     installEPKExtensions();
     return;
   }
