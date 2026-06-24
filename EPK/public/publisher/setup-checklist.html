@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPK Publisher Setup Checklist</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="publisher.css">
+</head>
+<body>
+<div class="publisher-shell">
+  <main class="main" style="max-width: 980px; margin: 0 auto;">
+    <header class="topbar">
+      <div>
+        <p class="kicker">Publisher portal</p>
+        <h1>First-run setup checklist</h1>
+        <p>Use this before treating the hosted publisher as private or publishing live EPK data.</p>
+      </div>
+      <div class="top-actions">
+        <a class="btn btn-secondary" href="./">Back to publisher</a>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2>Privacy and deployment</h2>
+      <ul class="rules">
+        <li>Protect <code>/publisher/*</code> with Cloudflare Access or equivalent before relying on hosted publisher privacy.</li>
+        <li>Keep the deploy root at <code>EPK/public</code>, or set Cloudflare project root to <code>EPK</code> with output <code>public</code>.</li>
+        <li>Everything in the deployed public root is publicly servable unless platform protection is configured.</li>
+        <li>Do not place private media, private notes, or credentials in the public deploy root.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Publishing safety</h2>
+      <ul class="rules">
+        <li>Validate the JSON before publishing live data.</li>
+        <li>Download or export JSON before publishing significant changes.</li>
+        <li>Use a publishing credential only for the current session.</li>
+        <li>Publish snapshots for fixed shareable versions at <code>/published/&lt;id&gt;/</code>.</li>
+        <li>Public pages must not link back to publisher/admin tools.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Local first-run commands</h2>
+      <pre><code>python3 -m http.server 8000</code></pre>
+      <p class="help">Then open <code>http://localhost:8000/EPK/public/</code>, <code>http://localhost:8000/EPK/public/publisher/</code>, and <code>http://localhost:8000/EPK/admin/admin.html</code>.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Full guide</h2>
+      <p>See <code>EPK/docs/EPK_SETUP.md</code> in the repository for the complete first-run setup guide.</p>
+    </section>
+  </main>
+</div>
+</body>
+</html>
