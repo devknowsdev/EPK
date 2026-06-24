@@ -1,14 +1,11 @@
-.route-tabs,
 .template-strip,
-.poster-template-grid,
-.media-preview-grid {
+.poster-template-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin: 10px 0 16px;
 }
 
-.route-tab,
 .template-chip {
   border: 1px solid var(--rule);
   background: rgba(255,255,255,0.025);
@@ -18,9 +15,7 @@
   padding: 9px 12px;
 }
 
-.route-tab:hover,
 .template-chip:hover,
-.route-tab.active,
 .template-chip.active {
   border-color: var(--accent);
   color: var(--accent-2);
@@ -86,12 +81,34 @@
   padding: 14px;
 }
 
-#poster-canvas {
+#epk-poster-canvas {
   width: 100%;
   max-width: 620px;
   display: block;
   margin: 0 auto;
   background: #1E1F1C;
+}
+
+.inline-media-preview,
+.inline-audio-preview {
+  margin: 12px 0;
+  border: 1px solid var(--rule);
+  background: rgba(255,255,255,0.018);
+}
+
+.inline-media-preview summary,
+.inline-audio-preview summary {
+  cursor: pointer;
+  color: var(--accent-2);
+  padding: 9px 11px;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inline-media-preview[open] summary,
+.inline-audio-preview[open] summary {
+  border-bottom: 1px solid var(--rule);
 }
 
 .media-preview-card {
@@ -100,6 +117,12 @@
   gap: 12px;
   align-items: start;
   width: min(520px, 100%);
+}
+
+.media-preview-card.compact {
+  width: 100%;
+  border: 0;
+  background: transparent;
 }
 
 .media-preview-thumb {
@@ -116,23 +139,15 @@
   object-fit: cover;
 }
 
-.audio-preview {
-  margin-top: 10px;
+.section-audio-tool {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
 }
 
+.section-audio-tool audio,
 .audio-preview audio {
   width: 100%;
-}
-
-.preview-focus-note {
-  margin: 0 0 8px;
-  color: var(--dim);
-  font-size: 0.86rem;
-}
-
-.sidebar-routes-block .help {
-  margin-top: 0;
-  margin-bottom: 10px;
 }
 
 .contact-preview-form {
