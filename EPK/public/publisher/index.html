@@ -22,22 +22,16 @@
       <strong>Security note:</strong> this is not a password gate. Protect <code>/publisher/*</code> with Cloudflare Access or equivalent before treating it as private.
     </div>
 
-    <div class="sidebar-block sidebar-routes-block">
-      <span class="sidebar-label">Public route tools</span>
-      <p class="help">Route tabs now live on the dashboard preview. These links remain as quick copy/open tools.</p>
-      <div id="mode-links" class="mode-links"></div>
-    </div>
-
     <nav class="nav" aria-label="Publisher sections">
       <button class="nav-item active" type="button" data-page="dashboard">Dashboard</button>
-      <button class="nav-item" type="button" data-page="profile">Profile</button>
+      <button class="nav-item" type="button" data-page="profile">Identity</button>
       <button class="nav-item" type="button" data-page="bio">Biography</button>
       <button class="nav-item" type="button" data-page="offerings">Offerings</button>
       <button class="nav-item" type="button" data-page="credits">Credits</button>
       <button class="nav-item" type="button" data-page="videos">Videos</button>
       <button class="nav-item" type="button" data-page="releases">Releases</button>
       <button class="nav-item" type="button" data-page="gallery">Gallery</button>
-      <button class="nav-item" type="button" data-page="modes">Audience pages</button>
+      <button class="nav-item" type="button" data-page="modes">Page builder</button>
       <button class="nav-item" type="button" data-page="brief">Promo brief</button>
       <button class="nav-item" type="button" data-page="json">JSON</button>
       <button class="nav-item" type="button" data-page="publish">Publish</button>
@@ -49,7 +43,7 @@
       <div>
         <p class="kicker">EPK Publisher</p>
         <h2 id="page-title">Dashboard</h2>
-        <p id="page-subtitle">Edit the EPK data, preview clean public pages, export JSON, or publish updates.</p>
+        <p id="page-subtitle">Edit content, preview audience pages, choose site templates, create posters, and publish updates.</p>
       </div>
       <div class="top-actions">
         <button class="btn btn-secondary" type="button" id="validate-top-btn">Validate</button>
@@ -66,7 +60,10 @@
       <div class="grid two">
         <section class="panel dashboard-preview-panel">
           <div class="panel-head">
-            <h3>Live preview</h3>
+            <div>
+              <h3>Audience preview</h3>
+              <p class="help">Use this selector to open each public route inside the preview. Page-specific controls live under Page builder.</p>
+            </div>
             <select id="preview-mode"></select>
           </div>
           <iframe id="preview-frame" title="Clean public EPK preview"></iframe>
@@ -74,7 +71,7 @@
 
         <section class="panel">
           <div class="panel-head">
-            <h3>Workflow</h3>
+            <h3>Drafts & data safety</h3>
           </div>
           <div class="action-list">
             <button class="btn btn-secondary" type="button" id="reload-live-btn">Reload live data</button>
@@ -82,7 +79,7 @@
             <button class="btn btn-secondary" type="button" id="restore-draft-btn">Restore browser draft</button>
             <button class="btn btn-danger" type="button" id="discard-draft-btn">Discard browser draft</button>
           </div>
-          <p class="help">Browser drafts stay on this device only. They are useful while working, but publishing still requires a GitHub token.</p>
+          <p class="help">This panel only manages local browser drafts and live data reloads. Publishing remains in the Publish tab.</p>
         </section>
       </div>
     </section>
@@ -132,7 +129,7 @@
 
     <section class="page" id="page-videos">
       <div class="panel-head standalone">
-        <div><h3>Videos</h3><p class="help">YouTube, Vimeo, and related media links.</p></div>
+        <div><h3>Videos</h3><p class="help">YouTube, Vimeo, and related media links. Each card can preview its linked media.</p></div>
         <button class="btn btn-primary" type="button" id="add-video-btn">Add video</button>
       </div>
       <div id="videos-list"></div>
@@ -140,7 +137,7 @@
 
     <section class="page" id="page-releases">
       <div class="panel-head standalone">
-        <div><h3>Releases</h3><p class="help">Spotify, SoundCloud, Bandcamp, and release links.</p></div>
+        <div><h3>Releases</h3><p class="help">Spotify, SoundCloud, Bandcamp, and release links. Each card can attach an optional local audio scrubber.</p></div>
         <button class="btn btn-primary" type="button" id="add-release-btn">Add release</button>
       </div>
       <div id="releases-list"></div>
@@ -148,7 +145,7 @@
 
     <section class="page" id="page-gallery">
       <div class="panel-head standalone">
-        <div><h3>Gallery</h3><p class="help">Images used by hero sections, gallery previews, and press views.</p></div>
+        <div><h3>Gallery</h3><p class="help">Images used by hero sections, gallery previews, page templates, and poster generation.</p></div>
         <button class="btn btn-primary" type="button" id="add-photo-btn">Add photo</button>
       </div>
       <div class="photo-grid" id="photo-grid"></div>
@@ -157,7 +154,7 @@
 
     <section class="page" id="page-modes">
       <div class="panel-head standalone">
-        <div><h3>Audience pages</h3><p class="help">Control which sections, videos, offerings, hero image, and gallery count each public route uses.</p></div>
+        <div><h3>Page builder</h3><p class="help">Each card is a public page. Set its route, hero image, site template, sections, tags, and gallery count here.</p></div>
       </div>
       <div id="modes-list"></div>
     </section>
