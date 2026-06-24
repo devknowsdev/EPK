@@ -70,11 +70,14 @@ There are two admin surfaces:
 
 - URL: `https://your-domain/publisher/`
 - Location: `public/publisher/`
-- Purpose: load `public/data/epk.json`, validate/export edits, and publish immutable snapshots to `/published/<id>/`
+- Purpose: edit the EPK data, preview clean public audience pages, generate promo briefs, validate/export JSON, publish live `EPK/public/data/epk.json`, and publish immutable snapshots to `/published/<id>/`
+- Includes controls for profile/contact/socials, short/acoustic/full bio, offerings, credits, videos, releases, gallery, and audience page recipes
+- Includes browser draft save/restore/discard and a local promo brief composer for copy/download handoff artifacts
 - Not linked from public EPK pages
 - Must be protected with Cloudflare Access or equivalent platform authentication before being treated as private
 - Does not implement frontend-only password protection
 - Does not send email, modify calendars, scan user folders, run media analysis, or call paid APIs
+- Does not save GitHub tokens; paste a token only for a publishing session
 
 **Local/admin UI:**
 
@@ -132,10 +135,10 @@ The current source of truth is still `public/data/epk.json`; the adapter just gi
 
 If we continue this integration, the next useful steps are:
 
-1. Add a dedicated music-career data block to `epk.json` for gigs, releases, and promo assets.
-2. Teach Spectra to read `window.EPKAdapter` before it falls back to DOM scraping.
-3. Add a small UI on the EPK side for quick promo-brief generation.
-4. Bring the gallery and admin pages onto the same bridge metadata pattern.
+1. Protect `/publisher/*` with Cloudflare Access before relying on hosted publisher privacy.
+2. Add a dedicated music-career data block to `epk.json` for gigs, releases, and promo assets.
+3. Teach Spectra to read `window.EPKAdapter` before it falls back to DOM scraping.
+4. Bring the gallery and admin pages onto the same bridge metadata pattern if full parity is needed.
 
 ## URL Reference
 
