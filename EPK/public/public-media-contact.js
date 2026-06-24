@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', waitForPublicEPK);
 function waitForPublicEPK() {
   publicEnhancementAttempts += 1;
   if (window.EPKAdapter && document.querySelector('[data-epk-section]')) {
+    applyPublicSiteTemplate();
     enhancePublicMedia();
     installContactModal();
     return;
@@ -13,6 +14,15 @@ function waitForPublicEPK() {
   if (publicEnhancementAttempts < PUBLIC_ENHANCEMENT_RETRIES) {
     window.setTimeout(waitForPublicEPK, 100);
   }
+}
+
+function applyPublicSiteTemplate() {
+  const data = safeData();
+  const modeKey = window.EPK_SITE?.mode || document.body.dataset.epkMode || 'default';
+  const modeTemplate = data?.modes?.[modeKey]?.siteTemplate;
+  const globalTemplate = data?.design?.siteTemplate;
+  const template = modeTemplate || globalTemplate || 'forest-editorial';
+  document.body.dataset.siteTemplate = template;
 }
 
 function enhancePublicMedia() {
