@@ -4,7 +4,7 @@
 
 - Added `window.EPKAdapter` to the public EPK page.
 - Added `window.EPK_SITE` and JSON-LD structured data for machine-readable inspection.
-- Added a utility header with mode chips, gallery/admin links, and `data-ai-surface="spectra"`.
+- Added a utility header with mode chips, a gallery link, and `data-ai-surface="spectra"`; admin tooling now lives outside the public deploy root.
 - Added bridge metadata to `public/index.html` so the page is easy to identify.
 - Documented the Spectra bridge in `README.md`.
 
@@ -26,4 +26,4 @@ Use the EPK page in this order:
 - Add a small promo brief composer in the admin flow.
 - Add a dedicated music-career object to `epk.json` for gigs, socials, and publication tasks.
 - Teach Spectra to prefer the adapter before DOM scraping.
-- Mirror the same bridge metadata in `gallery.html` and `admin.html` if we want full parity.
+- Mirror the same bridge metadata in `gallery.html` if we want full parity.

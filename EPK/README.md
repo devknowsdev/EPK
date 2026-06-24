@@ -2,7 +2,7 @@
 
 ## Ecosystem Role
 
-This repository is responsible for the public-facing EPK surface: the site, the admin editor, the published snapshots, and the structured press-kit payload in `public/data/epk.json`.
+This repository is responsible for the public-facing EPK surface: the site, local/admin editor tooling, the published snapshots, and the structured press-kit payload in `public/data/epk.json`.
 It is not responsible for the full music management layer or Prism Core orchestration.
 For ecosystem-wide architecture, see [prism-beam/docs/ECOSYSTEM_OVERVIEW.md](https://github.com/devknowsdev/prism-beam/blob/main/docs/ECOSYSTEM_OVERVIEW.md) and [prism-beam/docs/REPO_BOUNDARIES.md](https://github.com/devknowsdev/prism-beam/blob/main/docs/REPO_BOUNDARIES.md).
 
@@ -21,10 +21,8 @@ For ecosystem-wide architecture, see [prism-beam/docs/ECOSYSTEM_OVERVIEW.md](htt
 /public             ← Cloudflare serves everything from here
   index.html        ← Main EPK page
   gallery.html      ← Full gallery page
-  admin.html        ← Content editor
   _redirects        ← Cloudflare Pages route rewrites
   app.js
-  admin.js
   styles.css
   /data
     epk.json        ← All content lives here
@@ -33,6 +31,9 @@ For ecosystem-wide architecture, see [prism-beam/docs/ECOSYSTEM_OVERVIEW.md](htt
     Dave Session Violin.jpg
     Dave Cello.jpg
     Dave DUIF.jpg
+/admin              ← Local/admin tooling; do not deploy publicly
+  admin.html
+  admin.js
 ```
 
 ## Adding / Editing Photos
@@ -40,17 +41,39 @@ For ecosystem-wide architecture, see [prism-beam/docs/ECOSYSTEM_OVERVIEW.md](htt
 1. Drop image files into `/public/photos/`
 2. Reference them in `epk.json` as `"photos/your-file.jpg"`
 
+## Public Routes
+
+The public EPK exposes clean audience routes:
+
+| Audience | URL |
+|----------|-----|
+| General | `https://your-domain/` |
+| Venue / Booker | `https://your-domain/venue` |
+| Acoustic | `https://your-domain/acoustic` |
+| Press | `https://your-domain/press` |
+
+Legacy query-param mode URLs such as `/?for=press`, `/?for=acoustic`, and `/?for=booker` are still parsed for compatibility, but public navigation should use the clean routes above.
+
 ## Editing Content
 
-**Option A — Admin UI (recommended):**
-1. Open `https://your-domain/admin` or `https://your-domain/admin.html`
-2. Edit blocks visually
-3. Click **Export JSON**
-4. Replace `public/data/epk.json` in your repo with the downloaded file
-5. Push to GitHub → Cloudflare redeploys automatically
+**Option A — Local/admin UI:**
+1. From the repo root, run a local static server such as `python3 -m http.server 8000`
+2. Open `http://localhost:8000/EPK/admin/admin.html`
+3. Edit blocks visually
+4. Click **Export JSON**
+5. Replace `public/data/epk.json` in your repo with the downloaded file
+6. Push to GitHub → Cloudflare redeploys automatically
 
 **Option B — Edit JSON directly:**
 - Edit `public/data/epk.json` in your editor and push to GitHub
+
+## Admin Policy
+
+- Public deploy root remains `public`; files in this folder are served by Cloudflare Pages.
+- `admin/admin.html` and `admin/admin.js` are local/admin tooling, not public UX.
+- Do not copy, route, or deploy admin files publicly unless Cloudflare Access or equivalent hosting/platform authentication protects them.
+- Do not add frontend-only password gates; they do not secure static admin tooling.
+- The public site must not link to admin/editor controls.
 
 ## Published Versions
 
@@ -99,7 +122,8 @@ If we continue this integration, the next useful steps are:
 | Page    | URL                                 |
 |---------|-------------------------------------|
 | EPK     | `https://your-domain/`              |
+| Venue / Booker | `https://your-domain/venue` |
+| Acoustic | `https://your-domain/acoustic`     |
+| Press | `https://your-domain/press`          |
 | Gallery | `https://your-domain/gallery`       |
-| Admin   | `https://your-domain/admin`         |
-| Fallback | `https://your-domain/admin.html`    |
 | Published | `https://your-domain/published/<id>/` |

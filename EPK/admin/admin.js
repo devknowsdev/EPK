@@ -4,8 +4,21 @@ let history = [];
 let visualMode = true;
 let publishState = JSON.parse(localStorage.getItem('epk-publish-state') || 'null');
 
+const ADMIN_MODE_ROUTES = {
+ default: '/',
+ booker: '/venue',
+ acoustic: '/acoustic',
+ press: '/press',
+ film: '/film',
+ duif: '/duif'
+};
+
+function publicURLForMode(key){
+ return `${location.origin}${ADMIN_MODE_ROUTES[key]||'/'}`;
+}
+
 async function init(){
- const res=await fetch('data/epk.json');
+ const res=await fetch('../public/data/epk.json');
  db=await res.json();
  loadedDB=structuredClone(db);
  history=JSON.parse(localStorage.getItem('epk-history')||'[]');
@@ -16,9 +29,8 @@ async function init(){
 }
 
 function renderModeLinks(){
- const base=location.origin+location.pathname.replace('admin.html','index.html');
  document.getElementById('mode-links').innerHTML=Object.keys(db.modes||{}).map(k=>{
-  const url=k==='default'?base:`${base}?for=${k}`;
+  const url=publicURLForMode(k);
   return `<div class="mode-link-row"><span>${db.modes[k].label}</span><button onclick="copyLink(this,'${url}')">Copy</button></div>`;
  }).join('');
 }
@@ -54,8 +66,7 @@ function updatePreview(){
  const f=document.getElementById('preview-frame');
  if(!f)return;
  const m=document.getElementById('preview-mode')?.value||'default';
- const base=location.href.replace('admin.html','index.html').split('?')[0];
- f.src=m==='default'?base:`${base}?for=${m}`;
+ f.src=publicURLForMode(m);
 }
 
 function renderEditor(){

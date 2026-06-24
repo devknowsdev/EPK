@@ -4,6 +4,24 @@ let modeKey = 'default';
 let publishedId = '';
 let isPublished = false;
 
+const PUBLIC_ROUTE_TO_MODE = {
+    '/venue': 'booker',
+    '/booker': 'booker',
+    '/acoustic': 'acoustic',
+    '/press': 'press',
+    '/film': 'film',
+    '/duif': 'duif'
+};
+
+const MODE_TO_PUBLIC_ROUTE = {
+    default: '/',
+    booker: '/venue',
+    acoustic: '/acoustic',
+    press: '/press',
+    film: '/film',
+    duif: '/duif'
+};
+
 async function init() {
     const params = new URLSearchParams(window.location.search);
     publishedId = window.__EPK_PUBLISHED_ID__ || params.get('published') || '';
@@ -11,7 +29,7 @@ async function init() {
 
     epk = await loadEPKData();
 
-    const requested = params.get('for') || 'default';
+    const requested = resolveRequestedMode(params);
     modeKey = epk.modes?.[requested] ? requested : 'default';
     mode = getMode(modeKey);
 
@@ -47,6 +65,28 @@ async function loadEPKData() {
 
 function getMode(key) {
     return epk?.modes?.[key] || epk?.modes?.default || null;
+}
+
+function resolveRequestedMode(params) {
+    const legacyMode = params.get('for') || 'default';
+    if (isPublished) return legacyMode;
+
+    return modeFromPublicRoute(window.location.pathname) || legacyMode;
+}
+
+function modeFromPublicRoute(pathname) {
+    const path = normalizePublicPath(pathname);
+    return PUBLIC_ROUTE_TO_MODE[path] || '';
+}
+
+function normalizePublicPath(pathname) {
+    const path = pathname.replace(/\/index\.html$/, '/') || '/';
+    if (path === '/') return path;
+    return path.replace(/\/+$/, '');
+}
+
+function publicRouteForMode(key) {
+    return MODE_TO_PUBLIC_ROUTE[key] || '/';
 }
 
 function installAdapter() {
@@ -351,14 +391,13 @@ function renderTopBar() {
         </nav>
         <div class="site-bar__actions">
             <a class="site-bar__action" href="/gallery.html">Gallery</a>
-            <a class="site-bar__action" href="/admin">Admin</a>
         </div>
     </header>`;
 }
 
 function renderModeLinks() {
     return Object.entries(epk.modes || {}).map(([key, item]) => {
-        const href = key === 'default' ? '/' : `/?for=${key}`;
+        const href = publicRouteForMode(key);
         const active = key === modeKey ? ' is-active' : '';
         const current = key === modeKey ? ' aria-current="page"' : '';
         return `<a class="site-bar__chip${active}" href="${href}"${current}>${item.label}</a>`;
