@@ -1,5 +1,6 @@
 let currentData = null;
 let dirty = false;
+let draftSaveTimer = null;
 let lastPublishedURL = localStorage.getItem('epk-publisher-last-url') || '';
 let lastGeneratedBrief = null;
 
@@ -14,6 +15,34 @@ const MODE_ROUTES = {
 };
 const SECTION_OPTIONS = ['bio', 'offerings', 'credits', 'videos', 'releases', 'gallery', 'contact'];
 const BRIEF_OUTPUTS = ['poster copy', 'Instagram caption', 'story copy', 'Facebook event blurb', 'booking/venue blurb'];
+
+function bindBioDelegatedInputs() {
+  document.addEventListener('input', (event) => {
+    const target = event.target;
+    if (!target || !target.id) return;
+
+    if (target.id === 'bio-short') {
+      updateBioField('short', target.value);
+      return;
+    }
+
+    if (target.id === 'bio-acoustic') {
+      updateBioField('acoustic', target.value);
+      return;
+    }
+
+    if (target.id === 'bio-full') {
+      currentData.bio.full = target.value
+        .split('\n\n')
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean);
+      markDirty('Full bio updated');
+      renderJSON(false);
+    }
+  });
+}
+
+bindBioDelegatedInputs();
 
 document.addEventListener('DOMContentLoaded', initPublisher);
 
@@ -790,10 +819,15 @@ function restorePublishSettings() {
   });
 }
 
-function markDirty(message) {
+function markDirty(message = 'Unsaved changes') {
   dirty = true;
-  localStorage.setItem('epk-publisher-draft', JSON.stringify(currentData));
-  setStatus('warn', `${message}. Unsaved changes are held in this browser until you publish or download.`);
+  setStatus('warn', message || 'Unsaved changes');
+  if (draftSaveTimer) {
+    clearTimeout(draftSaveTimer);
+  }
+  draftSaveTimer = setTimeout(() => {
+    localStorage.setItem('epk-publisher-draft', JSON.stringify(currentData));
+  }, 500);
 }
 
 function setStatus(type, message) {
