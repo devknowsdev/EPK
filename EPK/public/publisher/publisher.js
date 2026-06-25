@@ -154,6 +154,11 @@ function renderAll() {
 function showPage(id) {
   document.querySelectorAll('.page').forEach(page => page.classList.toggle('active', page.id === `page-${id}`));
   document.querySelectorAll('.nav-item').forEach(btn => btn.classList.toggle('active', btn.dataset.page === id));
+  const activeNavItem = document.querySelector(`.nav-item[data-page="${id}"]`);
+  if (activeNavItem) {
+    const activeGroup = activeNavItem.closest('details.nav-group');
+    if (activeGroup) activeGroup.open = true;
+  }
   const titles = {
     dashboard: ['Dashboard', 'Edit the EPK data, preview clean public pages, export JSON, or publish updates.'],
     profile: ['Profile', 'Name, contact details, location, and social links.'],
@@ -163,8 +168,8 @@ function showPage(id) {
     videos: ['Videos', 'Media links tagged by audience.'],
     releases: ['Releases', 'Spotify, SoundCloud, Bandcamp, and release links.'],
     gallery: ['Gallery', 'Photo paths and captions used by public pages.'],
-    modes: ['Audience pages', 'Control the content recipe for each public route.'],
-    brief: ['Promo brief', 'Generate copy-ready handoff briefs for Spectra, Codex, or manual use.'],
+    modes: ['Audience Pages', 'Control the content recipe for each public route.'],
+    brief: ['Promo Kit', 'Generate copy-ready handoff briefs for Spectra, Codex, or manual use.'],
     json: ['Advanced JSON', 'Direct JSON editor for precise edits.'],
     publish: ['Publish', 'Commit live data or immutable snapshots to GitHub.']
   };
@@ -518,305 +523,24 @@ function applyJSON() {
 
 function validateData() {
   const issues = collectIssues(currentData);
-  setStatus(issues.length ? 'warn' : 'success', issues.length ? `Validation warnings:\n${issues.join('\n')}` : 'EPK data looks ready.');
-  return issues;
+  if (issues.length) {
+    setStatus('warn', `Validation found ${issues.length} issue(s):\n- ${issues.join('\n- ')}`);
+    return false;
+  }
+  setStatus('success', 'Validation passed. EPK data looks publish-ready.');
+  return true;
 }
 
 function collectIssues(data) {
   const issues = [];
-  if (!data.meta?.name) issues.push('Missing meta.name');
-  if (!data.meta?.email) issues.push('Missing meta.email');
-  if (!data.meta?.website) issues.push('Missing meta.website');
-  if (!data.bio?.short) issues.push('Missing bio.short');
-  if (!data.modes?.default) issues.push('Missing modes.default');
-  ['offerings', 'credits', 'videos', 'releases', 'gallery'].forEach(key => {
-    if (!Array.isArray(data[key])) issues.push(`${key} must be an array`);
-  });
-  (data.videos || []).forEach((video, index) => {
-    if (!video.title || !video.url) issues.push(`Video ${index + 1} needs title and URL`);
-  });
+  if (!data.meta?.name) issues.push('Missing artist name.');
+  if (!data.meta?.email) issues.push('Missing booking/contact email.');
+  if (!data.bio?.short) issues.push('Missing short bio.');
+  if (!Object.keys(data.modes || {}).length) issues.push('No audience modes configured.');
   (data.gallery || []).forEach((photo, index) => {
-    if (!photo.src) issues.push(`Gallery photo ${index + 1} needs src`);
+    if (!photo.src) issues.push(`Gallery image ${index + 1} is missing a src.`);
   });
   return issues;
-}
-
-function downloadJSON() {
-  downloadTextFile('epk.json', JSON.stringify(currentData, null, 2), 'application/json');
-  setStatus('success', 'Downloaded epk.json.');
-}
-
-function saveDraft() {
-  localStorage.setItem('epk-publisher-draft', JSON.stringify(currentData));
-  setStatus('success', 'Saved browser draft on this device.');
-}
-
-function restoreDraft() {
-  const raw = localStorage.getItem('epk-publisher-draft');
-  if (!raw) return setStatus('warn', 'No browser draft saved.');
-  try {
-    currentData = JSON.parse(raw);
-    ensureDataShape();
-    dirty = true;
-    renderAll();
-    setStatus('success', 'Restored browser draft.');
-  } catch (error) {
-    setStatus('error', `Could not restore draft: ${error.message}`);
-  }
-}
-
-function discardDraft() {
-  localStorage.removeItem('epk-publisher-draft');
-  setStatus('success', 'Discarded browser draft.');
-}
-
-function generateBrief() {
-  const modeKey = els['brief-mode'].value || 'default';
-  const mode = currentData.modes?.[modeKey] || currentData.modes?.default || {};
-  const outputs = [...document.querySelectorAll('#brief-output-options input:checked')].map(input => input.value);
-  const event = {
-    name: els['brief-event'].value.trim(),
-    date: els['brief-date'].value.trim(),
-    venue: els['brief-venue'].value.trim(),
-    city: els['brief-city'].value.trim(),
-    cta: els['brief-cta'].value.trim()
-  };
-  const selectedTags = unique([modeKey, ...(mode.videoTags || []), ...(mode.offeringTags || [])]);
-  const videos = (currentData.videos || []).filter(item => intersects(item.tags || [], selectedTags)).slice(0, 5);
-  const releases = (currentData.releases || []).filter(item => intersects(item.tags || [], selectedTags)).slice(0, 5);
-  const gallery = (currentData.gallery || []).slice(0, Math.max(Number(mode.galleryCount) || 4, 4));
-
-  lastGeneratedBrief = {
-    artist: currentData.meta?.name || 'Dave Knowles',
-    project: currentData.meta?.tagline || '',
-    mode: { key: modeKey, label: mode.label || modeKey },
-    event,
-    tone: els['brief-tone'].value.trim() || 'editorial and concise',
-    outputs,
-    assets: {
-      heroImage: mode.hero ? assetURL(mode.hero) : '',
-      heroCaption: mode.heroCaption || '',
-      gallery,
-      videos,
-      releases
-    },
-    contact: {
-      email: currentData.meta?.email || '',
-      phone: currentData.meta?.phone || '',
-      website: currentData.meta?.website || '',
-      social: currentData.meta?.social || {}
-    },
-    source: {
-      repo: 'devknowsdev/EPK',
-      data: 'EPK/public/data/epk.json',
-      route: publicURLForMode(modeKey)
-    },
-    notes: [
-      'Use public/data/epk.json as the source of truth.',
-      'Do not invent credits, dates, venues, media links, or claims.',
-      'Use the selected audience mode before falling back to general EPK copy.'
-    ]
-  };
-
-  els['brief-json'].value = JSON.stringify(lastGeneratedBrief, null, 2);
-  els['brief-text'].value = briefToMarkdown(lastGeneratedBrief);
-  setStatus('success', 'Generated promo brief.');
-}
-
-function briefToMarkdown(brief) {
-  const eventLines = Object.entries(brief.event).filter(([, value]) => value).map(([key, value]) => `- ${capitalize(key)}: ${value}`).join('\n') || '- Event details: TBD';
-  const outputLines = brief.outputs.map(output => `- ${output}`).join('\n');
-  const videoLines = brief.assets.videos.map(item => `- ${item.title}: ${item.url}`).join('\n') || '- No selected videos';
-  const releaseLines = brief.assets.releases.map(item => `- ${item.title}${item.alias ? ` (${item.alias})` : ''}: ${item.url}`).join('\n') || '- No selected releases';
-  const galleryLines = brief.assets.gallery.map(item => `- ${item.caption || item.src}: ${assetURL(item.src)}`).join('\n') || '- No selected photos';
-  return `# Promo brief — ${brief.artist}
-
-## Audience
-- Mode: ${brief.mode.label} (${brief.mode.key})
-- Route: ${brief.source.route}
-- Tone: ${brief.tone}
-
-## Event
-${eventLines}
-
-## Requested outputs
-${outputLines}
-
-## Core source
-- Artist: ${brief.artist}
-- Project: ${brief.project}
-- Hero image: ${brief.assets.heroImage}
-- Hero caption: ${brief.assets.heroCaption || 'None'}
-
-## Suggested videos
-${videoLines}
-
-## Suggested releases
-${releaseLines}
-
-## Suggested photos
-${galleryLines}
-
-## Contact
-- Email: ${brief.contact.email}
-- Phone: ${brief.contact.phone}
-- Website: ${brief.contact.website}
-
-## Guardrails
-${brief.notes.map(note => `- ${note}`).join('\n')}
-`;
-}
-
-async function copyBriefText() {
-  if (!els['brief-text'].value) generateBrief();
-  await copyText(els['brief-text'].value, 'Copied promo brief text.');
-}
-
-function downloadBriefJSON() {
-  if (!lastGeneratedBrief) generateBrief();
-  downloadTextFile('dave-knowles-promo-brief.json', JSON.stringify(lastGeneratedBrief, null, 2), 'application/json');
-  setStatus('success', 'Downloaded promo brief JSON.');
-}
-
-async function publishLiveData() {
-  const config = readPublishConfig();
-  if (!config) return;
-  const issues = collectIssues(currentData);
-  if (issues.length && !confirm(`Validation has warnings:\n${issues.join('\n')}\n\nPublish anyway?`)) return;
-
-  const token = els['gh-token'].value.trim();
-  const path = config.dataPath;
-  const apiURL = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${path}`;
-  const payload = JSON.stringify(currentData, null, 2);
-
-  setPublishButtons(false);
-  setStatus('', `Publishing live data to ${path}…`);
-  try {
-    const existing = await fetchGitHubContent(apiURL, token, config.branch);
-    const body = {
-      message: `EPK data update — ${new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })}`,
-      content: encodeBase64UTF8(payload),
-      branch: config.branch
-    };
-    if (existing?.sha) body.sha = existing.sha;
-    await putGitHubContent(apiURL, token, body);
-    dirty = false;
-    localStorage.removeItem('epk-publisher-draft');
-    setStatus('success', `Published live EPK data.\nCloudflare should redeploy shortly.`);
-  } catch (error) {
-    setStatus('error', `Live publish failed: ${error.message}`);
-  } finally {
-    setPublishButtons(true);
-  }
-}
-
-async function publishSnapshot() {
-  const config = readPublishConfig();
-  if (!config) return;
-  const publishId = makePublishId();
-  const basePath = normalizeFolder(config.snapshotPath);
-  const path = `${basePath}/${publishId}/epk.json`;
-  const apiURL = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${path}`;
-  const pageURL = `${location.origin}/published/${publishId}/`;
-
-  setPublishButtons(false);
-  setStatus('', `Publishing snapshot ${publishId}…`);
-  try {
-    const body = {
-      message: `EPK snapshot ${publishId}`,
-      content: encodeBase64UTF8(JSON.stringify(currentData, null, 2)),
-      branch: config.branch
-    };
-    await putGitHubContent(apiURL, config.token, body);
-    lastPublishedURL = pageURL;
-    localStorage.setItem('epk-publisher-last-url', pageURL);
-    localStorage.setItem('epk-publisher-gh-snapshot-path', basePath);
-    els['gh-snapshot-path'].value = basePath;
-    setStatus('success', `Published immutable snapshot.\n${pageURL}`);
-  } catch (error) {
-    setStatus('error', `Snapshot publish failed: ${error.message}`);
-  } finally {
-    setPublishButtons(true);
-  }
-}
-
-function readPublishConfig() {
-  const config = {
-    owner: els['gh-owner'].value.trim(),
-    repo: els['gh-repo'].value.trim(),
-    branch: els['gh-branch'].value.trim() || 'main',
-    dataPath: els['gh-data-path'].value.trim() || 'EPK/public/data/epk.json',
-    snapshotPath: els['gh-snapshot-path'].value.trim() || 'EPK/public/published',
-    token: els['gh-token'].value.trim()
-  };
-  if (!config.token) {
-    setStatus('error', 'Paste a GitHub token for this publishing session. It is not saved.');
-    return null;
-  }
-  if (!config.owner || !config.repo) {
-    setStatus('error', 'Fill in GitHub owner and repository.');
-    return null;
-  }
-  savePublishSettings();
-  return config;
-}
-
-async function fetchGitHubContent(apiURL, token, branch) {
-  const res = await fetch(`${apiURL}?ref=${encodeURIComponent(branch)}`, {
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: 'application/vnd.github+json'
-    }
-  });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(await githubError(res));
-  return await res.json();
-}
-
-async function putGitHubContent(apiURL, token, body) {
-  const res = await fetch(apiURL, {
-    method: 'PUT',
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) throw new Error(await githubError(res));
-  return await res.json();
-}
-
-async function githubError(res) {
-  try {
-    const err = await res.json();
-    return err?.message || `GitHub error ${res.status}`;
-  } catch (_) {
-    return `GitHub error ${res.status}`;
-  }
-}
-
-function setPublishButtons(enabled) {
-  els['publish-live-btn'].disabled = !enabled;
-  els['publish-snapshot-btn'].disabled = !enabled;
-}
-
-async function copyLastURL() {
-  if (!lastPublishedURL) return setStatus('warn', 'No snapshot URL has been published from this browser yet.');
-  await copyText(lastPublishedURL, `Copied ${lastPublishedURL}`);
-}
-
-function savePublishSettings() {
-  ['gh-owner', 'gh-repo', 'gh-branch', 'gh-data-path', 'gh-snapshot-path'].forEach(id => {
-    localStorage.setItem(`epk-publisher-${id}`, els[id].value.trim());
-  });
-}
-
-function restorePublishSettings() {
-  ['gh-owner', 'gh-repo', 'gh-branch', 'gh-data-path', 'gh-snapshot-path'].forEach(id => {
-    const saved = localStorage.getItem(`epk-publisher-${id}`);
-    if (saved) els[id].value = saved;
-  });
 }
 
 function markDirty(message = 'Unsaved changes') {
@@ -831,120 +555,247 @@ function markDirty(message = 'Unsaved changes') {
 }
 
 function setStatus(type, message) {
-  els.status.className = `status ${type || ''}`.trim();
-  els.status.textContent = message;
+  const status = els.status;
+  status.className = `status ${type || ''}`.trim();
+  status.textContent = message;
+}
+
+function saveDraft() {
+  localStorage.setItem('epk-publisher-draft', JSON.stringify(currentData));
+  dirty = false;
+  setStatus('success', 'Browser draft saved.');
+}
+
+function restoreDraft() {
+  const draft = localStorage.getItem('epk-publisher-draft');
+  if (!draft) return setStatus('warn', 'No browser draft found.');
+  try {
+    currentData = JSON.parse(draft);
+    ensureDataShape();
+    renderAll();
+    dirty = true;
+    setStatus('success', 'Browser draft restored. Review, validate, then publish if desired.');
+  } catch (error) {
+    setStatus('error', `Could not restore draft: ${error.message}`);
+  }
+}
+
+function discardDraft() {
+  if (!confirm('Discard the saved browser draft?')) return;
+  localStorage.removeItem('epk-publisher-draft');
+  setStatus('success', 'Browser draft discarded.');
+}
+
+function downloadJSON() {
+  const blob = new Blob([JSON.stringify(currentData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `epk-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function generateBrief() {
+  const mode = els['brief-mode'].value;
+  const outputs = [...els['brief-output-options'].querySelectorAll('input:checked')].map(input => input.value);
+  const payload = {
+    event: {
+      name: els['brief-event'].value.trim(),
+      date: els['brief-date'].value.trim(),
+      venue: els['brief-venue'].value.trim(),
+      city: els['brief-city'].value.trim(),
+      cta: els['brief-cta'].value.trim()
+    },
+    tone: els['brief-tone'].value.trim(),
+    audienceMode: mode,
+    outputs,
+    source: buildModeBriefSource(mode)
+  };
+  lastGeneratedBrief = payload;
+  els['brief-json'].value = JSON.stringify(payload, null, 2);
+  els['brief-text'].value = renderBriefMarkdown(payload);
+  setStatus('success', 'Promo brief generated.');
+}
+
+function buildModeBriefSource(modeKey) {
+  const mode = currentData.modes?.[modeKey] || {};
+  return {
+    artist: currentData.meta,
+    mode,
+    bio: pickBio(mode.bioStyle),
+    offerings: (currentData.offerings || []).filter(item => hasAnyTag(item, mode.offeringTags || [modeKey])),
+    videos: (currentData.videos || []).filter(item => hasAnyTag(item, mode.videoTags || [modeKey])),
+    releases: currentData.releases || [],
+    gallery: (currentData.gallery || []).slice(0, mode.galleryCount || 4),
+    publicURL: publicURLForMode(modeKey)
+  };
+}
+
+function renderBriefMarkdown(payload) {
+  const event = payload.event;
+  const source = payload.source;
+  return `# Promo brief: ${event.name || 'Untitled event'}\n\n` +
+    `## Event\n- Date: ${event.date || 'TBC'}\n- Venue: ${event.venue || 'TBC'}\n- City: ${event.city || 'TBC'}\n- CTA: ${event.cta || 'TBC'}\n\n` +
+    `## Tone\n${payload.tone}\n\n` +
+    `## Required outputs\n${payload.outputs.map(item => `- ${item}`).join('\n')}\n\n` +
+    `## Artist summary\n${source.bio || ''}\n\n` +
+    `## Suggested offering angles\n${source.offerings.map(item => `- ${item.title}: ${item.description || ''}`).join('\n') || '- None tagged'}\n\n` +
+    `## Public EPK route\n${source.publicURL}\n`;
+}
+
+function copyBriefText() {
+  copyText(els['brief-text'].value, 'Brief text copied.');
+}
+
+function downloadBriefJSON() {
+  if (!lastGeneratedBrief) generateBrief();
+  const blob = new Blob([JSON.stringify(lastGeneratedBrief, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `promo-brief-${Date.now()}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function readPublishConfig() {
+  return {
+    owner: els['gh-owner'].value.trim(),
+    repo: els['gh-repo'].value.trim(),
+    branch: els['gh-branch'].value.trim() || 'main',
+    dataPath: els['gh-data-path'].value.trim(),
+    snapshotPath: els['gh-snapshot-path'].value.trim(),
+    token: els['gh-token'].value.trim()
+  };
+}
+
+function restorePublishSettings() {
+  ['gh-owner', 'gh-repo', 'gh-branch', 'gh-data-path', 'gh-snapshot-path'].forEach(id => {
+    const stored = localStorage.getItem(`epk-publisher-${id}`);
+    if (stored) els[id].value = stored;
+  });
+}
+
+async function publishLiveData() {
+  if (!validateData()) return;
+  const config = readPublishConfig();
+  if (!config.token) return setStatus('error', 'Paste a GitHub token before publishing.');
+  await commitFile(config, config.dataPath, JSON.stringify(currentData, null, 2) + '\n', `Update EPK data ${new Date().toISOString()}`);
+  dirty = false;
+  localStorage.removeItem('epk-publisher-draft');
+  setStatus('success', `Published live data to ${config.dataPath}.`);
+}
+
+async function publishSnapshot() {
+  if (!validateData()) return;
+  const config = readPublishConfig();
+  if (!config.token) return setStatus('error', 'Paste a GitHub token before publishing.');
+  const id = new Date().toISOString().replace(/[:.]/g, '-');
+  const folder = `${config.snapshotPath.replace(/\/$/, '')}/${id}`;
+  const data = JSON.stringify(currentData, null, 2) + '\n';
+  const html = `<!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=../../index.html"><title>EPK snapshot ${id}</title>`;
+  await commitFile(config, `${folder}/epk.json`, data, `Add EPK snapshot ${id}`);
+  await commitFile(config, `${folder}/index.html`, html, `Add EPK snapshot index ${id}`);
+  lastPublishedURL = `/published/${id}/`;
+  localStorage.setItem('epk-publisher-last-url', lastPublishedURL);
+  setStatus('success', `Snapshot published: ${lastPublishedURL}`);
+}
+
+async function commitFile(config, path, content, message) {
+  const apiBase = `https://api.github.com/repos/${encodeURIComponent(config.owner)}/${encodeURIComponent(config.repo)}/contents/${path.split('/').map(encodeURIComponent).join('/')}`;
+  let sha = null;
+  const getRes = await fetch(`${apiBase}?ref=${encodeURIComponent(config.branch)}`, {
+    headers: { Authorization: `Bearer ${config.token}`, Accept: 'application/vnd.github+json' }
+  });
+  if (getRes.ok) {
+    const existing = await getRes.json();
+    sha = existing.sha;
+  } else if (getRes.status !== 404) {
+    throw new Error(`GitHub lookup failed for ${path}: ${getRes.status}`);
+  }
+
+  const putRes = await fetch(apiBase, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message,
+      branch: config.branch,
+      content: btoa(unescape(encodeURIComponent(content))),
+      ...(sha ? { sha } : {})
+    })
+  });
+
+  if (!putRes.ok) {
+    const error = await putRes.json().catch(() => ({}));
+    throw new Error(error.message || `GitHub publish failed (${putRes.status})`);
+  }
+}
+
+function copyLastURL() {
+  if (!lastPublishedURL) return setStatus('warn', 'No snapshot URL copied yet.');
+  copyText(lastPublishedURL, 'Snapshot URL copied.');
+}
+
+function pickBio(style) {
+  if (style === 'full') return Array.isArray(currentData.bio?.full) ? currentData.bio.full.join('\n\n') : currentData.bio?.full;
+  if (style === 'acoustic') return currentData.bio?.acoustic || currentData.bio?.short || '';
+  return currentData.bio?.short || '';
+}
+
+function hasAnyTag(item, tags) {
+  if (!tags?.length) return true;
+  return (item.tags || []).some(tag => tags.includes(tag));
+}
+
+function publicURLForMode(key) {
+  return MODE_ROUTES[key] || `/${key}`;
+}
+
+function assetURL(src) {
+  if (!src) return '';
+  if (/^https?:\/\//.test(src)) return src;
+  return src.startsWith('/') ? src : `/${src.replace(/^\.\//, '')}`;
+}
+
+function getModeKeys() {
+  return Object.keys(currentData.modes || {});
 }
 
 function bindValue(id, value) {
   els[id].value = value || '';
 }
 
-function val(id) {
-  return els[id]?.value || '';
-}
-
-function getPath(obj, path) {
-  return path.split('.').reduce((acc, key) => acc?.[key], obj);
-}
-
 function setPath(obj, path, value) {
-  const parts = path.split('.');
-  const last = parts.pop();
+  const keys = path.split('.');
   let cursor = obj;
-  parts.forEach(part => {
-    cursor[part] ||= {};
-    cursor = cursor[part];
+  keys.slice(0, -1).forEach(key => {
+    cursor[key] ||= {};
+    cursor = cursor[key];
   });
-  cursor[last] = value;
-}
-
-function getModeKeys() {
-  return Object.keys(currentData.modes || { default: true, booker: true, press: true, film: true, acoustic: true, duif: true });
-}
-
-function publicURLForMode(key) {
-  return `${location.origin}${MODE_ROUTES[key] || `/${key}`}`;
-}
-
-function assetURL(path) {
-  if (!path) return '';
-  if (/^https?:\/\//.test(path)) return path;
-  return `/${String(path).replace(/^\/+/, '')}`;
-}
-
-function normalizeFolder(path) {
-  const trimmed = (path || '').trim().replace(/\/+$/, '');
-  return trimmed || 'EPK/public/published';
-}
-
-function makePublishId() {
-  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, '').replace('T', '-');
-  const rand = Math.random().toString(36).slice(2, 6);
-  return `${stamp}-${rand}`;
-}
-
-function downloadTextFile(filename, content, type) {
-  const blob = new Blob([content], { type });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-async function copyText(text, successMessage) {
-  try {
-    await navigator.clipboard.writeText(text);
-    setStatus('success', successMessage);
-  } catch (error) {
-    setStatus('warn', `Copy failed. Select and copy manually.\n${text}`);
-  }
-}
-
-function encodeBase64UTF8(value) {
-  return btoa(unescape(encodeURIComponent(value)));
+  cursor[keys.at(-1)] = value;
 }
 
 function unique(values) {
   return [...new Set(values.filter(Boolean))];
 }
 
-function intersects(a, b) {
-  return a.some(item => b.includes(item));
-}
-
 function singular(kind) {
-  return {
-    offerings: 'offering',
-    credits: 'credit',
-    videos: 'video',
-    releases: 'release',
-    gallery: 'photo'
-  }[kind] || 'item';
+  return ({ offerings: 'offering', credits: 'credit', videos: 'video', releases: 'release', gallery: 'photo' })[kind] || kind;
 }
 
-function capitalize(value) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function copyText(text, message) {
+  navigator.clipboard.writeText(text).then(() => setStatus('success', message)).catch(error => setStatus('error', error.message));
 }
 
 function escapeHTML(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  return String(value ?? '').replace(/[&<>"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char]));
 }
 
 function escapeAttr(value) {
-  return escapeHTML(value)
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+  return escapeHTML(value).replace(/'/g, '&#39;');
 }
-
-window.updateItemField = updateItemField;
-window.toggleItemTag = toggleItemTag;
-window.updateModeField = updateModeField;
-window.toggleModeArrayValue = toggleModeArrayValue;
-window.moveItem = moveItem;
-window.duplicateItem = duplicateItem;
-window.removeItem = removeItem;
-window.copyText = copyText;
