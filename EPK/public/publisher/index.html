@@ -18,23 +18,32 @@
       <p>EPK control centre</p>
     </div>
 
-    <div class="security-note">
-      <strong>Security note:</strong> this is not a password gate. Protect <code>/publisher/*</code> with Cloudflare Access or equivalent before treating it as private.
-    </div>
-
     <nav class="nav" aria-label="Publisher sections">
       <button class="nav-item active" type="button" data-page="dashboard">Dashboard</button>
-      <button class="nav-item" type="button" data-page="profile">Identity</button>
-      <button class="nav-item" type="button" data-page="bio">Biography</button>
-      <button class="nav-item" type="button" data-page="offerings">Offerings</button>
-      <button class="nav-item" type="button" data-page="credits">Credits</button>
-      <button class="nav-item" type="button" data-page="videos">Videos</button>
-      <button class="nav-item" type="button" data-page="releases">Releases</button>
-      <button class="nav-item" type="button" data-page="gallery">Gallery</button>
-      <button class="nav-item" type="button" data-page="modes">Page builder</button>
-      <button class="nav-item" type="button" data-page="brief">Promo brief</button>
-      <button class="nav-item" type="button" data-page="json">JSON</button>
-      <button class="nav-item" type="button" data-page="publish">Publish</button>
+
+      <details class="nav-group" open>
+        <summary>Content</summary>
+        <button class="nav-item" type="button" data-page="profile">Identity</button>
+        <button class="nav-item" type="button" data-page="bio">Biography</button>
+        <button class="nav-item" type="button" data-page="offerings">Offerings</button>
+        <button class="nav-item" type="button" data-page="credits">Credits</button>
+      </details>
+
+      <details class="nav-group">
+        <summary>Media</summary>
+        <button class="nav-item" type="button" data-page="videos">Videos</button>
+        <button class="nav-item" type="button" data-page="releases">Releases</button>
+        <button class="nav-item" type="button" data-page="gallery">Gallery</button>
+      </details>
+
+      <button class="nav-item" type="button" data-page="modes">Audience Pages</button>
+      <button class="nav-item" type="button" data-page="brief">Promo Kit</button>
+
+      <details class="nav-group nav-group-danger">
+        <summary>Publish &amp; Advanced</summary>
+        <button class="nav-item" type="button" data-page="publish">Publish</button>
+        <button class="nav-item" type="button" data-page="json">Advanced JSON</button>
+      </details>
     </nav>
   </aside>
 
@@ -46,8 +55,8 @@
         <p id="page-subtitle">Edit content, preview audience pages, choose site templates, create posters, and publish updates.</p>
       </div>
       <div class="top-actions">
-        <button class="btn btn-secondary" type="button" id="validate-top-btn">Validate</button>
-        <button class="btn btn-secondary" type="button" id="download-top-btn">Download JSON</button>
+        <button class="btn btn-secondary" type="button" id="validate-top-btn">Check data</button>
+        <button class="btn btn-secondary" type="button" id="download-top-btn">Backup JSON</button>
         <button class="btn btn-primary" type="button" data-page-jump="publish">Publish</button>
       </div>
     </header>
@@ -55,6 +64,17 @@
     <div id="status" class="status">Loading public/data/epk.json…</div>
 
     <section class="page active" id="page-dashboard">
+      <section class="panel page-intro">
+        <p class="kicker">Recommended workflow</p>
+        <h3>Start with content, check the public pages, then publish.</h3>
+        <ol class="workflow-list">
+          <li>Edit identity, biography, offerings, and credits under <strong>Content</strong>.</li>
+          <li>Add or tidy videos, releases, and photos under <strong>Media</strong>.</li>
+          <li>Use <strong>Audience Pages</strong> to decide what each public route should show.</li>
+          <li>Run <strong>Check data</strong>, make a JSON backup, then publish only when ready.</li>
+        </ol>
+      </section>
+
       <div class="metric-grid" id="metrics"></div>
 
       <div class="grid two">
@@ -62,7 +82,7 @@
           <div class="panel-head">
             <div>
               <h3>Audience preview</h3>
-              <p class="help">Use this selector to open each public route inside the preview. Page-specific controls live under Page builder.</p>
+              <p class="help">Use this selector to open each public route inside the preview. Page-specific controls live under Audience Pages.</p>
             </div>
             <select id="preview-mode"></select>
           </div>
@@ -72,7 +92,7 @@
 
         <section class="panel">
           <div class="panel-head">
-            <h3>Drafts & data safety</h3>
+            <h3>Drafts &amp; data safety</h3>
           </div>
           <div class="action-list">
             <button class="btn btn-secondary" type="button" id="reload-live-btn">Reload live data</button>
@@ -86,6 +106,11 @@
     </section>
 
     <section class="page" id="page-profile">
+      <section class="panel page-intro">
+        <p class="kicker">Content</p>
+        <h3>Identity and contact details</h3>
+        <p class="help">These details appear across public pages, contact areas, booking contexts, and metadata. Keep this section factual and stable.</p>
+      </section>
       <section class="panel">
         <h3>Identity</h3>
         <div class="form-grid">
@@ -104,6 +129,15 @@
     </section>
 
     <section class="page" id="page-bio">
+      <section class="panel page-intro">
+        <p class="kicker">Content</p>
+        <h3>Biography by audience context</h3>
+        <div class="guidance-grid">
+          <p><strong>Short bio</strong><span>Homepage, quick introductions, lightweight previews.</span></p>
+          <p><strong>Acoustic bio</strong><span>Acoustic route, venues, intimate show contexts.</span></p>
+          <p><strong>Full press bio</strong><span>Press route, long-form media, formal EPK use.</span></p>
+        </div>
+      </section>
       <section class="panel">
         <h3>Biography</h3>
         <label>Short bio<textarea id="bio-short" rows="5"></textarea></label>
@@ -113,6 +147,11 @@
     </section>
 
     <section class="page" id="page-offerings">
+      <section class="panel page-intro">
+        <p class="kicker">Content</p>
+        <h3>Performance and service cards</h3>
+        <p class="help">Offerings are tagged by audience, then pulled into the relevant public pages. Add only clear bookable or promotable offerings here.</p>
+      </section>
       <div class="panel-head standalone">
         <div><h3>Offerings</h3><p class="help">Tag each offering so it appears in the right audience page.</p></div>
         <button class="btn btn-primary" type="button" id="add-offering-btn">Add offering</button>
@@ -121,6 +160,11 @@
     </section>
 
     <section class="page" id="page-credits">
+      <section class="panel page-intro">
+        <p class="kicker">Content</p>
+        <h3>Career proof and credibility</h3>
+        <p class="help">Credits support press, booking, film, theatre, television, and festival contexts. Keep titles clear and descriptions concise.</p>
+      </section>
       <div class="panel-head standalone">
         <div><h3>Credits</h3><p class="help">Film, theatre, TV, festival, and score credits.</p></div>
         <button class="btn btn-primary" type="button" id="add-credit-btn">Add credit</button>
@@ -129,6 +173,11 @@
     </section>
 
     <section class="page" id="page-videos">
+      <section class="panel page-intro">
+        <p class="kicker">Media</p>
+        <h3>Video evidence and public embeds</h3>
+        <p class="help">Use this for YouTube, Vimeo, live performance, interview, and showreel links. Tags decide which audience pages include each video.</p>
+      </section>
       <div class="panel-head standalone">
         <div><h3>Videos</h3><p class="help">YouTube, Vimeo, and related media links. Each card can preview its linked media.</p></div>
         <button class="btn btn-primary" type="button" id="add-video-btn">Add video</button>
@@ -137,6 +186,11 @@
     </section>
 
     <section class="page" id="page-releases">
+      <section class="panel page-intro">
+        <p class="kicker">Media</p>
+        <h3>Music releases and listening links</h3>
+        <p class="help">Use this for Spotify, SoundCloud, Bandcamp, and other release destinations. Keep titles recognizable and URLs current.</p>
+      </section>
       <div class="panel-head standalone">
         <div><h3>Releases</h3><p class="help">Spotify, SoundCloud, Bandcamp, and release links. Each card can attach an optional local audio scrubber.</p></div>
         <button class="btn btn-primary" type="button" id="add-release-btn">Add release</button>
@@ -145,6 +199,11 @@
     </section>
 
     <section class="page" id="page-gallery">
+      <section class="panel page-intro">
+        <p class="kicker">Media</p>
+        <h3>Photos used across the site</h3>
+        <p class="help">Images feed hero sections, galleries, page templates, and poster generation. Captions should help you identify where each image fits.</p>
+      </section>
       <div class="panel-head standalone">
         <div><h3>Gallery</h3><p class="help">Images used by hero sections, gallery previews, page templates, and poster generation.</p></div>
         <button class="btn btn-primary" type="button" id="add-photo-btn">Add photo</button>
@@ -154,13 +213,23 @@
     </section>
 
     <section class="page" id="page-modes">
+      <section class="panel page-intro">
+        <p class="kicker">Audience Pages</p>
+        <h3>Decide what each public route should show</h3>
+        <p class="help">Each card represents a public page. Start with the audience purpose, then choose hero image, bio style, visible sections, and tags.</p>
+      </section>
       <div class="panel-head standalone">
-        <div><h3>Page builder</h3><p class="help">Each card is a public page. Set its route, hero image, site template, sections, tags, and gallery count here.</p></div>
+        <div><h3>Audience Pages</h3><p class="help">Each card is a public page. Set its route, hero image, site template, sections, tags, and gallery count here.</p></div>
       </div>
       <div id="modes-list"></div>
     </section>
 
     <section class="page" id="page-brief">
+      <section class="panel page-intro">
+        <p class="kicker">Promo Kit</p>
+        <h3>Generate copy-ready campaign material</h3>
+        <p class="help">Use this after the EPK content is reasonably current. It creates reusable copy for posters, captions, event pages, and booking blurbs.</p>
+      </section>
       <section class="panel">
         <div class="panel-head">
           <h3>Promo brief composer</h3>
@@ -188,6 +257,11 @@
     </section>
 
     <section class="page" id="page-json">
+      <section class="panel page-intro warning-intro">
+        <p class="kicker">Advanced</p>
+        <h3>Use JSON only for recovery or precise bulk edits</h3>
+        <p class="help">This bypasses the guided editor. Make a backup before applying JSON and validate immediately afterward.</p>
+      </section>
       <section class="panel">
         <div class="panel-head">
           <h3>Advanced JSON</h3>
@@ -201,6 +275,26 @@
     </section>
 
     <section class="page" id="page-publish">
+      <section class="panel page-intro warning-intro">
+        <p class="kicker">Publish safety</p>
+        <h3>Validate, back up, then publish.</h3>
+        <ol class="workflow-list">
+          <li>Run <strong>Check data</strong> from the top bar.</li>
+          <li>Use <strong>Backup JSON</strong> before live publishing.</li>
+          <li>Paste a GitHub token only for this session.</li>
+          <li>Publish live data or create an immutable snapshot.</li>
+        </ol>
+        <p class="help"><strong>Security note:</strong> this is not a password gate. Protect <code>/publisher/*</code> with Cloudflare Access or equivalent before treating it as private.</p>
+      </section>
+      <section class="panel publish-checklist">
+        <p class="kicker">Preflight</p>
+        <h3>Before pressing publish</h3>
+        <div class="guidance-grid">
+          <p><strong>1. Check data</strong><span>Use the top-bar check and resolve any missing required fields.</span></p>
+          <p><strong>2. Backup JSON</strong><span>Download a copy before changing the live data file.</span></p>
+          <p><strong>3. Preview routes</strong><span>Open the main audience pages and confirm the right content appears.</span></p>
+        </div>
+      </section>
       <div class="grid two">
         <section class="panel">
           <h3>Publish live EPK data</h3>
