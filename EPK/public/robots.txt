@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /publisher/
+Disallow: /prism.html
+Disallow: /prism-links.json
