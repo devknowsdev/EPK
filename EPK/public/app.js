@@ -361,12 +361,15 @@ function renderPage() {
             case 'releases':
                 if (epk.releases.length) parts.push(wrapOpen + renderReleases() + wrapClose);
                 break;
-            case 'gallery':
-                if (mode.galleryCount > 0) {
-                    const photos = epk.gallery.slice(0, mode.galleryCount);
+            case 'gallery': {
+                const srcs = mode.galleryPhotos || [];
+                if (srcs.length > 0) {
+                    const lookup = Object.fromEntries((epk.gallery || []).map(g => [g.src, g]));
+                    const photos = srcs.map(s => lookup[s] || { src: s, caption: '' });
                     parts.push(wrapOpen + renderGallery(photos) + wrapClose);
                 }
                 break;
+            }
             case 'contact':
                 parts.push(wrapOpen + renderContact() + wrapClose);
                 break;
