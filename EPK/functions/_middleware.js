@@ -42,13 +42,17 @@ function extensionOf(pathname) {
 function isPublicShellRequest(url) {
   if (PUBLIC_SHELL_PATHS.has(url.pathname)) return true;
   return PUBLIC_ASSET_EXTENSIONS.has(extensionOf(url.pathname)) &&
+    !url.pathname.startsWith('/admin/') &&
     !url.pathname.startsWith('/data/') &&
     !url.pathname.startsWith('/published/') &&
     !url.pathname.startsWith('/publisher/');
 }
 
 function isProtectedPath(pathname) {
-  return pathname.startsWith('/publisher/') ||
+  return pathname === '/admin' ||
+    pathname.startsWith('/admin/') ||
+    pathname === '/publisher' ||
+    pathname.startsWith('/publisher/') ||
     pathname.startsWith('/data/') ||
     pathname.startsWith('/published/') ||
     pathname.startsWith('/downloads/') ||
@@ -152,6 +156,11 @@ function redactedJsonResponse() {
 function protectedResponse(request) {
   const url = new URL(request.url);
   if (url.pathname === '/data/epk.json') return redactedJsonResponse();
+  if (url.pathname === '/admin' || url.pathname.startsWith('/admin/') || url.pathname === '/publisher' || url.pathname.startsWith('/publisher/') || extensionOf(url.pathname) === '.html') {
+    const loginUrl = new URL('/', request.url);
+    loginUrl.searchParams.set('next', url.pathname + url.search);
+    return loginPage(new Request(loginUrl, request));
+  }
   return new Response('This EPK content is password protected.', {
     status: 401,
     headers: {
