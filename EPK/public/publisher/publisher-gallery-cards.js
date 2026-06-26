@@ -94,3 +94,11 @@ function gallerySafeAttr(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+(function loadPublisherPrismTools() {
+  if (document.querySelector('script[data-publisher-prism-tools]')) return;
+  const script = document.createElement('script');
+  script.src = 'publisher-prism-tools.js';
+  script.dataset.publisherPrismTools = 'true';
+  document.head.appendChild(script);
+})();
