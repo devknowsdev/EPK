@@ -1,13 +1,166 @@
 /*
 MODULE: EPK/functions/_middleware.js
-PURPOSE: Cloudflare Pages password gate for the EPK site.
+PURPOSE: Cloudflare Pages access gate for EPK data, publisher, and downloadable/private surfaces while allowing a redacted public shell.
 SECURITY: Does not hard-code passwords. Set EPK_ACCESS_PASSWORD as a Cloudflare Pages environment variable.
-INVARIANTS: Fail closed when the password env var is missing; protect public pages, publisher pages, data, and assets.
+INVARIANTS: Anonymous users can open the site shell only; content/social/file/data links remain protected or redacted.
 LAST_STABILIZED: 2026-06-26
 */
 
 const COOKIE_NAME = 'epk_access';
 const MAX_AGE_SECONDS = 60 * 60 * 12;
+
+const PUBLIC_SHELL_PATHS = new Set([
+  '/',
+  '/index.html',
+  '/venue',
+  '/booker',
+  '/acoustic',
+  '/press',
+  '/film',
+  '/duif'
+]);
+
+const PUBLIC_ASSET_EXTENSIONS = new Set([
+  '.css',
+  '.js',
+  '.ico',
+  '.svg',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.webp',
+  '.woff',
+  '.woff2'
+]);
+
+function extensionOf(pathname) {
+  const last = pathname.split('/').pop() || '';
+  const dot = last.lastIndexOf('.');
+  return dot === -1 ? '' : last.slice(dot).toLowerCase();
+}
+
+function isPublicShellRequest(url) {
+  if (PUBLIC_SHELL_PATHS.has(url.pathname)) return true;
+  return PUBLIC_ASSET_EXTENSIONS.has(extensionOf(url.pathname)) &&
+    !url.pathname.startsWith('/data/') &&
+    !url.pathname.startsWith('/published/') &&
+    !url.pathname.startsWith('/publisher/');
+}
+
+function isProtectedPath(pathname) {
+  return pathname.startsWith('/publisher/') ||
+    pathname.startsWith('/data/') ||
+    pathname.startsWith('/published/') ||
+    pathname.startsWith('/downloads/') ||
+    pathname.startsWith('/files/') ||
+    pathname.endsWith('.json');
+}
+
+function redactedEpkData() {
+  return {
+    meta: {
+      name: 'Dave Knowles',
+      tagline: 'Electronic Press Kit',
+      location: '',
+      email: '',
+      phone: '',
+      website: '',
+      social: {}
+    },
+    bio: {
+      short: '',
+      acoustic: '',
+      full: []
+    },
+    modes: {
+      default: {
+        label: 'Public',
+        hero: '',
+        heroCaption: '',
+        sections: [],
+        offeringTags: [],
+        videoTags: [],
+        galleryPhotos: []
+      },
+      booker: {
+        label: 'Venue',
+        hero: '',
+        heroCaption: '',
+        sections: [],
+        offeringTags: [],
+        videoTags: [],
+        galleryPhotos: []
+      },
+      acoustic: {
+        label: 'Acoustic',
+        hero: '',
+        heroCaption: '',
+        sections: [],
+        offeringTags: [],
+        videoTags: [],
+        galleryPhotos: []
+      },
+      press: {
+        label: 'Press',
+        hero: '',
+        heroCaption: '',
+        sections: [],
+        offeringTags: [],
+        videoTags: [],
+        galleryPhotos: []
+      },
+      film: {
+        label: 'Film',
+        hero: '',
+        heroCaption: '',
+        sections: [],
+        offeringTags: [],
+        videoTags: [],
+        galleryPhotos: []
+      },
+      duif: {
+        label: 'DUiF',
+        hero: '',
+        heroCaption: '',
+        sections: [],
+        offeringTags: [],
+        videoTags: [],
+        galleryPhotos: []
+      }
+    },
+    offerings: [],
+    credits: [],
+    videos: [],
+    releases: [],
+    gallery: [],
+    redacted: true,
+    notice: 'Content, social links, media links, files, and publisher tools are password protected.'
+  };
+}
+
+function redactedJsonResponse() {
+  return new Response(JSON.stringify(redactedEpkData(), null, 2), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+      'X-Robots-Tag': 'noindex, nofollow'
+    }
+  });
+}
+
+function protectedResponse(request) {
+  const url = new URL(request.url);
+  if (url.pathname === '/data/epk.json') return redactedJsonResponse();
+  return new Response('This EPK content is password protected.', {
+    status: 401,
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-store',
+      'X-Robots-Tag': 'noindex, nofollow'
+    }
+  });
+}
 
 async function sha256Hex(input) {
   const bytes = new TextEncoder().encode(input);
@@ -56,7 +209,7 @@ function loginPage(request, message = '') {
   <main class="card">
     <p class="kicker">Protected EPK</p>
     <h1>Access required</h1>
-    <p>Enter the EPK password to view this site.</p>
+    <p>Enter the EPK password to view protected content, social links, media links, files, and publisher tools.</p>
     ${message ? `<p class="error">${escapeHtml(message)}</p>` : ''}
     <form method="post" action="/__epk-login">
       <input type="hidden" name="next" value="${escapeHtml(next)}">
@@ -138,7 +291,8 @@ export async function onRequest(context) {
     });
   }
 
-  if (await isAuthed(request, env)) {
+  const authed = await isAuthed(request, env);
+  if (authed) {
     const response = await next();
     const protectedResponse = new Response(response.body, response);
     protectedResponse.headers.set('Cache-Control', 'no-store');
@@ -146,7 +300,17 @@ export async function onRequest(context) {
     return protectedResponse;
   }
 
-  const loginUrl = new URL('/', request.url);
-  loginUrl.searchParams.set('next', url.pathname + url.search);
-  return loginPage(new Request(loginUrl, request));
+  if (isPublicShellRequest(url)) {
+    const response = await next();
+    const publicResponse = new Response(response.body, response);
+    publicResponse.headers.set('Cache-Control', 'no-store');
+    publicResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return publicResponse;
+  }
+
+  if (isProtectedPath(url.pathname)) {
+    return protectedResponse(request);
+  }
+
+  return protectedResponse(request);
 }
