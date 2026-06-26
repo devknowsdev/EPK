@@ -191,8 +191,10 @@ function renderGallery(epk, mode) {
 
 function renderContact(meta) {
   const social = meta.social || {};
+  const onlineEPK = routeURL(modeKey);
   const rows = [
-    meta.email ? `<a href="mailto:${esc(meta.email)}">${esc(meta.email)}</a>` : '',
+    `<a href="${esc(onlineEPK)}" target="_blank" rel="noopener">Full online EPK</a>`,
+    meta.email ? `<button class="client-contact-link" type="button" onclick="copyContactEmail()">${esc(meta.email)}</button>` : '',
     meta.phone ? `<a href="tel:${esc(meta.phone)}">${esc(meta.phone)}</a>` : '',
     meta.website ? `<a href="${esc(href(meta.website))}" target="_blank" rel="noopener">${esc(meta.website)}</a>` : '',
     ...Object.entries(social)
@@ -257,7 +259,7 @@ function render(epk) {
         <p class="client-tagline">${esc(meta.tagline || '')}</p>
         <div class="client-actions">
           <a class="client-button" href="${esc(routeURL(modeKey))}" target="_blank" rel="noopener">Open live page ↗</a>
-          ${meta.email ? `<a class="client-button" href="mailto:${esc(meta.email)}">Email</a>` : ''}
+          ${meta.email ? `<button class="client-button" type="button" onclick="openContactBox()">Contact</button>` : ''}
         </div>
       </div>
       ${mode.hero ? `<img class="client-hero-img" src="${esc(assetURL(mode.hero))}" alt="${esc(meta.name || 'EPK hero')}">` : ''}
@@ -276,3 +278,24 @@ loadData()
     console.error(error);
     app.innerHTML = `<p style="padding:32px">Failed to load printable EPK: ${esc(error.message)}</p>`;
   });
+
+
+function copyContactEmail() {
+  const email = contactContext?.email || '';
+  if (!email) return;
+  navigator.clipboard?.writeText(email);
+  const status = document.getElementById('client-contact-status');
+  if (status) {
+    status.textContent = 'Email address copied.';
+    status.dataset.type = 'success';
+  }
+}
+
+
+function openContactBox() {
+  const box = document.getElementById('client-contact-box');
+  if (!box) return;
+  box.classList.remove('hidden');
+  box.setAttribute('aria-hidden', 'false');
+  document.getElementById('client-contact-message')?.focus();
+}
