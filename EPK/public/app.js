@@ -68,10 +68,11 @@ function getMode(key) {
 }
 
 function resolveRequestedMode(params) {
-    const legacyMode = params.get('for') || 'default';
+    const previewMode = window.__EPK_PREVIEW_MODE__ || '';
+    const legacyMode = previewMode || params.get('for') || 'default';
     if (isPublished) return legacyMode;
 
-    return modeFromPublicRoute(window.location.pathname) || legacyMode;
+    return previewMode || modeFromPublicRoute(window.location.pathname) || legacyMode;
 }
 
 function modeFromPublicRoute(pathname) {
@@ -361,12 +362,15 @@ function renderPage() {
             case 'releases':
                 if (epk.releases.length) parts.push(wrapOpen + renderReleases() + wrapClose);
                 break;
-            case 'gallery':
-                if (mode.galleryCount > 0) {
-                    const photos = epk.gallery.slice(0, mode.galleryCount);
+            case 'gallery': {
+                const srcs = mode.galleryPhotos || [];
+                if (srcs.length > 0) {
+                    const lookup = Object.fromEntries((epk.gallery || []).map(g => [g.src, g]));
+                    const photos = srcs.map(s => lookup[s] || { src: s, caption: '' });
                     parts.push(wrapOpen + renderGallery(photos) + wrapClose);
                 }
                 break;
+            }
             case 'contact':
                 parts.push(wrapOpen + renderContact() + wrapClose);
                 break;
@@ -407,7 +411,15 @@ function renderModeLinks() {
 function assetURL(path) {
     if (!path) return '';
     if (/^https?:\/\//.test(path)) return path;
-    return `/${path.replace(/^\/+/, '')}`;
+
+    const cleanPath = String(path).replace(/^\/+/, '');
+    const publicBase = window.__EPK_PUBLIC_BASE__ || '/';
+
+    try {
+        return new URL(cleanPath, publicBase).href;
+    } catch {
+        return `/${cleanPath}`;
+    }
 }
 
 function canonicalPageUrl() {

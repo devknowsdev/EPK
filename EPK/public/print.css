@@ -1,0 +1,944 @@
+:root {
+  --client-bg: #1E1F1C;
+  --client-surface: #2A2B27;
+  --client-ink: #EDEEE8;
+  --client-muted: #7A8070;
+  --client-accent: #7A9E80;
+  --client-rule: rgba(122,158,128,.24);
+}
+
+body {
+  background: var(--client-bg);
+  color: var(--client-ink);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.client-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(122,158,128,.12), transparent 34rem),
+    linear-gradient(180deg, #1E1F1C 0%, #181916 100%);
+}
+
+.client-hero {
+  min-height: 82vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 72px);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(48px, 8vw, 96px) 32px;
+  border-bottom: 1px solid var(--client-rule);
+}
+
+.client-kicker,
+.client-label {
+  display: block;
+  color: var(--client-accent);
+  text-transform: uppercase;
+  letter-spacing: .32em;
+  font-size: .68rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.client-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(4rem, 10vw, 8.4rem);
+  line-height: .9;
+  letter-spacing: .035em;
+  margin: 0 0 24px;
+}
+
+.client-tagline {
+  color: var(--client-accent);
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  font-size: clamp(.72rem, 1.3vw, .9rem);
+  line-height: 1.7;
+  margin: 0 0 28px;
+}
+
+.client-hero-img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  filter: brightness(.72) sepia(.22);
+  border: 1px solid var(--client-rule);
+}
+
+.client-actions,
+.client-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.client-button,
+.client-link {
+  color: var(--client-ink);
+  text-decoration: none;
+  border: 1px solid var(--client-rule);
+  padding: 9px 13px;
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.client-button:hover,
+.client-link:hover {
+  color: var(--client-accent);
+  border-color: var(--client-accent);
+}
+
+.client-content {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 32px 96px;
+}
+
+.client-section {
+  padding: 64px 0;
+  border-bottom: 1px solid var(--client-rule);
+}
+
+.client-section:last-child {
+  border-bottom: 0;
+}
+
+.client-section h2 {
+  margin: 0;
+}
+
+.client-bio {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.9;
+}
+
+.client-bio p + p {
+  margin-top: 1.1em;
+}
+
+.client-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.client-card {
+  background: var(--client-surface);
+  border-left: 2px solid var(--client-accent);
+  padding: 24px;
+  min-height: 100%;
+}
+
+.client-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.08rem;
+  margin: 0 0 8px;
+}
+
+.client-card p {
+  color: var(--client-muted);
+  font-size: .88rem;
+  line-height: 1.65;
+  margin: 0 0 12px;
+}
+
+.client-video-card {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.client-video-thumb {
+  width: 132px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid var(--client-rule);
+  background: #111;
+}
+
+.client-video-fallback {
+  width: 132px;
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  color: var(--client-accent);
+  border: 1px solid var(--client-rule);
+  background: rgba(0,0,0,.28);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+}
+
+.client-credit {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 20px;
+  background: var(--client-surface);
+  padding: 22px 24px;
+  border-bottom: 2px solid var(--client-bg);
+}
+
+.client-credit-meta {
+  color: var(--client-accent);
+  font-size: .76rem;
+  letter-spacing: .08em;
+}
+
+.client-credit-role {
+  color: var(--client-muted);
+  font-size: .72rem;
+  margin-top: 6px;
+}
+
+.client-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+
+.client-gallery a,
+.client-gallery img {
+  display: block;
+}
+
+.client-gallery img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  filter: brightness(.86) sepia(.12);
+}
+
+.client-contact {
+  display: grid;
+  gap: 10px;
+}
+
+.client-contact a {
+  color: var(--client-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--client-rule);
+}
+
+.client-contact a:hover {
+  color: var(--client-accent);
+  border-color: var(--client-accent);
+}
+
+.client-footer {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 32px;
+  color: var(--client-muted);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-size: .68rem;
+  border-top: 1px solid var(--client-rule);
+}
+
+@media (max-width: 780px) {
+  .client-hero,
+  .client-grid,
+  .client-video-card,
+  .client-credit {
+    grid-template-columns: 1fr;
+  }
+
+  .client-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .client-video-thumb,
+  .client-video-fallback {
+    width: 100%;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #151613;
+  }
+
+  .client-shell {
+    background: #fff;
+  }
+
+  .client-hero {
+    min-height: auto;
+    grid-template-columns: 1.2fr .8fr;
+    padding: 0 0 28px;
+    gap: 28px;
+  }
+
+  .client-title {
+    color: #151613;
+    font-size: 4.8rem;
+  }
+
+  .client-card,
+  .client-credit {
+    background: #f3f1e9;
+  }
+
+  .client-section {
+    break-inside: avoid;
+    padding: 28px 0;
+  }
+
+  .client-button {
+    display: none;
+  }
+
+  .client-link,
+  .client-contact a {
+    color: #151613;
+  }
+
+  .client-content,
+  .client-footer {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* ── Exact branded PDF export ─────────────────────────────────────
+   Keep browser Save-as-PDF visually aligned with the client HTML.
+   In Chrome print settings, also enable Background graphics and disable Headers/footers.
+*/
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+html {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+@media print {
+  html,
+  body {
+    background: var(--client-bg) !important;
+    color: var(--client-ink) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .client-shell {
+    background:
+      radial-gradient(circle at top right, rgba(122,158,128,.12), transparent 34rem),
+      linear-gradient(180deg, #1E1F1C 0%, #181916 100%) !important;
+    color: var(--client-ink) !important;
+  }
+
+  .client-hero {
+    min-height: 82vh;
+    grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr);
+    padding: 28mm 0 20mm;
+    gap: 18mm;
+    border-bottom: 1px solid var(--client-rule);
+  }
+
+  .client-title {
+    color: var(--client-ink) !important;
+    font-size: 76pt;
+  }
+
+  .client-tagline,
+  .client-kicker,
+  .client-label {
+    color: var(--client-accent) !important;
+  }
+
+  .client-card,
+  .client-credit {
+    background: var(--client-surface) !important;
+    color: var(--client-ink) !important;
+  }
+
+  .client-card p,
+  .client-credit-role,
+  .client-footer {
+    color: var(--client-muted) !important;
+  }
+
+  .client-link,
+  .client-contact a,
+  .client-card a {
+    color: var(--client-ink) !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid var(--client-rule);
+  }
+
+  a[href]::after {
+    content: none !important;
+  }
+
+  .client-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    padding: 20mm 0;
+    border-bottom: 1px solid var(--client-rule);
+  }
+
+  .client-gallery a::after,
+  .client-gallery a[href]::after {
+    content: none !important;
+  }
+
+  .client-gallery img {
+    filter: brightness(.86) sepia(.12);
+  }
+
+  .client-button {
+    display: inline-block !important;
+  }
+}
+
+/* ── PDF refinement pass: compact designed EPK pack ─────────────── */
+@media print {
+  @page {
+    size: A4;
+    margin: 8mm;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    background: #11130f !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .client-shell {
+    background: #11130f !important;
+  }
+
+  .client-hero {
+    min-height: auto !important;
+    height: auto !important;
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 12mm;
+    padding: 18mm 10mm 16mm !important;
+    margin: 0;
+    break-after: avoid;
+    page-break-after: avoid;
+    overflow: hidden;
+  }
+
+  .client-title {
+    font-size: 58pt !important;
+    line-height: .92 !important;
+    letter-spacing: .02em !important;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  .client-tagline {
+    font-size: 8.5pt !important;
+    letter-spacing: .22em !important;
+    max-width: 95%;
+  }
+
+  .client-kicker,
+  .client-label {
+    font-size: 7pt !important;
+    letter-spacing: .34em !important;
+    color: #9DC4A4 !important;
+  }
+
+  .client-hero-img {
+    aspect-ratio: 4 / 4.7 !important;
+    max-height: 112mm;
+    object-fit: cover;
+  }
+
+  .client-content {
+    max-width: none !important;
+    padding: 0 10mm 12mm !important;
+  }
+
+  .client-section {
+    padding: 10mm 0 !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-bottom: 1px solid rgba(122,158,128,.26) !important;
+  }
+
+  .client-bio {
+    font-size: 15pt !important;
+    line-height: 1.55 !important;
+  }
+
+  .client-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 2.5mm !important;
+  }
+
+  .client-card {
+    padding: 7mm !important;
+    background: #252821 !important;
+    border-left: 1.5mm solid #7A9E80 !important;
+  }
+
+  .client-card h3 {
+    font-size: 13pt !important;
+    color: #F4F4EE !important;
+  }
+
+  .client-card p {
+    font-size: 9.5pt !important;
+    line-height: 1.45 !important;
+    color: #C7CCBE !important;
+  }
+
+  .client-video-card {
+    grid-template-columns: 46mm 1fr !important;
+    gap: 7mm !important;
+  }
+
+  .client-video-thumb,
+  .client-video-fallback {
+    width: 46mm !important;
+  }
+
+  .client-gallery {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.5mm !important;
+  }
+
+  .client-gallery img {
+    aspect-ratio: 1.15 / 1 !important;
+  }
+
+  .client-contact {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 4mm 8mm;
+  }
+
+  .client-contact p {
+    margin: 0;
+  }
+
+  .client-contact a {
+    color: #F4F4EE !important;
+    font-size: 10pt !important;
+    border-bottom: 1px solid rgba(122,158,128,.42) !important;
+  }
+
+  .client-link,
+  .client-button {
+    color: #F4F4EE !important;
+    border-color: rgba(122,158,128,.42) !important;
+    font-size: 7.5pt !important;
+    letter-spacing: .16em !important;
+  }
+
+  .client-footer {
+    padding: 8mm 10mm 0 !important;
+    font-size: 7pt !important;
+    color: #9BA391 !important;
+  }
+
+  a[href]::after {
+    content: none !important;
+  }
+}
+
+/* ── Export system pass: content-adaptive PDF layout ───────────────
+   This is not mode-specific. It makes each content type obey its own
+   export rules so future page/mode changes remain stable.
+*/
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #11130f !important;
+    overflow: visible !important;
+  }
+
+  .client-shell {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 10mm;
+    box-sizing: border-box;
+    background:
+      radial-gradient(circle at top right, rgba(122,158,128,.10), transparent 90mm),
+      linear-gradient(180deg, #11130f 0%, #171915 100%) !important;
+  }
+
+  .client-hero,
+  .client-content,
+  .client-footer {
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  .client-hero {
+    padding: 10mm 0 12mm !important;
+    grid-template-columns: minmax(0, 1fr) 78mm !important;
+    gap: 12mm !important;
+    align-items: center !important;
+    min-height: 118mm !important;
+  }
+
+  .client-title {
+    font-size: clamp(46pt, 15vw, 64pt) !important;
+    line-height: .9 !important;
+    max-width: 100% !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+
+  .client-tagline {
+    max-width: 82mm !important;
+    font-size: 8pt !important;
+    line-height: 1.55 !important;
+  }
+
+  .client-hero-img {
+    width: 78mm !important;
+    max-height: 96mm !important;
+    aspect-ratio: 4 / 4.8 !important;
+  }
+
+  .client-content {
+    padding: 0 !important;
+  }
+
+  .client-section {
+    padding: 9mm 0 !important;
+    margin: 0 !important;
+  }
+
+  .client-label {
+    margin-bottom: 7mm !important;
+  }
+
+  .client-bio {
+    max-width: 168mm !important;
+    font-size: 14.5pt !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Generic cards adapt to available width */
+  .client-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(78mm, 1fr)) !important;
+    gap: 2.5mm !important;
+  }
+
+  .client-card {
+    min-width: 0 !important;
+  }
+
+  .client-card h3 {
+    line-height: 1.18 !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+  }
+
+  /* Video sections are feature media, not offering cards */
+  .client-section:has(.client-video-card) .client-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .client-video-card {
+    display: grid !important;
+    grid-template-columns: minmax(92mm, 1.25fr) minmax(62mm, .75fr) !important;
+    gap: 8mm !important;
+    align-items: center !important;
+    padding: 7mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .client-video-thumb,
+  .client-video-fallback {
+    width: 100% !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .client-video-card h3 {
+    font-size: 16pt !important;
+    line-height: 1.16 !important;
+    margin-bottom: 5mm !important;
+  }
+
+  .client-video-card .client-link-row {
+    margin-top: 4mm !important;
+  }
+
+  /* Gallery should behave as a compact contact-sheet */
+  .client-gallery {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.4mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .client-gallery img {
+    aspect-ratio: 1.08 / 1 !important;
+    object-fit: cover !important;
+  }
+
+  /* Contact should not feel like a stranded mostly-empty page */
+  .client-section:has(.client-contact) {
+    padding-top: 8mm !important;
+  }
+
+  .client-contact {
+    grid-template-columns: repeat(auto-fit, minmax(70mm, 1fr)) !important;
+    gap: 3.5mm 8mm !important;
+  }
+
+  .client-contact p {
+    margin: 0 !important;
+    line-height: 1.35 !important;
+  }
+
+  .client-footer {
+    padding: 7mm 0 0 !important;
+    margin-top: 4mm !important;
+  }
+}
+
+/* PDF-specific CTA rule:
+   Online HTML keeps hero buttons. PDF hides them and moves the online
+   page link into Contact & Links, where active links belong.
+*/
+@media print {
+  .client-actions {
+    display: none !important;
+  }
+}
+
+/* PDF-specific CTA rule:
+   Online HTML keeps hero buttons. PDF hides them and moves the online
+   page link into Contact & Links, where active links belong.
+*/
+@media print {
+  .client-actions {
+    display: none !important;
+  }
+}
+
+.client-contact-field {
+  display: grid;
+  gap: 6px;
+  color: var(--client-muted);
+  font-size: .8rem;
+  margin-bottom: 10px;
+}
+
+.client-contact-field input {
+  width: 100%;
+  background: #11130f;
+  color: var(--client-ink);
+  border: 1px solid var(--client-rule);
+  padding: 10px 12px;
+  font: 0.95rem/1.4 Inter, system-ui, sans-serif;
+}
+
+.client-honeypot {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.client-contact-status {
+  min-height: 1.4em;
+  margin-top: 12px;
+  color: var(--client-muted);
+  font-size: .88rem;
+}
+
+.client-contact-status[data-type="success"] {
+  color: #9DC4A4;
+}
+
+.client-contact-status[data-type="error"] {
+  color: #d99a9a;
+}
+
+.client-contact-status[data-type="loading"] {
+  color: var(--client-ink);
+}
+
+.client-button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.client-contact-link {
+  background: transparent;
+  color: var(--client-ink);
+  border: 0;
+  border-bottom: 1px solid var(--client-rule);
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.client-contact-link:hover {
+  color: var(--client-accent);
+  border-color: var(--client-accent);
+}
+
+@media print {
+  .client-contact-link {
+    color: var(--client-ink) !important;
+    border-bottom: 1px solid var(--client-rule);
+  }
+}
+
+
+/* ── Direct contact form / export contact controls ─────────────── */
+.client-button {
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.client-contact-link {
+  background: transparent;
+  color: var(--client-ink);
+  border: 0;
+  border-bottom: 1px solid var(--client-rule);
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.client-contact-link:hover {
+  color: var(--client-accent);
+  border-color: var(--client-accent);
+}
+
+.client-contact-box {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0,0,0,.72);
+}
+
+.client-contact-box__panel {
+  width: min(560px, 92vw);
+  background: #20231d;
+  border: 1px solid var(--client-rule);
+  padding: 28px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.45);
+  position: relative;
+}
+
+.client-contact-box__panel h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  margin: 0 0 10px;
+}
+
+.client-contact-box__panel p {
+  color: var(--client-muted);
+  margin: 0 0 16px;
+}
+
+.client-contact-box__panel textarea,
+.client-contact-field input {
+  width: 100%;
+  background: #11130f;
+  color: var(--client-ink);
+  border: 1px solid var(--client-rule);
+  padding: 10px 12px;
+  font: 0.95rem/1.45 Inter, system-ui, sans-serif;
+}
+
+.client-contact-box__panel textarea {
+  resize: vertical;
+}
+
+.client-contact-field {
+  display: grid;
+  gap: 6px;
+  color: var(--client-muted);
+  font-size: .8rem;
+  margin-bottom: 10px;
+}
+
+.client-honeypot {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.client-contact-box__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.client-contact-box__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  color: var(--client-ink);
+  border: 1px solid var(--client-rule);
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.client-contact-status {
+  min-height: 1.4em;
+  margin-top: 12px;
+  color: var(--client-muted);
+  font-size: .88rem;
+}
+
+.client-contact-status[data-type="success"] {
+  color: #9DC4A4;
+}
+
+.client-contact-status[data-type="error"] {
+  color: #d99a9a;
+}
+
+.client-contact-status[data-type="loading"] {
+  color: var(--client-ink);
+}
+
+.client-button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+@media print {
+  .client-contact-box,
+  .client-actions {
+    display: none !important;
+  }
+}

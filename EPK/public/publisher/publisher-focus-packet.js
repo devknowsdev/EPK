@@ -1,5 +1,6 @@
 let lastFocusPacket=null;
 
+// Focus packet panel — EPK proposes reviewed event/task packets for prism-focus.
 document.addEventListener('DOMContentLoaded',()=>{
   const page=document.getElementById('page-brief');
   if(!page||document.getElementById('focus-packet-panel'))return;
@@ -25,6 +26,101 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('copy-focus-packet-btn')?.addEventListener('click',copyFocusPacket);
   document.getElementById('download-focus-packet-btn')?.addEventListener('click',downloadFocusPacket);
 });
+
+// Publisher chrome simplification — keep global controls calm and labelled.
+document.addEventListener('DOMContentLoaded',()=>{
+  setTimeout(simplifyPublisherChrome,0);
+  setTimeout(simplifyPublisherChrome,700);
+  setTimeout(simplifyPublisherChrome,1800);
+});
+
+function simplifyPublisherChrome(){
+  injectPublisherChromeStyles();
+  simplifyTopActions();
+  rebuildPublisherNav();
+}
+
+function injectPublisherChromeStyles(){
+  if(document.getElementById('publisher-chrome-simplify-styles'))return;
+  const style=document.createElement('style');
+  style.id='publisher-chrome-simplify-styles';
+  style.textContent=`
+    .top-actions-clear{align-items:flex-start;justify-content:flex-end;min-width:min(420px,100%)}
+    .top-actions-clear>.btn{min-width:92px;font-weight:800}.publisher-tools-menu{position:relative}.publisher-tools-menu>summary{list-style:none}.publisher-tools-menu>summary::-webkit-details-marker{display:none}.publisher-tools-menu[open]>summary{border-color:var(--accent);color:var(--accent-2)}
+    .publisher-tools-panel{position:absolute;right:0;top:calc(100% + 8px);z-index:80;width:min(280px,calc(100vw - 40px));display:grid;gap:8px;padding:10px;border:1px solid var(--rule-strong);background:var(--surface2);box-shadow:var(--shadow)}
+    .publisher-tools-panel .btn{justify-content:flex-start;width:100%;text-align:left}.publisher-tools-note{margin:2px 0 0;color:var(--dim);font-size:.75rem;line-height:1.35}.publisher-primary-nav{gap:8px}.nav-section-label{margin:12px 8px 3px;color:var(--dim);font-size:.62rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase}.nav-item-primary{border-left-color:var(--warning);background:rgba(209,166,90,.11);color:#ead4a8;font-weight:800}.nav-item-primary:hover{background:rgba(209,166,90,.16);color:#f1dbad}.nav-group-tools{border-color:rgba(209,166,90,.22)}
+    @media(max-width:1040px){.top-actions-clear{min-width:0;width:100%;justify-content:flex-start}.publisher-tools-panel{left:0;right:auto}.publisher-primary-nav{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}}
+  `;
+  document.head.appendChild(style);
+}
+
+function simplifyTopActions(){
+  const topActions=document.querySelector('.top-actions');
+  if(!topActions||topActions.dataset.simplified==='1')return;
+  topActions.dataset.simplified='1';
+  topActions.classList.add('top-actions-clear');
+  topActions.innerHTML=`
+    <button class="btn btn-secondary" type="button" id="publisher-preview-top-btn">Preview</button>
+    <button class="btn btn-primary" type="button" id="publisher-publish-top-btn">Publish</button>
+    <details class="publisher-tools-menu">
+      <summary class="btn btn-secondary">Tools</summary>
+      <div class="publisher-tools-panel">
+        <button class="btn btn-secondary" type="button" id="validate-top-btn">Check data</button>
+        <button class="btn btn-secondary" type="button" id="download-top-btn">Backup JSON</button>
+        <button class="btn btn-secondary" type="button" id="publisher-brief-top-btn">Promo Kit</button>
+        <button class="btn btn-secondary" type="button" id="publisher-json-top-btn">Advanced JSON</button>
+        <p class="publisher-tools-note">Recovery, backup, and advanced controls live here so the top bar stays calm.</p>
+      </div>
+    </details>`;
+  document.getElementById('publisher-preview-top-btn')?.addEventListener('click',()=>showPage('dashboard'));
+  document.getElementById('publisher-publish-top-btn')?.addEventListener('click',()=>showPage('publish'));
+  document.getElementById('validate-top-btn')?.addEventListener('click',()=>validateData());
+  document.getElementById('download-top-btn')?.addEventListener('click',()=>downloadJSON());
+  document.getElementById('publisher-brief-top-btn')?.addEventListener('click',()=>showPage('brief'));
+  document.getElementById('publisher-json-top-btn')?.addEventListener('click',()=>showPage('json'));
+}
+
+function rebuildPublisherNav(){
+  const nav=document.querySelector('.nav');
+  if(!nav||nav.dataset.rebuilding==='1')return;
+  nav.dataset.rebuilding='1';
+  nav.classList.add('publisher-primary-nav');
+  nav.innerHTML=`
+    <button class="nav-item active" type="button" data-page="dashboard">Dashboard</button>
+    <div class="nav-section-label">Build</div>
+    <details class="nav-group" open>
+      <summary>Profile & content</summary>
+      <button class="nav-item" type="button" data-page="profile">Identity</button>
+      <button class="nav-item" type="button" data-page="bio">Biography</button>
+      <button class="nav-item" type="button" data-page="offerings">Offerings</button>
+      <button class="nav-item" type="button" data-page="credits">Proof / credits</button>
+    </details>
+    <details class="nav-group">
+      <summary>Media</summary>
+      <button class="nav-item" type="button" data-page="videos">Videos</button>
+      <button class="nav-item" type="button" data-page="releases">Releases</button>
+      <button class="nav-item" type="button" data-page="gallery">Gallery</button>
+    </details>
+    <button class="nav-item" type="button" data-page="modes">Audience Pages</button>
+    <div class="nav-section-label">Tools</div>
+    <details class="nav-group nav-group-tools">
+      <summary>Design & advanced</summary>
+      ${typeof showExtensionPage==='function'?'<button class="nav-item" type="button" data-extension-nav="site-templates">Site templates</button><button class="nav-item" type="button" data-extension-nav="poster">Poster studio</button><button class="nav-item" type="button" data-extension-nav="contact">Contact UX</button>':''}
+      <button class="nav-item" type="button" data-page="brief">Promo Kit</button>
+      <button class="nav-item" type="button" data-page="json">Advanced JSON</button>
+    </details>
+    <button class="nav-item nav-item-primary" type="button" data-page="publish">Publish</button>`;
+
+  nav.querySelectorAll('[data-page]').forEach(btn=>{
+    btn.addEventListener('click',()=>showPage(btn.dataset.page));
+  });
+  nav.querySelectorAll('[data-extension-nav]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(typeof showExtensionPage==='function')showExtensionPage(btn.dataset.extensionNav);
+    });
+  });
+  nav.dataset.rebuilding='0';
+}
 
 function generateFocusPacket(){
   const event=readFocusPacketEvent();
