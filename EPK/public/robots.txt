@@ -2,4 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /publisher/
 Disallow: /prism.html
+Disallow: /prism
+Disallow: /launcher
+Disallow: /status.html
+Disallow: /status
 Disallow: /prism-links.json
