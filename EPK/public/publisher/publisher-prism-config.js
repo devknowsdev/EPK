@@ -1,0 +1,1 @@
+// Prism publisher config shell
