@@ -104,11 +104,10 @@ window.__EPK_PUBLIC_BASE__='${baseHref}';
   frame.removeAttribute('src');
   frame.srcdoc = html;
 }
-function openExport(){const now=new Date().toISOString().slice(0,10);$('pub-purpose').value=$('pub-purpose').value||`${db.modes?.[activeMode]?.label||activeMode} EPK`;$('pub-recipient').value=$('pub-recipient').value||'';$('pub-id').value=$('pub-id').value||`${now}-${activeMode}`.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');$('export-modal').classList.remove('hidden');}
+function openExport(){const now=new Date().toISOString().slice(0,10);const label=(db.modes&&db.modes[activeMode]&&db.modes[activeMode].label)||activeMode;if(!$('pub-purpose').value)$('pub-purpose').value=label+' EPK';if(!$('pub-recipient').value)$('pub-recipient').value='';if(!$('pub-id').value)$('pub-id').value=(now+'-'+activeMode).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');$('export-modal').classList.remove('hidden');}
 function closeExport(){$('export-modal').classList.add('hidden');}
-function printParams(shouldPrint,snapshotKey){const q=new URLSearchParams({for:activeMode,print:shouldPrint?'1':'0',snapshotKey});return q.toString();}
-function openPrintView(shouldPrint=false){const snapshotKey=`draft-${Date.now()}`;localStorage.setItem(`epk-print-snapshot:${snapshotKey}`,JSON.stringify(db));window.open(publicHref(`print.html?${printParams(shouldPrint,snapshotKey)}`),'_blank');}
-`),'_blank','noopener');}
+function printParams(shouldPrint,snapshotKey){const q=new URLSearchParams();q.set('for',activeMode);q.set('print',shouldPrint?'1':'0');q.set('snapshotKey',snapshotKey);return q.toString();}
+function openPrintView(shouldPrint){const key='draft-'+String(Date.now());localStorage.setItem('epk-print-snapshot:'+key,JSON.stringify(db));const url=publicHref('print.html?'+printParams(!!shouldPrint,key));window.open(url,'_blank');}
 function clearSavedToken(){localStorage.removeItem('gh-token');const el=$('gh-token');if(el)el.value='';status('success','Saved GitHub token cleared from this browser.');}
 function openPublish(){loadGH();const diff=JSON.stringify(db)!==JSON.stringify(loadedDb);$('publish-summary').innerHTML=`<div class="status ${diff?'loading':'success'}">${diff?'Unpublished changes are ready for review.':'No changes since load.'}</div>`;$('publish-modal').classList.remove('hidden');}
 function closePublish(){$('publish-modal').classList.add('hidden');}
