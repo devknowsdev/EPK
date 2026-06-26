@@ -305,3 +305,97 @@ body {
     padding-right: 0;
   }
 }
+
+/* ── Exact branded PDF export ─────────────────────────────────────
+   Keep browser Save-as-PDF visually aligned with the client HTML.
+   In Chrome print settings, also enable Background graphics and disable Headers/footers.
+*/
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+html {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+@media print {
+  html,
+  body {
+    background: var(--client-bg) !important;
+    color: var(--client-ink) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .client-shell {
+    background:
+      radial-gradient(circle at top right, rgba(122,158,128,.12), transparent 34rem),
+      linear-gradient(180deg, #1E1F1C 0%, #181916 100%) !important;
+    color: var(--client-ink) !important;
+  }
+
+  .client-hero {
+    min-height: 82vh;
+    grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr);
+    padding: 28mm 0 20mm;
+    gap: 18mm;
+    border-bottom: 1px solid var(--client-rule);
+  }
+
+  .client-title {
+    color: var(--client-ink) !important;
+    font-size: 76pt;
+  }
+
+  .client-tagline,
+  .client-kicker,
+  .client-label {
+    color: var(--client-accent) !important;
+  }
+
+  .client-card,
+  .client-credit {
+    background: var(--client-surface) !important;
+    color: var(--client-ink) !important;
+  }
+
+  .client-card p,
+  .client-credit-role,
+  .client-footer {
+    color: var(--client-muted) !important;
+  }
+
+  .client-link,
+  .client-contact a,
+  .client-card a {
+    color: var(--client-ink) !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid var(--client-rule);
+  }
+
+  a[href]::after {
+    content: none !important;
+  }
+
+  .client-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    padding: 20mm 0;
+    border-bottom: 1px solid var(--client-rule);
+  }
+
+  .client-gallery a::after,
+  .client-gallery a[href]::after {
+    content: none !important;
+  }
+
+  .client-gallery img {
+    filter: brightness(.86) sepia(.12);
+  }
+
+  .client-button {
+    display: inline-block !important;
+  }
+}
