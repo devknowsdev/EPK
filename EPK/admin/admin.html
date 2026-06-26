@@ -73,7 +73,29 @@ function closeLibrary(){libraryOpen=false;$('library-panel').classList.add('hidd
 function renderLibrary(){if(!libraryOpen)return;$('lib-tabs').innerHTML=['profile','bio','offerings','videos','releases','credits','photos'].map(t=>`<button class="${t===libraryTab?'active':''}" onclick="libraryTab='${t}';renderLibrary()">${t}</button>`).join('');let h='';if(libraryTab==='profile'){const m=db.meta||{};h=`<label>Name<input id="meta-name" value="${esc(m.name||'')}"></label><label>Tagline<input id="meta-tagline" value="${esc(m.tagline||'')}"></label><label>Location<input id="meta-location" value="${esc(m.location||'')}"></label><label>Email<input id="meta-email" value="${esc(m.email||'')}"></label><label>Phone<input id="meta-phone" value="${esc(m.phone||'')}"></label><label>Website<input id="meta-website" value="${esc(m.website||'')}"></label><button onclick="saveProfile()">Save profile</button>`;}else if(libraryTab==='bio'){h=`<p class="muted">Use the Biography block on a page to edit the active variant.</p>`;}else if(libraryTab==='photos'){h=`<div class="photo-grid">${(db.gallery||[]).map(g=>`<div><img src="${assetSrc(g.src)}"><small>${esc(g.caption||g.src)}</small></div>`).join('')}</div>`;}else{h=(db[libraryTab]||[]).map((x,i)=>`<div class="lib-item"><strong>${esc(x.title||x.role||'Untitled')}</strong><p class="muted">${esc((x.tags||[]).join(', '))}</p></div>`).join('')||'<p class="muted">No items.</p>'}$('lib-body').innerHTML=h;}
 function saveProfile(){pushHistory();db.meta.name=val('meta-name');db.meta.tagline=val('meta-tagline');db.meta.location=val('meta-location');db.meta.email=val('meta-email');db.meta.phone=val('meta-phone');db.meta.website=val('meta-website');markDirty();renderCanvas();toast('Profile saved');}
 function togglePreview(){previewOpen=!previewOpen;$('preview-pane').classList.toggle('hidden',!previewOpen);$('preview-btn').classList.toggle('active',previewOpen);if(previewOpen)updatePreview();}
-let previewURL=null;function updatePreview(){if(previewURL)URL.revokeObjectURL(previewURL);const html=`<!doctype html><html><head><base href="../public/"><link rel="stylesheet" href="styles.css"></head><body><div id="app"></div><script>window.__EPK_SNAPSHOT__=${JSON.stringify(db)};history.replaceState(null,'','?for=${activeMode}');<\/script><script src="app.js"><\/script></body></html>`;previewURL=URL.createObjectURL(new Blob([html],{type:'text/html'}));$('preview-frame').src=previewURL;}
+function updatePreview(){
+  const baseHref = new URL('../public/', location.href).href;
+  const previewMode = activeMode;
+  const html = `<!doctype html>
+<html>
+<head>
+<base href="${baseHref}">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app"></div>
+<script>
+window.__EPK_SNAPSHOT__=${JSON.stringify(db)};
+window.__EPK_PREVIEW_MODE__='${previewMode}';
+window.__EPK_PUBLIC_BASE__='${baseHref}';
+<\/script>
+<script src="app.js"><\/script>
+</body>
+</html>`;
+  const frame = $('preview-frame');
+  frame.removeAttribute('src');
+  frame.srcdoc = html;
+}
 function openPublish(){loadGH();const diff=JSON.stringify(db)!==JSON.stringify(loadedDb);$('publish-summary').innerHTML=`<div class="status ${diff?'loading':'success'}">${diff?'Unpublished changes are ready for review.':'No changes since load.'}</div>`;$('publish-modal').classList.remove('hidden');}
 function closePublish(){$('publish-modal').classList.add('hidden');}
 function loadGH(){['user','repo','path','token'].forEach(k=>{const el=$('gh-'+k);if(el)el.value=localStorage.getItem('gh-'+k)||el.value||''});}
