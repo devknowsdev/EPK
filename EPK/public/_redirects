@@ -1,3 +1,5 @@
+/publisher /admin/admin.html 302
+/publisher/ /admin/admin.html 302
 /venue /index.html 200
 /booker /index.html 200
 /acoustic /index.html 200
