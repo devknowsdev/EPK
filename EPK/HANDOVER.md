@@ -5,6 +5,8 @@
 - Added `window.EPKAdapter` to the public EPK page.
 - Added `window.EPK_SITE` and JSON-LD structured data for machine-readable inspection.
 - Added clean public route handling for `/`, `/venue`, `/acoustic`, and `/press`.
+- Added `/EPK/` as the clean live/latest public EPK route for the custom domain path.
+- Added dated client freezes at `/EPK/YYYY-MM-DD/` so sent business/client links remain stable even if the live EPK later changes or breaks.
 - Removed visible public mode switching from audience pages; public audience selection is by URL only.
 - Added `public-clean.js` so the public utility/mode toolbar is removed from public pages without disturbing route-mode resolution.
 - Added public media/contact/site-template enhancements:
@@ -27,6 +29,7 @@
   - Public-contact behavior preview remains in Contact UX.
   - Live preview selector remains on the dashboard.
   - Profile/contact/social editing, biographies, offerings, credits, videos, releases, gallery, page recipes, JSON, drafts, promo brief, and publishing remain available.
+  - Publish snapshot has been replaced by **Freeze dated client EPK**, which writes a self-contained dated client package plus frozen JSON/manifest.
 - Kept local/admin tooling outside the public EPK UX under `admin/`.
 - Documented the Spectra bridge, public route contract, publisher/admin policy, media/contact behavior, separate site/poster templates, and poster generator in `README.md`.
 
@@ -35,6 +38,8 @@
 The EPK site already had a strong content model. These passes make the model easier for Spectra to consume while keeping public audience pages clean and separating publisher access from visitor-facing page chrome.
 
 The latest correction fixes the publisher hierarchy: controls now live where the user expects them, templates have separate meanings, and poster generation can draw from the actual Gallery instead of requiring only uploaded logos.
+
+The dated freeze route protects business meetings and client handoffs: `/EPK` can keep changing, while a sent `/EPK/YYYY-MM-DD/` link is intended to remain stable.
 
 ## Current Contract
 
@@ -47,11 +52,13 @@ Use the EPK page in this order:
 
 Public routes:
 
-- `/` → general/default EPK
+- `/EPK/` → live/latest general/default EPK for client-friendly sharing.
+- `/EPK/YYYY-MM-DD/` → frozen dated client EPK package; do not edit in place except emergency typo/contact fixes.
+- `/` → general/default EPK on deployments where this project owns the host root.
 - `/venue` → booker/venue EPK
 - `/acoustic` → acoustic EPK
 - `/press` → press EPK
-- `/published/<id>/` → immutable snapshot EPK
+- `/published/<id>/` → legacy immutable snapshot route; prefer `/EPK/YYYY-MM-DD/` for new client links.
 
 Publisher/admin:
 
@@ -68,10 +75,12 @@ Publisher/admin:
 - Public EPK pages must not link to admin/editor controls or show the mode-switching toolbar.
 - Do not add fake frontend password protection.
 - Do not store GitHub tokens in the repo. The publisher asks for a token only when publishing.
+- Dated freezes are created by `public/publisher/publisher-date-freeze.js` and committed under `EPK/public/EPK/YYYY-MM-DD/`.
 
 ## Next Best Steps
 
 - Protect `/publisher/*` in Cloudflare Access before relying on it as private hosted publisher access.
+- Test `/EPK/` and a newly generated `/EPK/YYYY-MM-DD/` after Cloudflare redeploy.
 - Choose whether contact should remain a reviewable mailto handoff or become a real server-side form submission.
 - Add a dedicated music-career object to `epk.json` for gigs, socials, and publication tasks.
 - Add real audio files under `public/audio/` if release scrubbers should appear immediately.
