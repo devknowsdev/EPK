@@ -7,23 +7,42 @@ SAFETY: No token is stored; uses the existing publisher GitHub token field for t
   const DATE_ROUTE_ROOT = 'EPK';
   const DEFAULT_FREEZE_MODE = 'default';
 
-  installWhenReady();
+  installVisibleLabelsWhenReady();
+  installFunctionalBinderWhenReady();
 
-  function installWhenReady(attempt=0){
+  function installVisibleLabelsWhenReady(attempt=0){
+    const snapshotBtn = document.getElementById('publish-snapshot-btn');
+    if (snapshotBtn) {
+      applyVisibleFreezeLabels();
+      return;
+    }
+    if (attempt < 80) setTimeout(() => installVisibleLabelsWhenReady(attempt + 1), 100);
+  }
+
+  function installFunctionalBinderWhenReady(attempt=0){
     const ready = typeof currentData !== 'undefined' && currentData && typeof readPublishConfig === 'function' && typeof commitFile === 'function';
     if (ready) return installDateFreezePublisher();
-    if (attempt < 80) setTimeout(() => installWhenReady(attempt + 1), 100);
+    if (attempt < 80) setTimeout(() => installFunctionalBinderWhenReady(attempt + 1), 100);
   }
 
   function installDateFreezePublisher(){
+    applyVisibleFreezeLabels();
+    const snapshotBtn = document.getElementById('publish-snapshot-btn');
+    if (snapshotBtn && snapshotBtn.dataset.dateFreezeReady !== '1') {
+      snapshotBtn.dataset.dateFreezeReady = '1';
+      snapshotBtn.onclick = publishDatedClientEPK;
+    }
+  }
+
+  function applyVisibleFreezeLabels(){
     updatePublisherCopy();
     const snapshotBtn = document.getElementById('publish-snapshot-btn');
-    if (snapshotBtn && snapshotBtn.dataset.dateFreeze !== '1') {
-      snapshotBtn.dataset.dateFreeze = '1';
+    if (snapshotBtn && snapshotBtn.dataset.dateFreezeLabelled !== '1') {
+      snapshotBtn.dataset.dateFreezeLabelled = '1';
       snapshotBtn.textContent = 'Freeze dated client EPK';
       snapshotBtn.classList.remove('btn-secondary');
       snapshotBtn.classList.add('btn-primary');
-      snapshotBtn.onclick = publishDatedClientEPK;
+      snapshotBtn.title = 'Create a stable /EPK/YYYY-MM-DD/ client link.';
     }
 
     const copyBtn = document.getElementById('copy-last-url-btn');
@@ -33,8 +52,10 @@ SAFETY: No token is stored; uses the existing publisher GitHub token field for t
   function updatePublisherCopy(){
     const snapshotInput = document.getElementById('gh-snapshot-path');
     if (snapshotInput) {
-      snapshotInput.value = snapshotInput.value || 'EPK/public/EPK';
-      snapshotInput.closest('label')?.querySelector('.hint')?.remove();
+      snapshotInput.value = 'EPK/public/EPK';
+      const label = snapshotInput.closest('label');
+      if (label && label.firstChild) label.firstChild.textContent = 'Dated client folder';
+      snapshotInput.title = 'Frozen client EPK packages are written under EPK/public/EPK/YYYY-MM-DD/';
     }
 
     const publishPanel = document.querySelector('#page-publish .grid.two .panel');
@@ -46,7 +67,7 @@ SAFETY: No token is stored; uses the existing publisher GitHub token field for t
     }
 
     document.querySelectorAll('#page-publish .rules li').forEach(li => {
-      if (li.textContent.includes('/published/<id>/')) {
+      if (li.textContent.includes('/published/<id>/') || li.textContent.includes('Snapshots are immutable')) {
         li.innerHTML = 'Dated client packages are frozen at <code>/EPK/YYYY-MM-DD/</code>.';
       }
     });
