@@ -34,6 +34,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   setTimeout(simplifyPublisherChrome,1800);
 });
 
+// Dated client-freeze publisher extension — keeps sent /EPK/YYYY-MM-DD links stable.
+(function loadPublisherDateFreeze(){
+  if(document.querySelector('script[data-publisher-date-freeze]'))return;
+  const script=document.createElement('script');
+  script.src='publisher-date-freeze.js';
+  script.dataset.publisherDateFreeze='true';
+  document.head.appendChild(script);
+})();
+
 function simplifyPublisherChrome(){
   injectPublisherChromeStyles();
   simplifyTopActions();
