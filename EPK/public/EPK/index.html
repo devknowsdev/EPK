@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dave Knowles — EPK</title>
+<meta name="description" content="Dave Knowles electronic press kit.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="/EPK/">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../public-media-contact.css">
+</head>
+<body>
+<div id="app"></div>
+<script>
+window.__EPK_PUBLIC_BASE__ = '../';
+(function(){
+  const nativeFetch = window.fetch.bind(window);
+  window.fetch = function epkPathFetch(input, init){
+    if (typeof input === 'string') {
+      if (input === '/data/epk.json') return nativeFetch('../data/epk.json', init);
+      if (input.startsWith('/published/')) return nativeFetch('..' + input, init);
+    }
+    return nativeFetch(input, init);
+  };
+})();
+</script>
+<script src="../app.js"></script>
+<script src="../public-empty-cta.js"></script>
+<script src="../public-clean.js"></script>
+<script src="../public-media-contact.js"></script>
+</body>
+</html>
