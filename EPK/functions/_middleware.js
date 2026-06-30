@@ -272,7 +272,11 @@ async function handleLogin(request, env) {
   const password = String(form.get('password') || '');
   const next = String(form.get('next') || '/');
   if (password !== env.EPK_ACCESS_PASSWORD) {
-    const retry = new Request(new URL('/?next=' + encodeURIComponent(next), request.url), request);
+    // The POST body has already been consumed by formData(), so do not use
+    // the original request as RequestInit here. Cloudflare rejects cloning a
+    // request with a disturbed body, which previously turned bad passwords
+    // into a 500 instead of redisplaying the login form.
+    const retry = new Request(new URL('/?next=' + encodeURIComponent(next), request.url));
     return loginPage(retry, 'Incorrect password.');
   }
   const token = await expectedToken(env);
