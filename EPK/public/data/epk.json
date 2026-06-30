@@ -17,18 +17,22 @@
     "short": "Dave Knowles is a South African composer, multi-instrumentalist, and live loop artist whose performances weave guitar, sax, violin, flute, and voice into immersive soundscapes. With a career spanning indie rock, folk, theatre, children's television, and experimental electronica, Dave brings a genre-blending performance full of energy, improvisation, and heart.",
     "acoustic": "Dave Knowles delivers dynamic acoustic performances, blending percussive guitar grooves with soulful melodies and lyrical storytelling. A seasoned folk artist, his live shows are intimate, powerful, and unforgettable.",
     "full": [
-      "<p><strong>Dave Knowles</strong> is a Cape Town-based composer and multi-instrumentalist whose two-decade career spans indie rock, theatre, film, and children's television. He began with the indie rock band <em>Shinobi</em>, which took him to the UK for two years, before returning to South Africa to develop a distinctive percussive acoustic style that established him in Cape Town's folk scene.</p>",
-      "<p>His work as a composer has taken him into theatre and film, including directing the music for <em>No Functional Language</em> (Chaeli Campaign, 2016) — a live multi-instrumental score performed across South Africa and at Denmark's Aprilfest — and co-scoring <em>The First Week</em> for the 48 Hour Film Project, which won <strong>Best Original Score</strong> internationally and screened at <strong>Cannes</strong>. More recently, he composed the original score for <em>Yazuke — Baba Yaya</em> (2025), a Cape Town dance theatre production tracing the story of the first African samurai through African contemporary dance, ballet, hip hop, and martial arts.</p>",
-      "<p>Dave is equally known for his immersive live-looping performances, weaving together guitar, saxophone, violin, flute, bass, voice, and electronics into marathon improvisational sets. These have brought him to stages including <strong>Lush</strong>, <strong>Splashy Fen</strong>, <strong>River Republic</strong>, <strong>STRAB</strong>, and the <strong>National Arts Festival</strong>, alongside reactive sound installations and live scoring for dance.</p>",
-      "<p>Since relocating to the Garden Route, Dave has built a strong commission portfolio, most notably composing four seasons of original music for <em>Takalani Sesame</em>, the South African co-production of <em>Sesame Street</em>. He also performs as <strong>DU!F</strong>, an electronic live-loop alias delivering high-energy, soundscape-driven sets.</p>",
-      "<p>From indie rock stages in Manchester to international children's television, <strong>Dave Knowles</strong> continues to build bridges between genres, disciplines, and audiences.</p>"
-    ]
+      "Dave Knowles is a Cape Town-based composer and multi-instrumentalist whose two-decade career spans indie rock, theatre, film, and children's television. He began with the indie rock band Shinobi, which took him to the UK for two years, before returning to South Africa to develop a distinctive percussive acoustic style that established him in Cape Town's folk scene.",
+      "His work as a composer has taken him into theatre and film, including directing the music for No Functional Language (Chaeli Campaign, 2016) — a live multi-instrumental score performed across South Africa and at Denmark's Aprilfest — and co-scoring The First Week for the 48 Hour Film Project, which won Best Original Score internationally and screened at Cannes. More recently, he composed the original score for Yazuke — Baba Yaya (2025), a Cape Town dance theatre production tracing the story of the first African samurai through African contemporary dance, ballet, hip hop, and martial arts.",
+      "Dave is equally known for his immersive live-looping performances, weaving together guitar, saxophone, violin, flute, bass, voice, and electronics into marathon improvisational sets. These have brought him to stages including Lush, Splashy Fen, River Republic, STRAB, and the National Arts Festival, alongside reactive sound installations and live scoring for dance.",
+      "Since relocating to the Garden Route, Dave has built a strong commission portfolio, most notably composing four seasons of original music for Takalani Sesame, the South African co-production of Sesame Street. He also performs as DU!F, an electronic live-loop alias delivering high-energy, soundscape-driven sets.",
+      "From indie rock stages in Manchester to international children's television, Dave Knowles continues to build bridges between genres, disciplines, and audiences."
+    ],
+    "tldr": "Dave Knowles is a South African composer, multi-instrumentalist and live-loop performer working across stages, screen, theatre, children’s television and experimental electronic music.",
+    "blurb": "Genre-fluid live performance and bespoke composition for festivals, venues, theatre, film, events and creative collaborations.",
+    "cta": "For bookings, commissions, collaborations or press enquiries, contact Dave to discuss the right EPK, performance format or project fit."
   },
   "offerings": [
     {
       "title": "DU!F — Live Looping",
       "description": "Immersive real-time composition using layered loops, guitar, saxophone, violin, flute, and electronics. High-energy and deeply textured.",
       "tags": [
+        "default",
         "booker",
         "duif"
       ]
@@ -37,6 +41,7 @@
       "title": "Acoustic Songwriting",
       "description": "Intricate folk and percussive guitar with dynamic vocal performances. Powerful, personal, unforgettable. A seasoned songwriter weaving a life into song with visceral sincerity.",
       "tags": [
+        "default",
         "booker",
         "acoustic"
       ]
@@ -45,6 +50,7 @@
       "title": "Film & Theatre Scoring",
       "description": "Original scores for screen and stage — from orchestral arrangements to live electronic textures. Credits include Cannes Film Festival and Takalani Sesame.",
       "tags": [
+        "default",
         "booker",
         "film"
       ]
@@ -53,6 +59,7 @@
       "title": "Wedding & Event Music",
       "description": "A regular of weddings on the Garden route, Dave's multi-instrumental obsession makes him an indispensable asset on a planner's portfolio, lending violin, flute, sax or singing to complete the atmosphere and get people dancing.",
       "tags": [
+        "default",
         "booker"
       ]
     },
@@ -60,6 +67,7 @@
       "title": "Sound Installation & Dance",
       "description": "Reactive sound installations and live scoring for contemporary dance. Collaborative, site-specific, experimental.",
       "tags": [
+        "default",
         "booker",
         "film"
       ]
@@ -372,7 +380,10 @@
       "videoTags": [
         "default"
       ],
-      "galleryCount": 6
+      "galleryCount": 6,
+      "bioParts": [
+        "short"
+      ]
     },
     "booker": {
       "label": "Booker",
@@ -391,7 +402,10 @@
       "videoTags": [
         "booker"
       ],
-      "galleryCount": 0
+      "galleryCount": 0,
+      "bioParts": [
+        "short"
+      ]
     },
     "press": {
       "label": "Press",
@@ -410,7 +424,10 @@
       "videoTags": [
         "press"
       ],
-      "galleryCount": 9
+      "galleryCount": 9,
+      "bioParts": [
+        "full"
+      ]
     },
     "film": {
       "label": "Film & Theatre",
@@ -429,7 +446,10 @@
       "videoTags": [
         "film"
       ],
-      "galleryCount": 0
+      "galleryCount": 0,
+      "bioParts": [
+        "short"
+      ]
     },
     "acoustic": {
       "label": "Acoustic",
@@ -449,7 +469,10 @@
       "videoTags": [
         "acoustic"
       ],
-      "galleryCount": 4
+      "galleryCount": 4,
+      "bioParts": [
+        "acoustic"
+      ]
     },
     "duif": {
       "label": "DU!F",
@@ -469,7 +492,10 @@
       "videoTags": [
         "duif"
       ],
-      "galleryCount": 0
+      "galleryCount": 0,
+      "bioParts": [
+        "short"
+      ]
     }
   }
 }

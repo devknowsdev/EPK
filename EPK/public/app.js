@@ -90,6 +90,10 @@ function publicRouteForMode(key) {
     return MODE_TO_PUBLIC_ROUTE[key] || '/';
 }
 
+function selectedForMode(items, key = modeKey) {
+    return (items || []).filter(item => (item.tags || []).includes(key));
+}
+
 function installAdapter() {
     window.EPKAdapter = {
         version: '1.2.0',
@@ -337,31 +341,25 @@ function renderPage() {
                 parts.push(wrapOpen + renderBio() + wrapClose);
                 break;
             case 'offerings': {
-                const offers = epk.offerings.filter(o =>
-                    mode.offeringTags.length === 0 ||
-                    o.tags.some(t => mode.offeringTags.includes(t))
-                );
+                const offers = selectedForMode(epk.offerings);
                 if (offers.length) parts.push(wrapOpen + renderOfferings(offers) + wrapClose);
                 break;
             }
             case 'credits': {
-                const credits = epk.credits.filter(c =>
-                    c.tags.some(t => ['film', 'press'].includes(t))
-                );
+                const credits = selectedForMode(epk.credits);
                 if (credits.length) parts.push(wrapOpen + renderCredits(credits) + wrapClose);
                 break;
             }
             case 'videos': {
-                const videos = epk.videos.filter(v =>
-                    mode.videoTags.length === 0 ||
-                    v.tags.some(t => mode.videoTags.includes(t))
-                );
+                const videos = selectedForMode(epk.videos);
                 if (videos.length) parts.push(wrapOpen + renderVideos(videos) + wrapClose);
                 break;
             }
-            case 'releases':
-                if (epk.releases.length) parts.push(wrapOpen + renderReleases() + wrapClose);
+            case 'releases': {
+                const releases = selectedForMode(epk.releases);
+                if (releases.length) parts.push(wrapOpen + renderReleases(releases) + wrapClose);
                 break;
+            }
             case 'gallery': {
                 const srcs = mode.galleryPhotos || [];
                 if (srcs.length > 0) {
@@ -442,18 +440,38 @@ function renderHero() {
 }
 
 // ── Bio ───────────────────────────────────────────────────────────
-function renderBio() {
-    const style = mode.bioStyle || 'short';
-    const bio = epk.bio;
+function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>"]/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;'
+    }[char]));
+}
 
-    let html = '';
-    if (style === 'full') {
-        html = bio.full.map(p => `<p>${p}</p>`).join('');
-    } else if (style === 'acoustic') {
-        html = `<p>${bio.acoustic}</p>`;
-    } else {
-        html = `<p>${bio.short}</p>`;
-    }
+function plainParagraphs(value) {
+    const raw = Array.isArray(value) ? value.join('\n\n') : String(value || '');
+    return raw
+        .replace(/<\/p>\s*<p>/gi, '\n\n')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .split(/\n\n+/)
+        .map(p => p.trim())
+        .filter(Boolean);
+}
+
+function selectedBioParts() {
+    return Array.isArray(mode.bioParts) && mode.bioParts.length
+        ? mode.bioParts
+        : [mode.bioStyle || 'short'];
+}
+
+function renderBio() {
+    const bio = epk.bio || {};
+    const html = selectedBioParts()
+        .map(part => plainParagraphs(bio[part]).map(p => `<p>${escapeHTML(p)}</p>`).join(''))
+        .filter(Boolean)
+        .join('');
 
     return `
     <section class="epk-section" data-epk-section="bio">
@@ -517,12 +535,12 @@ function renderVideos(videos) {
 }
 
 // ── Releases ──────────────────────────────────────────────────────
-function renderReleases() {
+function renderReleases(releases) {
     return `
     <section class="epk-section" data-epk-section="releases">
         <p class="section-label">Selected Releases</p>
         <div class="video-list">
-            ${epk.releases.map(r => `
+            ${releases.map(r => `
                 <a class="video-link" href="${r.url}" target="_blank" rel="noopener">
                     <span class="play-icon">♪</span>
                     ${r.title} ${r.alias ? `<span class="release-alias">— ${r.alias}</span>` : ''}
