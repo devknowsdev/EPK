@@ -10,7 +10,7 @@ const publicAdminExportPatch = path.join(publicAdminDir, 'admin-export-link-patc
 
 let html = await readFile(sourceAdmin, 'utf8');
 
-if (!html.includes('name="epk-public-root"')) {
+if (!/<meta\s+name=["']epk-public-root["']/i.test(html)) {
   html = html.replace(
     '<title>EPK OS — Admin</title>',
     '<title>EPK OS — Admin</title>\n<meta name="epk-public-root" content="same">'

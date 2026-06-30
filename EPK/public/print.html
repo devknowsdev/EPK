@@ -6,19 +6,6 @@
 <title>Dave Knowles — Printable EPK</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="print.css">
-<script>
-(function(){
-  const params = new URLSearchParams(location.search);
-  const isPrintPreview = params.get('print') === '1';
-  const snapshotKey = params.get('snapshotKey') || '';
-  if (!isPrintPreview && snapshotKey.startsWith('draft-')) {
-    const mode = params.get('for') || 'default';
-    const clean = new URL('/EPK/', location.origin);
-    if (mode && mode !== 'default') clean.searchParams.set('for', mode);
-    location.replace(clean.href);
-  }
-})();
-</script>
 </head>
 <body>
 <div id="print-app" class="print-shell">Loading printable EPK…</div>

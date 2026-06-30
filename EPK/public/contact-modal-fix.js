@@ -7,6 +7,8 @@ INVARIANTS: Does not auto-open contact UI; preserves explicit Contact button beh
 LAST_STABILIZED: 2026-06-27
 */
 (function(){
+  let contactTrigger=null;
+
   function injectModalFixStyles(){
     if(document.getElementById('client-contact-modal-fix-styles'))return;
     const style=document.createElement('style');
@@ -38,6 +40,8 @@ LAST_STABILIZED: 2026-06-27
     if(!box)return;
     box.classList.add('hidden');
     box.setAttribute('aria-hidden','true');
+    if(contactTrigger?.isConnected)contactTrigger.focus();
+    contactTrigger=null;
   }
 
   function installContactDismissal(){
@@ -46,10 +50,8 @@ LAST_STABILIZED: 2026-06-27
     const box=document.getElementById('client-contact-box');
     if(!box||box.dataset.dismissalPatched==='1')return;
     box.dataset.dismissalPatched='1';
-    box.classList.add('hidden');
-    box.setAttribute('aria-hidden','true');
     box.addEventListener('click',event=>{
-      if(event.target===box)hardCloseContactBox();
+      if(event.target===box)window.closeContactBox();
     });
   }
 
@@ -61,19 +63,22 @@ LAST_STABILIZED: 2026-06-27
 
   const originalOpen=window.openContactBox;
   window.openContactBox=function(){
+    contactTrigger=document.activeElement;
     injectModalFixStyles();
     removeRedundantOnlineEpkButton();
+    installContactDismissal();
     if(typeof originalOpen==='function')originalOpen.apply(this,arguments);
     const box=document.getElementById('client-contact-box');
     if(box){
       box.classList.remove('hidden');
       box.setAttribute('aria-hidden','false');
-      installContactDismissal();
+      requestAnimationFrame(()=>(box.querySelector('#client-contact-message')||box.querySelector('input, textarea, button'))?.focus());
     }
   };
 
   document.addEventListener('keydown',event=>{
-    if(event.key==='Escape')hardCloseContactBox();
+    const box=document.getElementById('client-contact-box');
+    if(event.key==='Escape'&&box&&!box.classList.contains('hidden'))window.closeContactBox();
   });
 
   document.addEventListener('DOMContentLoaded',()=>{

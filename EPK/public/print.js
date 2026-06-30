@@ -256,8 +256,8 @@ function renderContactBox() {
 
   return `
     <div id="client-contact-box" class="client-contact-box hidden" aria-hidden="true">
-      <div class="client-contact-box__panel" role="dialog" aria-label="Contact Dave Knowles">
-        <button class="client-contact-box__close" type="button" onclick="closeContactBox()">×</button>
+      <div class="client-contact-box__panel" role="dialog" aria-modal="true" aria-label="Contact Dave Knowles">
+        <button class="client-contact-box__close" type="button" aria-label="Close contact dialog" onclick="closeContactBox()">×</button>
         <span class="client-label">Contact</span>
         <h2>Send an enquiry</h2>
         <p>Edit the message, then send it directly from this page. WhatsApp remains available as a fallback.</p>
