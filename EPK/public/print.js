@@ -120,15 +120,27 @@ function selectedForMode(items, key = modeKey) {
   return (items || []).filter(item => (item.tags || []).includes(key));
 }
 
+function plainParagraphs(value) {
+  const raw = Array.isArray(value) ? value.join('\n\n') : String(value || '');
+  return raw
+    .replace(/<\/p>\s*<p>/gi, '\n\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .split(/\n\n+/)
+    .map(p => p.trim())
+    .filter(Boolean);
+}
+
 function bioHTML(epk, mode) {
-  const style = mode.bioStyle || 'short';
   const bio = epk.bio || {};
+  const parts = Array.isArray(mode.bioParts) && mode.bioParts.length
+    ? mode.bioParts
+    : [mode.bioStyle || 'short'];
 
-  if (style === 'full' && Array.isArray(bio.full)) {
-    return bio.full.map(String).join('');
-  }
-
-  return `<p>${esc(bio[style] || bio.short || '')}</p>`;
+  return parts
+    .map(part => plainParagraphs(bio[part]).map(p => `<p>${esc(p)}</p>`).join(''))
+    .filter(Boolean)
+    .join('');
 }
 
 function renderCards(title, items, linkKey = 'url') {

@@ -440,18 +440,38 @@ function renderHero() {
 }
 
 // ── Bio ───────────────────────────────────────────────────────────
-function renderBio() {
-    const style = mode.bioStyle || 'short';
-    const bio = epk.bio;
+function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>"]/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;'
+    }[char]));
+}
 
-    let html = '';
-    if (style === 'full') {
-        html = bio.full.map(p => `<p>${p}</p>`).join('');
-    } else if (style === 'acoustic') {
-        html = `<p>${bio.acoustic}</p>`;
-    } else {
-        html = `<p>${bio.short}</p>`;
-    }
+function plainParagraphs(value) {
+    const raw = Array.isArray(value) ? value.join('\n\n') : String(value || '');
+    return raw
+        .replace(/<\/p>\s*<p>/gi, '\n\n')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .split(/\n\n+/)
+        .map(p => p.trim())
+        .filter(Boolean);
+}
+
+function selectedBioParts() {
+    return Array.isArray(mode.bioParts) && mode.bioParts.length
+        ? mode.bioParts
+        : [mode.bioStyle || 'short'];
+}
+
+function renderBio() {
+    const bio = epk.bio || {};
+    const html = selectedBioParts()
+        .map(part => plainParagraphs(bio[part]).map(p => `<p>${escapeHTML(p)}</p>`).join(''))
+        .filter(Boolean)
+        .join('');
 
     return `
     <section class="epk-section" data-epk-section="bio">
