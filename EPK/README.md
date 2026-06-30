@@ -47,6 +47,19 @@ Use one of these equivalent Cloudflare Pages setups:
 
 Everything in the deploy root is publicly servable unless Cloudflare Access or equivalent platform auth protects it.
 
+## Regression checks
+
+Before merging access-gate, admin-route, or generated-admin changes, run:
+
+```bash
+node EPK/scripts/test-epk-access-gate.mjs
+node EPK/scripts/validate-epk-admin-upgrade.mjs
+node EPK/scripts/prepare-cloudflare-pages.mjs
+git diff --exit-code -- EPK/public/admin/admin.html EPK/public/admin/admin-export-link-patch.js
+```
+
+GitHub Actions runs the same checks on every pull request and every push to `main`. The access-gate suite verifies incorrect and correct password submissions, session cookies, malformed cookies, fail-closed configuration, public-route isolation, and parity between `/admin` and `/admin/`.
+
 ## Repo Structure
 
 ```
