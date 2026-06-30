@@ -116,9 +116,8 @@ function activeMode(epk) {
   return epk.modes?.[modeKey] || epk.modes?.default || {};
 }
 
-function selectedByTags(items, tags = []) {
-  if (!tags.length) return items || [];
-  return (items || []).filter(item => (item.tags || []).some(tag => tags.includes(tag)));
+function selectedForMode(items, key = modeKey) {
+  return (items || []).filter(item => (item.tags || []).includes(key));
 }
 
 function bioHTML(epk, mode) {
@@ -395,20 +394,19 @@ function render(epk) {
     }
 
     if (section === 'offerings') {
-      return renderCards('Offerings', selectedByTags(epk.offerings || [], mode.offeringTags || []));
+      return renderCards('Offerings', selectedForMode(epk.offerings || []));
     }
 
     if (section === 'videos') {
-      return renderVideos(selectedByTags(epk.videos || [], mode.videoTags || []));
+      return renderVideos(selectedForMode(epk.videos || []));
     }
 
     if (section === 'releases') {
-      return renderCards('Releases', epk.releases || []);
+      return renderCards('Releases', selectedForMode(epk.releases || []));
     }
 
     if (section === 'credits') {
-      const credits = (epk.credits || []).filter(item => (item.tags || []).some(tag => ['film', 'press', modeKey].includes(tag)));
-      return renderCredits(credits);
+      return renderCredits(selectedForMode(epk.credits || []));
     }
 
     if (section === 'gallery') {

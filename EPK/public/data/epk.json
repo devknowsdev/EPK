@@ -29,6 +29,7 @@
       "title": "DU!F — Live Looping",
       "description": "Immersive real-time composition using layered loops, guitar, saxophone, violin, flute, and electronics. High-energy and deeply textured.",
       "tags": [
+        "default",
         "booker",
         "duif"
       ]
@@ -37,6 +38,7 @@
       "title": "Acoustic Songwriting",
       "description": "Intricate folk and percussive guitar with dynamic vocal performances. Powerful, personal, unforgettable. A seasoned songwriter weaving a life into song with visceral sincerity.",
       "tags": [
+        "default",
         "booker",
         "acoustic"
       ]
@@ -45,6 +47,7 @@
       "title": "Film & Theatre Scoring",
       "description": "Original scores for screen and stage — from orchestral arrangements to live electronic textures. Credits include Cannes Film Festival and Takalani Sesame.",
       "tags": [
+        "default",
         "booker",
         "film"
       ]
@@ -53,6 +56,7 @@
       "title": "Wedding & Event Music",
       "description": "A regular of weddings on the Garden route, Dave's multi-instrumental obsession makes him an indispensable asset on a planner's portfolio, lending violin, flute, sax or singing to complete the atmosphere and get people dancing.",
       "tags": [
+        "default",
         "booker"
       ]
     },
@@ -60,6 +64,7 @@
       "title": "Sound Installation & Dance",
       "description": "Reactive sound installations and live scoring for contemporary dance. Collaborative, site-specific, experimental.",
       "tags": [
+        "default",
         "booker",
         "film"
       ]
