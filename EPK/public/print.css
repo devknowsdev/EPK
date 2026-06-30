@@ -92,6 +92,17 @@ body {
   border-color: var(--client-accent);
 }
 
+.client-button:focus-visible,
+.client-link:focus-visible,
+.client-contact a:focus-visible,
+.client-contact-link:focus-visible,
+.client-contact-box button:focus-visible,
+.client-contact-box input:focus-visible,
+.client-contact-box textarea:focus-visible {
+  outline: 2px solid #9DC4A4;
+  outline-offset: 3px;
+}
+
 .client-content {
   max-width: 920px;
   margin: 0 auto;

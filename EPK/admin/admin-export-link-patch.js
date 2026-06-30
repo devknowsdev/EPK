@@ -1,13 +1,13 @@
 /*
 MODULE: admin-export-link-patch.js
-PURPOSE: Make old Admin Print / Export use clean client links and show a visible print/client-link log.
-NOTE: Draft print/PDF preview still uses the temporary snapshotKey route because it can show unpublished browser edits.
+PURPOSE: Keep draft previews distinct from clean client links and show a visible print/client-link log.
+NOTE: Draft HTML and print/PDF previews use temporary snapshotKey routes because they can show unpublished browser edits.
 */
 (function(){
   const LOG_KEY = 'epk-admin-print-link-log-v1';
 
   function currentMode(){
-    return window.activeMode || 'default';
+    return window.getActiveAdminMode?.() || 'default';
   }
 
   function liveEPKUrl(){
@@ -44,7 +44,8 @@ NOTE: Draft print/PDF preview still uses the temporary snapshotKey route because
     if (kind === 'frozen') return 'Frozen client version';
     if (kind === 'live') return 'Live client link';
     if (kind === 'copy') return 'Copied live link';
-    if (kind === 'draft-print') return 'Draft print/PDF preview';
+    if (kind === 'draft-html') return 'Current draft HTML preview';
+    if (kind === 'draft-print') return 'Current draft print/PDF preview';
     return 'Output';
   }
 
@@ -80,18 +81,18 @@ NOTE: Draft print/PDF preview still uses the temporary snapshotKey route because
 
     const help = modal.querySelector('.help-box');
     if (help) {
-      help.innerHTML = '<strong>Client links are public-facing.</strong><br><code>/EPK/</code> is the live client link. A dated <code>/EPK/YYYY-MM-DD/</code> page is the frozen client version. Draft print/PDF preview may still use a temporary browser-only draft URL so unpublished edits can be previewed.';
+      help.innerHTML = '<strong>Draft previews and client links are different.</strong><br>Preview current draft HTML or PDF to review unpublished edits. Open or copy the live EPK only when you need a public client link. Dated <code>/EPK/YYYY-MM-DD/</code> pages are frozen client versions.';
     }
 
     const row = modal.querySelector('.button-row');
     if (row && row.dataset.publicLinkPatched !== '1') {
       row.dataset.publicLinkPatched = '1';
-      row.innerHTML = '<button onclick="openLiveClientEPK()">Open live client EPK</button><button onclick="copyLiveClientEPK()">Copy live EPK URL</button><button onclick="openPrintView(true)">Draft print / Save PDF</button><button onclick="downloadJSON()">Backup JSON</button>';
+      row.innerHTML = '<button type="button" onclick="openPrintView(false)">Preview current draft HTML</button><button type="button" onclick="openPrintView(true)">Print draft / Save PDF</button><button type="button" onclick="openLiveClientEPK()">Open live client EPK</button><button type="button" onclick="copyLiveClientEPK(this)">Copy live EPK URL</button><button type="button" onclick="downloadJSON()">Backup JSON</button>';
     }
 
     const note = modal.querySelector('p.field-help');
     if (note) {
-      note.innerHTML = 'Send clients <code>' + liveEPKUrl() + '</code> for the live EPK. Use dated freezes from Publisher for stable meeting links. The draft print/PDF route is temporary and should not be sent as a client URL.';
+      note.innerHTML = 'Draft preview URLs are browser-only and must not be sent to clients. Send <code>' + liveEPKUrl() + '</code> for the live EPK, or use a dated freeze from Publisher for a stable client version.';
     }
 
     if (!document.getElementById('admin-print-link-log')) {
@@ -116,18 +117,14 @@ NOTE: Draft print/PDF preview still uses the temporary snapshotKey route because
   const originalOpenPrintView = window.openPrintView;
   if (typeof originalOpenPrintView === 'function' && originalOpenPrintView.__printLogPatched !== true) {
     window.openPrintView = function patchedOpenPrintView(shouldPrint){
-      if (shouldPrint) {
-        const before = Date.now();
-        originalOpenPrintView.apply(this, arguments);
-        recordPrintLog({
-          kind: 'draft-print',
-          frozen: false,
-          note: 'Temporary draft print/PDF preview. Not a frozen client page.',
-          url: new URL('/print?for=' + encodeURIComponent(currentMode()) + '&print=1&snapshotKey=draft-' + before, location.origin).href
-        });
-        return;
-      }
-      window.openLiveClientEPK();
+      const url = originalOpenPrintView.apply(this, arguments);
+      recordPrintLog({
+        kind: shouldPrint ? 'draft-print' : 'draft-html',
+        frozen: false,
+        note: 'Temporary browser-only draft preview. Not a public client link.',
+        url
+      });
+      return url;
     };
     window.openPrintView.__printLogPatched = true;
   }
@@ -135,18 +132,30 @@ NOTE: Draft print/PDF preview still uses the temporary snapshotKey route because
   window.openLiveClientEPK = function openLiveClientEPK(){
     const url = liveModeUrl();
     recordPrintLog({ kind: 'live', frozen: false, url, note: 'Live/latest EPK; changes when the site is updated.' });
-    window.open(url, '_blank');
+    window.open(url, '_blank', 'noopener');
   };
 
-  window.copyLiveClientEPK = async function copyLiveClientEPK(){
+  window.copyLiveClientEPK = async function copyLiveClientEPK(button){
     const url = liveModeUrl();
     recordPrintLog({ kind: 'copy', frozen: false, url, note: 'Copied live/latest EPK URL.' });
     try {
-      await navigator.clipboard.writeText(url);
+      const copied = typeof window.copyAdminText === 'function'
+        ? await window.copyAdminText(url)
+        : (await navigator.clipboard.writeText(url), true);
+      if (!copied) throw new Error('Clipboard unavailable');
+      if (button) {
+        const label = button.textContent;
+        button.textContent = 'Copied ✓';
+        button.disabled = true;
+        setTimeout(() => {
+          button.textContent = label;
+          button.disabled = false;
+        }, 1400);
+      }
       if (typeof toast === 'function') toast('Copied live EPK URL');
       else console.log('Copied live EPK URL:', url);
     } catch {
-      window.prompt('Copy live EPK URL:', url);
+      if (typeof toast === 'function') toast('Could not copy live EPK URL');
     }
   };
 
