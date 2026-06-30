@@ -297,6 +297,13 @@ async function handleRequest(context) {
     return handleLogin(request, env);
   }
 
+  // Public shells and assets never need authentication. Keep them off the
+  // cookie hashing path entirely; protected data requests still authenticate
+  // separately and determine whether the public app receives full or redacted data.
+  if (isPublicShellRequest(url)) {
+    return next();
+  }
+
   if (!env.EPK_ACCESS_PASSWORD) {
     return new Response('EPK password gate is not configured. Set EPK_ACCESS_PASSWORD in Cloudflare Pages environment variables.', {
       status: 503,
@@ -310,19 +317,7 @@ async function handleRequest(context) {
 
   const authed = await isAuthed(request, env);
   if (authed) {
-    const response = await next();
-    const protectedResponse = new Response(response.body, response);
-    protectedResponse.headers.set('Cache-Control', 'no-store');
-    protectedResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
-    return protectedResponse;
-  }
-
-  if (isPublicShellRequest(url)) {
-    const response = await next();
-    const publicResponse = new Response(response.body, response);
-    publicResponse.headers.set('Cache-Control', 'no-store');
-    publicResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
-    return publicResponse;
+    return next();
   }
 
   if (isProtectedPath(url.pathname)) {
@@ -333,5 +328,24 @@ async function handleRequest(context) {
 }
 
 export async function onRequest(context) {
-  return handleRequest(context);
+  try {
+    return await handleRequest(context);
+  } catch (error) {
+    const url = new URL(context.request.url);
+    console.error('EPK middleware exception', {
+      method: context.request.method,
+      pathname: url.pathname,
+      name: error?.name || 'Error',
+      message: error?.message || String(error),
+      stack: error?.stack || ''
+    });
+    return new Response('EPK request could not be completed. Please try again.', {
+      status: 500,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'X-Robots-Tag': 'noindex, nofollow'
+      }
+    });
+  }
 }
