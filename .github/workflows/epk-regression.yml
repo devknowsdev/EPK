@@ -1,0 +1,39 @@
+name: EPK regression checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  access-gate:
+    name: Access gate and generated output
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Check middleware syntax
+        run: node --check EPK/functions/_middleware.js
+
+      - name: Test access gate and admin routes
+        run: node EPK/scripts/test-epk-access-gate.mjs
+
+      - name: Validate admin upgrade invariants
+        run: node EPK/scripts/validate-epk-admin-upgrade.mjs
+
+      - name: Verify generated public admin output
+        run: |
+          node EPK/scripts/prepare-cloudflare-pages.mjs
+          git diff --exit-code -- EPK/public/admin/admin.html EPK/public/admin/admin-export-link-patch.js
