@@ -187,6 +187,14 @@ function escapeHtml(value) {
   }[c]));
 }
 
+function safeDecodeCookie(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function parseCookies(request) {
   return Object.fromEntries((request.headers.get('Cookie') || '')
     .split(';')
@@ -195,7 +203,7 @@ function parseCookies(request) {
     .map(part => {
       const index = part.indexOf('=');
       if (index === -1) return [part, ''];
-      return [part.slice(0, index), decodeURIComponent(part.slice(index + 1))];
+      return [part.slice(0, index), safeDecodeCookie(part.slice(index + 1))];
     }));
 }
 
