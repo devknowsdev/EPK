@@ -288,7 +288,7 @@ async function handleLogin(request, env) {
   });
 }
 
-export async function onRequest(context) {
+async function handleRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
 
@@ -331,3 +331,34 @@ export async function onRequest(context) {
 
   return protectedResponse(request);
 }
+
+export async function onRequest(context) {
+  try {
+    return await handleRequest(context);
+  } catch (error) {
+    const url = new URL(context.request.url);
+    const message = error && error.stack ? error.stack : String(error && error.message ? error.message : error);
+    console.error('EPK middleware exception:', message);
+
+    if (url.searchParams.get('debug') === '1') {
+      return new Response(`EPK middleware exception\n\n${message}`, {
+        status: 500,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'no-store',
+          'X-Robots-Tag': 'noindex, nofollow'
+        }
+      });
+    }
+
+    return new Response('EPK middleware error. Open this URL with ?debug=1 to inspect the temporary diagnostic output.', {
+      status: 500,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'X-Robots-Tag': 'noindex, nofollow'
+      }
+    });
+  }
+}
+
