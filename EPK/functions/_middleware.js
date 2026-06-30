@@ -3,7 +3,7 @@ MODULE: EPK/functions/_middleware.js
 PURPOSE: Cloudflare Pages access gate for EPK data, publisher, and downloadable/private surfaces while allowing a redacted public shell.
 SECURITY: Does not hard-code passwords. Set EPK_ACCESS_PASSWORD as a Cloudflare Pages environment variable.
 INVARIANTS: Anonymous users can open the site shell only; content/social/file/data links remain protected or redacted.
-LAST_STABILIZED: 2026-06-26
+LAST_STABILIZED: 2026-06-30
 */
 
 const COOKIE_NAME = 'epk_access';
@@ -291,35 +291,6 @@ async function handleLogin(request, env) {
 async function handleRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
-  const debugMode = url.searchParams.get('debug') === '1';
-
-  if (url.pathname === '/__epk-debug') {
-    return new Response(JSON.stringify({
-      ok: true,
-      pathname: url.pathname,
-      hasPassword: Boolean(env.EPK_ACCESS_PASSWORD),
-      hasAuthSalt: Boolean(env.EPK_AUTH_SALT),
-      cookieHeaderPresent: Boolean(request.headers.get('Cookie')),
-      cookieHeaderLength: (request.headers.get('Cookie') || '').length,
-      note: 'Temporary EPK middleware diagnostic endpoint. Remove after debugging.'
-    }, null, 2), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': 'no-store',
-        'X-Robots-Tag': 'noindex, nofollow'
-      }
-    });
-  }
-
-  if (debugMode) {
-    const response = await next();
-    const debugResponse = new Response(response.body, response);
-    debugResponse.headers.set('Cache-Control', 'no-store');
-    debugResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
-    debugResponse.headers.set('X-EPK-Debug-Bypass', '1');
-    return debugResponse;
-  }
 
   if (url.pathname === '/__epk-login') {
     if (request.method !== 'POST') return Response.redirect(new URL('/', request.url), 302);
@@ -362,32 +333,5 @@ async function handleRequest(context) {
 }
 
 export async function onRequest(context) {
-  try {
-    return await handleRequest(context);
-  } catch (error) {
-    const url = new URL(context.request.url);
-    const message = error && error.stack ? error.stack : String(error && error.message ? error.message : error);
-    console.error('EPK middleware exception:', message);
-
-    if (url.searchParams.get('debug') === '1') {
-      return new Response(`EPK middleware exception\n\n${message}`, {
-        status: 500,
-        headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
-          'Cache-Control': 'no-store',
-          'X-Robots-Tag': 'noindex, nofollow'
-        }
-      });
-    }
-
-    return new Response('EPK middleware error. Open this URL with ?debug=1 to inspect the temporary diagnostic output.', {
-      status: 500,
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-store',
-        'X-Robots-Tag': 'noindex, nofollow'
-      }
-    });
-  }
+  return handleRequest(context);
 }
-
