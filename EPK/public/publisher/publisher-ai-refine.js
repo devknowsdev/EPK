@@ -1,5 +1,6 @@
 (function installEpkCopyRefinement() {
   const DEFAULT_SPECTRA_URL = 'http://127.0.0.1:3000';
+  const DYNAMIC_DESCRIPTION_KINDS = ['offerings', 'credits'];
   const suggestions = new Map();
 
   function spectraBaseUrl() {
@@ -30,6 +31,14 @@
         field
       }
     };
+  }
+
+  function dynamicDescriptionTargetId(kind, index) {
+    return `copy-${kind}-${index}-description`;
+  }
+
+  function dynamicDescriptionField(kind, index) {
+    return `${kind}[${index}].description`;
   }
 
   function extractSuggestion(result) {
@@ -136,21 +145,115 @@
   }
 
   function bindRefinementControls() {
-    document.querySelectorAll('[data-refine-copy]').forEach(button => {
-      button.addEventListener('click', () => requestSuggestion(button.dataset.refineCopy, button));
+    document.addEventListener('click', (event) => {
+      const refineButton = event.target.closest('[data-refine-copy]');
+      if (refineButton) {
+        requestSuggestion(refineButton.dataset.refineCopy, refineButton);
+        return;
+      }
+
+      const applyButton = event.target.closest('[data-apply-refine]');
+      if (applyButton) {
+        applySuggestion(applyButton.dataset.applyRefine);
+        return;
+      }
+
+      const discardButton = event.target.closest('[data-discard-refine]');
+      if (discardButton) {
+        clearSuggestion(discardButton.dataset.discardRefine);
+      }
     });
-    document.querySelectorAll('[data-apply-refine]').forEach(button => {
-      button.addEventListener('click', () => applySuggestion(button.dataset.applyRefine));
+  }
+
+  function decorateDynamicDescriptionFields() {
+    DYNAMIC_DESCRIPTION_KINDS.forEach(kind => {
+      const container = document.getElementById(`${kind}-list`);
+      if (!container) return;
+
+      [...container.querySelectorAll('.item-card')].forEach((card, index) => {
+        const textarea = card.querySelector('label.wide textarea');
+        if (!textarea || textarea.dataset.refineCopyReady === 'true') return;
+
+        const targetId = dynamicDescriptionTargetId(kind, index);
+        const label = textarea.closest('label');
+        if (!label) return;
+
+        textarea.id = targetId;
+        textarea.dataset.refineCopyReady = 'true';
+        label.classList.add('refine-copy-field');
+        label.dataset.refineField = dynamicDescriptionField(kind, index);
+        replaceLeadingLabelText(label, 'Description');
+        label.insertBefore(buildDynamicRefineHead(targetId, 'Description'), textarea);
+        label.after(buildSuggestionPanel(targetId, `Suggested ${singular(kind)} description edit`));
+      });
     });
-    document.querySelectorAll('[data-discard-refine]').forEach(button => {
-      button.addEventListener('click', () => clearSuggestion(button.dataset.discardRefine));
+  }
+
+  function replaceLeadingLabelText(label, fallback) {
+    const textNode = [...label.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+    if (textNode) {
+      textNode.textContent = '';
+      return;
+    }
+    label.insertBefore(document.createTextNode(''), label.firstChild);
+  }
+
+  function buildDynamicRefineHead(targetId, label) {
+    const head = document.createElement('div');
+    head.className = 'refine-copy-head';
+
+    const text = document.createElement('span');
+    text.textContent = label;
+
+    const button = document.createElement('button');
+    button.className = 'btn btn-secondary btn-sm';
+    button.type = 'button';
+    button.dataset.refineCopy = targetId;
+    button.textContent = 'Refine copy';
+
+    head.append(text, button);
+    return head;
+  }
+
+  function buildSuggestionPanel(targetId, label) {
+    const panel = document.createElement('div');
+    panel.className = 'refine-copy-suggestion wide';
+    panel.dataset.refineSuggestion = targetId;
+    panel.hidden = true;
+    panel.setAttribute('aria-live', 'polite');
+    panel.innerHTML = `
+      <p class="refine-copy-status"></p>
+      <textarea class="refine-copy-draft" rows="4" readonly aria-label="${label}"></textarea>
+      <div class="action-list refine-copy-actions">
+        <button class="btn btn-primary btn-sm" type="button" data-apply-refine="${targetId}">Apply suggestion</button>
+        <button class="btn btn-secondary btn-sm" type="button" data-discard-refine="${targetId}">Discard</button>
+      </div>`;
+    return panel;
+  }
+
+  function observeDynamicDescriptionFields() {
+    DYNAMIC_DESCRIPTION_KINDS.forEach(kind => {
+      const container = document.getElementById(`${kind}-list`);
+      if (!container || typeof MutationObserver === 'undefined') return;
+      const observer = new MutationObserver(() => decorateDynamicDescriptionFields());
+      observer.observe(container, { childList: true, subtree: true });
     });
+  }
+
+  function singular(kind) {
+    return ({ offerings: 'offering', credits: 'credit' })[kind] || kind;
   }
 
   window.EPKCareerRefineCopy = {
     buildRequestPayload,
+    dynamicDescriptionField,
+    dynamicDescriptionTargetId,
     extractSuggestion
   };
 
-  document.addEventListener('DOMContentLoaded', bindRefinementControls);
+  document.addEventListener('DOMContentLoaded', () => {
+    bindRefinementControls();
+    decorateDynamicDescriptionFields();
+    observeDynamicDescriptionFields();
+  });
 })();
