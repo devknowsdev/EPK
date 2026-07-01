@@ -1,6 +1,5 @@
 (function installEpkCopyRefinement() {
   const DEFAULT_SPECTRA_URL = 'http://127.0.0.1:3000';
-  const DEFAULT_LOCAL_TOKEN = 'dev-local-token';
   const suggestions = new Map();
 
   function spectraBaseUrl() {
@@ -13,7 +12,7 @@
     return (typeof localStorage !== 'undefined' && localStorage.getItem('adhd4_local_ai_token'))
       || window.__PRISM_SPECTRA_TOKEN__
       || window.__AI_FORGE_LOCAL_TOKEN__
-      || DEFAULT_LOCAL_TOKEN;
+      || '';
   }
 
   function buildRequestPayload(text, field) {
@@ -50,11 +49,16 @@
     const draft = panel?.querySelector('.refine-copy-draft');
     const field = source?.closest('[data-refine-field]')?.dataset.refineField || targetId;
     const text = source?.value.trim() || '';
+    const token = localToken();
 
     if (!source || !panel || !status || !draft) return;
     if (!text) {
       showPublisherStatus('warn', 'Add some copy before asking Spectra to refine it.');
       source.focus();
+      return;
+    }
+    if (!token) {
+      showPublisherStatus('warn', 'Spectra is not configured for this browser. Set the local Spectra token before requesting a draft suggestion.');
       return;
     }
 
@@ -70,7 +74,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-local-token': localToken()
+          'x-local-token': token
         },
         body: JSON.stringify(buildRequestPayload(text, field))
       });

@@ -58,6 +58,8 @@ assert.equal(
   'Plain response'
 );
 assert.equal(typeof listeners.DOMContentLoaded, 'function');
+assert.equal(script.includes('DEFAULT_LOCAL_TOKEN'), false);
+assert.equal(script.includes('dev-local-token'), false);
 assert.equal(script.includes("riskClass: 'read-only'"), true);
 assert.equal(/riskClass:\s*['"](?!read-only)/.test(script), false);
 
