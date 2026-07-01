@@ -46,6 +46,28 @@ assert.deepEqual(
   }
 );
 
+const offeringField = window.EPKCareerRefineCopy.dynamicDescriptionField('offerings', 2);
+const offeringPayload = window.EPKCareerRefineCopy.buildRequestPayload(
+  'Looping performance description',
+  offeringField
+);
+
+assert.equal(window.EPKCareerRefineCopy.dynamicDescriptionTargetId('offerings', 2), 'copy-offerings-2-description');
+assert.equal(offeringField, 'offerings[2].description');
+assert.equal(offeringPayload.context.field, 'offerings[2].description');
+assert.equal(offeringPayload.riskClass, 'read-only');
+
+const creditField = window.EPKCareerRefineCopy.dynamicDescriptionField('credits', 1);
+const creditPayload = window.EPKCareerRefineCopy.buildRequestPayload(
+  'Television scoring credit description',
+  creditField
+);
+
+assert.equal(window.EPKCareerRefineCopy.dynamicDescriptionTargetId('credits', 1), 'copy-credits-1-description');
+assert.equal(creditField, 'credits[1].description');
+assert.equal(creditPayload.context.field, 'credits[1].description');
+assert.equal(creditPayload.riskClass, 'read-only');
+
 assert.equal(
   window.EPKCareerRefineCopy.extractSuggestion({
     structuredResponse: { refinedText: 'Refined copy' },
@@ -59,7 +81,8 @@ assert.equal(
 );
 assert.equal(typeof listeners.DOMContentLoaded, 'function');
 assert.equal(script.includes('DEFAULT_LOCAL_TOKEN'), false);
-assert.equal(script.includes('dev-local-token'), false);
+assert.equal(script.includes(['dev', 'local', 'token'].join('-')), false);
+assert.equal(script.includes("document.addEventListener('click'"), true);
 assert.equal(script.includes("riskClass: 'read-only'"), true);
 assert.equal(/riskClass:\s*['"](?!read-only)/.test(script), false);
 
