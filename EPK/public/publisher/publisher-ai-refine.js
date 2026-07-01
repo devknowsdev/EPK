@@ -182,15 +182,15 @@
         textarea.dataset.refineCopyReady = 'true';
         label.classList.add('refine-copy-field');
         label.dataset.refineField = dynamicDescriptionField(kind, index);
-        replaceLeadingLabelText(label, 'Description');
+        replaceLeadingLabelText(label);
         label.insertBefore(buildDynamicRefineHead(targetId, 'Description'), textarea);
         label.after(buildSuggestionPanel(targetId, `Suggested ${singular(kind)} description edit`));
       });
     });
   }
 
-  function replaceLeadingLabelText(label, fallback) {
-    const textNode = [...label.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+  function replaceLeadingLabelText(label) {
+    const textNode = [...label.childNodes].find(node => node.nodeType === 3 && node.textContent.trim());
     if (textNode) {
       textNode.textContent = '';
       return;
@@ -210,6 +210,7 @@
     button.type = 'button';
     button.dataset.refineCopy = targetId;
     button.textContent = 'Refine copy';
+    button.setAttribute('aria-label', `Refine ${label.toLowerCase()} copy`);
 
     head.append(text, button);
     return head;
