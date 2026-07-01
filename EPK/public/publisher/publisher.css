@@ -212,6 +212,36 @@ body {
   border-style: dashed;
 }
 .refine-copy-actions { justify-content: flex-end; }
+.copy-consistency-panel .panel-head {
+  align-items: center;
+  margin-bottom: 0;
+}
+.copy-consistency-findings {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--rule-strong);
+  background: rgba(122,158,128,0.08);
+}
+.copy-consistency-findings[hidden] { display: none; }
+.copy-consistency-status {
+  margin: 0;
+  color: var(--accent-2);
+  font-size: 0.88rem;
+}
+.copy-consistency-output {
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  border: 1px dashed var(--rule-strong);
+  background: var(--surface2);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+.copy-consistency-actions { justify-content: flex-end; }
 .page { display: none; }
 .page.active { display: block; }
 .panel, .item-card {
