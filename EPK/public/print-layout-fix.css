@@ -1,0 +1,263 @@
+/* ── PDF export layout fix ────────────────────────────────────────
+   Loaded after print.css so these print/PDF rules override the older
+   layered print passes without disturbing screen/contact styles.
+*/
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #11130f !important;
+    color: #151613;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .client-shell {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 10mm;
+    box-sizing: border-box;
+    background:
+      radial-gradient(circle at top right, rgba(122,158,128,.10), transparent 90mm),
+      linear-gradient(180deg, #11130f 0%, #171915 100%) !important;
+  }
+
+  .client-hero,
+  .client-content,
+  .client-footer {
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  .client-hero {
+    min-height: auto !important;
+    height: auto !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 78mm !important;
+    align-items: center !important;
+    gap: 12mm !important;
+    padding: 10mm 0 12mm !important;
+    margin: 0;
+    break-after: avoid;
+    page-break-after: avoid;
+    overflow: hidden;
+  }
+
+  .client-title {
+    color: var(--client-ink) !important;
+    font-size: clamp(46pt, 15vw, 64pt) !important;
+    line-height: .9 !important;
+    letter-spacing: .02em !important;
+    max-width: 100% !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+
+  .client-tagline {
+    max-width: 82mm !important;
+    font-size: 8pt !important;
+    letter-spacing: .22em !important;
+    line-height: 1.55 !important;
+  }
+
+  .client-kicker,
+  .client-label {
+    font-size: 7pt !important;
+    letter-spacing: .34em !important;
+    color: #9DC4A4 !important;
+  }
+
+  .client-hero-img {
+    width: 78mm !important;
+    max-height: 96mm !important;
+    aspect-ratio: 4 / 4.8 !important;
+    object-fit: cover;
+  }
+
+  .client-content {
+    padding: 0 !important;
+  }
+
+  .client-section {
+    padding: 10mm 0 !important;
+    margin: 0 !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-bottom: 1px solid rgba(122,158,128,.26) !important;
+  }
+
+  .client-section:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .client-label {
+    margin-bottom: 7mm !important;
+  }
+
+  .client-bio {
+    max-width: 168mm !important;
+    font-size: 14.5pt !important;
+    line-height: 1.55 !important;
+  }
+
+  .client-bio p + p {
+    margin-top: 0.9em !important;
+  }
+
+  .client-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(78mm, 1fr)) !important;
+    gap: 2.5mm !important;
+  }
+
+  .client-card {
+    min-width: 0 !important;
+    padding: 7mm !important;
+    background: var(--client-surface) !important;
+    border-left: 1.5mm solid var(--client-accent) !important;
+    color: var(--client-ink) !important;
+  }
+
+  .client-card h3 {
+    font-size: 13pt !important;
+    line-height: 1.18 !important;
+    color: #F4F4EE !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+  }
+
+  .client-card p {
+    font-size: 9.5pt !important;
+    line-height: 1.45 !important;
+    color: #C7CCBE !important;
+  }
+
+  .client-section:has(.client-video-card) .client-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 4mm !important;
+  }
+
+  .client-video-card {
+    display: grid !important;
+    grid-template-columns: 32mm 1fr !important;
+    gap: 4mm !important;
+    align-items: center !important;
+    padding: 4mm !important;
+    background: var(--client-surface) !important;
+    border-left: 1.5mm solid var(--client-accent) !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .client-video-thumb,
+  .client-video-fallback {
+    width: 32mm !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+
+  .client-video-card h3 {
+    font-size: 9.5pt !important;
+    line-height: 1.22 !important;
+    margin: 0 0 2mm !important;
+    color: #F4F4EE !important;
+  }
+
+  .client-video-card .client-link-row {
+    margin-top: 1.5mm !important;
+  }
+
+  .client-gallery {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.5mm !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .client-gallery img {
+    aspect-ratio: 1.1 / 1 !important;
+    object-fit: cover !important;
+    filter: brightness(.86) sepia(.12);
+  }
+
+  .client-gallery a::after,
+  .client-gallery a[href]::after {
+    content: none !important;
+  }
+
+  .client-credit {
+    grid-template-columns: 32mm minmax(0, 1fr) !important;
+    gap: 6mm !important;
+    padding: 5mm 6mm !important;
+    background: var(--client-surface) !important;
+    color: var(--client-ink) !important;
+    border-bottom: 1px solid #11130f !important;
+  }
+
+  .client-credit-meta {
+    font-size: 7.5pt !important;
+  }
+
+  .client-credit-role {
+    font-size: 8.5pt !important;
+    color: var(--client-muted) !important;
+  }
+
+  .client-section:has(.client-contact) {
+    padding-top: 8mm !important;
+  }
+
+  .client-contact {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(70mm, 1fr)) !important;
+    gap: 3.5mm 8mm !important;
+  }
+
+  .client-contact p {
+    margin: 0 !important;
+    line-height: 1.35 !important;
+  }
+
+  .client-contact a {
+    color: #F4F4EE !important;
+    font-size: 10pt !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid rgba(122,158,128,.42) !important;
+  }
+
+  .client-link,
+  .client-button {
+    color: #F4F4EE !important;
+    border-color: rgba(122,158,128,.42) !important;
+    font-size: 7.5pt !important;
+    letter-spacing: .16em !important;
+  }
+
+  .client-button {
+    display: inline-block !important;
+  }
+
+  .client-footer {
+    padding: 7mm 0 0 !important;
+    margin-top: 4mm !important;
+    font-size: 7pt !important;
+    color: #9BA391 !important;
+  }
+
+  a[href]::after {
+    content: none !important;
+  }
+
+  .client-actions {
+    display: none !important;
+  }
+}
