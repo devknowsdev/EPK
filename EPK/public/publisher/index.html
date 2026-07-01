@@ -140,9 +140,51 @@
       </section>
       <section class="panel">
         <h3>Biography</h3>
-        <label>Short bio<textarea id="bio-short" rows="5"></textarea></label>
-        <label>Acoustic bio<textarea id="bio-acoustic" rows="5"></textarea></label>
-        <label>Full press bio <span class="hint">one paragraph per blank line</span><textarea id="bio-full" rows="12"></textarea></label>
+        <div class="refine-copy-field" data-refine-field="bio.short">
+          <div class="refine-copy-head">
+            <label for="bio-short">Short bio</label>
+            <button class="btn btn-secondary btn-sm" type="button" data-refine-copy="bio-short">Refine copy</button>
+          </div>
+          <textarea id="bio-short" rows="5"></textarea>
+          <div class="refine-copy-suggestion" data-refine-suggestion="bio-short" hidden aria-live="polite">
+            <p class="refine-copy-status"></p>
+            <textarea class="refine-copy-draft" rows="5" readonly aria-label="Suggested short bio edit"></textarea>
+            <div class="action-list refine-copy-actions">
+              <button class="btn btn-primary btn-sm" type="button" data-apply-refine="bio-short">Apply suggestion</button>
+              <button class="btn btn-secondary btn-sm" type="button" data-discard-refine="bio-short">Discard</button>
+            </div>
+          </div>
+        </div>
+        <div class="refine-copy-field" data-refine-field="bio.acoustic">
+          <div class="refine-copy-head">
+            <label for="bio-acoustic">Acoustic bio</label>
+            <button class="btn btn-secondary btn-sm" type="button" data-refine-copy="bio-acoustic">Refine copy</button>
+          </div>
+          <textarea id="bio-acoustic" rows="5"></textarea>
+          <div class="refine-copy-suggestion" data-refine-suggestion="bio-acoustic" hidden aria-live="polite">
+            <p class="refine-copy-status"></p>
+            <textarea class="refine-copy-draft" rows="5" readonly aria-label="Suggested acoustic bio edit"></textarea>
+            <div class="action-list refine-copy-actions">
+              <button class="btn btn-primary btn-sm" type="button" data-apply-refine="bio-acoustic">Apply suggestion</button>
+              <button class="btn btn-secondary btn-sm" type="button" data-discard-refine="bio-acoustic">Discard</button>
+            </div>
+          </div>
+        </div>
+        <div class="refine-copy-field" data-refine-field="bio.full">
+          <div class="refine-copy-head">
+            <label for="bio-full">Full press bio <span class="hint">one paragraph per blank line</span></label>
+            <button class="btn btn-secondary btn-sm" type="button" data-refine-copy="bio-full">Refine copy</button>
+          </div>
+          <textarea id="bio-full" rows="12"></textarea>
+          <div class="refine-copy-suggestion" data-refine-suggestion="bio-full" hidden aria-live="polite">
+            <p class="refine-copy-status"></p>
+            <textarea class="refine-copy-draft" rows="10" readonly aria-label="Suggested full press bio edit"></textarea>
+            <div class="action-list refine-copy-actions">
+              <button class="btn btn-primary btn-sm" type="button" data-apply-refine="bio-full">Apply suggestion</button>
+              <button class="btn btn-secondary btn-sm" type="button" data-discard-refine="bio-full">Discard</button>
+            </div>
+          </div>
+        </div>
       </section>
     </section>
 
@@ -327,6 +369,7 @@
 </div>
 
 <script src="publisher.js"></script>
+<script src="publisher-ai-refine.js"></script>
 <script src="publisher-focus-packet.js"></script>
 <script src="publisher-extensions.js"></script>
 <script src="publisher-gallery-cards.js"></script>
