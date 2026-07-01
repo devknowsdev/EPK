@@ -306,11 +306,19 @@
         <div class="checkbox-row" id="brief-output-options"></div>
         <div class="action-list">
           <button class="btn btn-secondary" type="button" id="copy-brief-btn">Copy brief text</button>
+          <button class="btn btn-secondary" type="button" id="refine-promo-copy-btn">Refine promo copy</button>
           <button class="btn btn-secondary" type="button" id="download-brief-btn">Download brief JSON</button>
         </div>
         <div class="split">
           <textarea id="brief-text" readonly rows="18" placeholder="Generated Markdown brief will appear here."></textarea>
           <textarea id="brief-json" readonly rows="18" placeholder="Generated JSON brief will appear here."></textarea>
+        </div>
+        <div class="refine-copy-suggestion" id="promo-refine-suggestion" hidden aria-live="polite">
+          <p class="refine-copy-status" id="promo-refine-status"></p>
+          <textarea class="refine-copy-draft" id="promo-refine-draft" rows="14" readonly aria-label="Suggested promo copy"></textarea>
+          <div class="action-list refine-copy-actions">
+            <button class="btn btn-secondary btn-sm" type="button" id="discard-promo-refine-btn">Discard</button>
+          </div>
         </div>
       </section>
     </section>
@@ -388,6 +396,7 @@
 <script src="publisher.js"></script>
 <script src="publisher-ai-refine.js"></script>
 <script src="publisher-ai-consistency.js"></script>
+<script src="publisher-ai-promo-refine.js"></script>
 <script src="publisher-focus-packet.js"></script>
 <script src="publisher-extensions.js"></script>
 <script src="publisher-gallery-cards.js"></script>
